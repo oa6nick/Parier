@@ -209,7 +209,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
         <div className="flex items-center gap-3 text-xs font-medium text-gray-400 min-w-0 flex-1">
           <div className="flex items-center gap-1.5 whitespace-nowrap">
             <Clock className="w-3.5 h-3.5 flex-shrink-0" />
-            <span className="truncate max-w-[100px]">{timeAgo}</span>
+            <span className="truncate max-w-[100px]" suppressHydrationWarning>{timeAgo}</span>
           </div>
           <div className="flex items-center gap-1.5 whitespace-nowrap">
             <Users className="w-3.5 h-3.5 flex-shrink-0" />
