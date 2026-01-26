@@ -1,0 +1,182 @@
+{
+  "Navigation": {
+    "feed": "Feed",
+    "ranking": "Ranking",
+    "profile": "Profile",
+    "create": "Create",
+    "trends": "Trends"
+  },
+  "Home": {
+    "title_part1": "Challenge the",
+    "title_part2": "Status Quo.",
+    "subtitle": "Join the premier prediction market. Validate your insights, earn reputation, and engage in intellectual debate.",
+    "globalMarket": "Global Market",
+    "activePredictions": "{count} Active Predictions",
+    "all": "All"
+  },
+  "BetCard": {
+    "pool": "Pool",
+    "odds": "Odds",
+    "potential": "Potential",
+    "prediction": "Prediction",
+    "active": "Active",
+    "closed": "Closed",
+    "betNow": "Bet Now",
+    "winRate": "WIN"
+  },
+  "BetModal": {
+    "title": "Place Your Bet",
+    "prediction": "Prediction",
+    "currentPool": "Current Pool",
+    "odds": "Odds",
+    "betAmount": "Bet Amount",
+    "potentialWin": "Potential Win",
+    "ifWin": "If your prediction is correct",
+    "disclaimer": "Important",
+    "disclaimerText": "You can only bet up to the current pool amount. Your bet will be added to the pool.",
+    "cancel": "Cancel",
+    "placeBet": "Place Bet",
+    "placing": "Placing...",
+    "errors": {
+      "minBet": "Minimum bet is ${min}",
+      "maxBet": "Maximum bet is ${max}"
+    }
+  },
+  "Create": {
+    "title": "Create Prediction",
+    "subtitle": "Formulate your insight and back it with conviction.",
+    "backToFeed": "Back to Feed",
+    "textInput": "Text Input",
+    "voiceInput": "AI Voice Assistant",
+    "aiReady": "AI Assistant Ready",
+    "aiDesc": "Just speak your prediction. I'll structure it, suggest odds, and fill the form for you.",
+    "aiDisclaimer": "*Disclaimer: AI suggestions are not financial advice.*",
+    "startRecording": "Start Recording",
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "e.g., Bitcoin to hit $100k by Q4 2025",
+      "shortDesc": "Short Description",
+      "shortDescPlaceholder": "Briefly explain the prediction context...",
+      "category": "Category",
+      "selectCategory": "Select a category",
+      "poolAmount": "Pool Amount ($)",
+      "coefficient": "Coefficient (x)",
+      "deadline": "Deadline",
+      "verificationSource": "Verification Source",
+      "verificationPlaceholder": "e.g., Bloomberg, Official Reports",
+      "cancel": "Cancel",
+      "publish": "Publish Prediction"
+    }
+  },
+  "Rating": {
+    "title": "Leaderboard",
+    "subtitle": "The top predictors by earnings and activity. Compete with the best minds on the platform.",
+    "totalPlayers": "Total Players",
+    "totalPredictions": "Total Predictions",
+    "totalPrizePool": "Total Prize Pool",
+    "globalRankings": "Global Rankings",
+    "topEarnings": "Top Earnings",
+    "mostActive": "Most Active",
+    "totalEarned": "Total Earned",
+    "winRate": "Win Rate"
+  },
+  "Register": {
+    "title": "Prove your point.",
+    "subtitle": "Join a community of intellectuals where every opinion matters and has value.",
+    "createAccount": "Create Account",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign In",
+    "username": "Username",
+    "usernamePlaceholder": "e.g., CryptoKing",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "creating": "Creating...",
+    "startJourney": "Start Journey",
+    "orVia": "Or via",
+    "google": "Google",
+    "apple": "Apple",
+    "predictors": "+2,000 predictors",
+    "validation": {
+      "required": "Please fill in all fields",
+      "passwordLength": "Password must be at least 6 characters"
+    }
+  },
+  "Login": {
+    "title": "Welcome back.",
+    "subtitle": "Continue your journey of predictions and intellectual debates.",
+    "signIn": "Sign In",
+    "noAccount": "Don't have an account?",
+    "createAccount": "Create one",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signingIn": "Signing in...",
+    "signInButton": "Sign In",
+    "orVia": "Or via",
+    "google": "Google",
+    "apple": "Apple",
+    "predictors": "+2,000 predictors"
+  },
+  "Onboarding": {
+    "step1": {
+      "title": "What interests you?",
+      "subtitle": "Select topics so we can personalize your feed.",
+      "interests": {
+        "sports": "Sports",
+        "politics": "Politics",
+        "tech": "Technology",
+        "crypto": "Cryptocurrency",
+        "entertainment": "Entertainment",
+        "economy": "Economy"
+      },
+      "continue": "Continue"
+    },
+    "step2": {
+      "title": "How will you participate?",
+      "subtitle": "This will help us find suitable bets for you.",
+      "levels": {
+        "active": {
+          "title": "Actively debating",
+          "description": "I'm ready to take risks and prove my point with money."
+        },
+        "casual": {
+          "title": "Sometimes",
+          "description": "I only participate in the most interesting events."
+        },
+        "observer": {
+          "title": "Just observing",
+          "description": "I want to follow trends and public opinion."
+        }
+      },
+      "back": "Back",
+      "finish": "Finish"
+    }
+  },
+  "Profile": {
+    "share": "Share",
+    "winRate": "Win Rate",
+    "joined": "Joined {date}",
+    "activePredictions": "Active Predictions",
+    "wins": "Wins",
+    "totalEarnings": "Total Earnings",
+    "globalRank": "Global Rank",
+    "predictorLevel": "Predictor Level {level}",
+    "eliteAnalyst": "Elite Analyst",
+    "location": "Moscow, RU",
+    "tabs": {
+      "all": "All",
+      "active": "Active",
+      "completed": "Completed"
+    },
+    "empty": {
+      "title": "No predictions found",
+      "desc": "You haven't made any predictions in this category yet.",
+      "create": "Create Prediction"
+    }
+  }
+}

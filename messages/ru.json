@@ -1,0 +1,182 @@
+{
+  "Navigation": {
+    "feed": "Лента",
+    "ranking": "Рейтинг",
+    "profile": "Профиль",
+    "create": "Создать",
+    "trends": "Тренды"
+  },
+  "Home": {
+    "title_part1": "Брось вызов",
+    "title_part2": "Статус-кво.",
+    "subtitle": "Присоединяйтесь к ведущему рынку прогнозов. Подтверждайте свои идеи, зарабатывайте репутацию и участвуйте в интеллектуальных дебатах.",
+    "globalMarket": "Глобальный рынок",
+    "activePredictions": "{count} Активных прогнозов",
+    "all": "Все"
+  },
+  "BetCard": {
+    "pool": "Пул",
+    "odds": "Кэф",
+    "potential": "Потенциал",
+    "prediction": "Прогноз",
+    "active": "Активен",
+    "closed": "Закрыт",
+    "betNow": "Сделать ставку",
+    "winRate": "WIN"
+  },
+  "BetModal": {
+    "title": "Разместить ставку",
+    "prediction": "Прогноз",
+    "currentPool": "Текущий пул",
+    "odds": "Кэф",
+    "betAmount": "Сумма ставки",
+    "potentialWin": "Потенциальный выигрыш",
+    "ifWin": "Если ваш прогноз верен",
+    "disclaimer": "Важно",
+    "disclaimerText": "Вы можете сделать ставку только до суммы текущего пула. Ваша ставка будет добавлена в пул.",
+    "cancel": "Отмена",
+    "placeBet": "Сделать ставку",
+    "placing": "Размещение...",
+    "errors": {
+      "minBet": "Минимальная ставка ${min}",
+      "maxBet": "Максимальная ставка ${max}"
+    }
+  },
+  "Create": {
+    "title": "Создать прогноз",
+    "subtitle": "Сформулируйте свою идею и подкрепите ее уверенностью.",
+    "backToFeed": "Назад в ленту",
+    "textInput": "Текст",
+    "voiceInput": "AI Ассистент",
+    "aiReady": "AI Ассистент готов",
+    "aiDesc": "Просто произнесите свой прогноз. Я структурирую его, предложу коэффициенты и заполню форму за вас.",
+    "aiDisclaimer": "*Дисклеймер: Предложения ИИ не являются финансовым советом.*",
+    "startRecording": "Начать запись",
+    "form": {
+      "title": "Заголовок",
+      "titlePlaceholder": "например, Биткоин достигнет $100k к Q4 2025",
+      "shortDesc": "Краткое описание",
+      "shortDescPlaceholder": "Кратко объясните контекст прогноза...",
+      "category": "Категория",
+      "selectCategory": "Выберите категорию",
+      "poolAmount": "Сумма пула ($)",
+      "coefficient": "Коэффициент (x)",
+      "deadline": "Дедлайн",
+      "verificationSource": "Источник проверки",
+      "verificationPlaceholder": "например, Bloomberg, Официальные отчеты",
+      "cancel": "Отмена",
+      "publish": "Опубликовать"
+    }
+  },
+  "Rating": {
+    "title": "Таблица лидеров",
+    "subtitle": "Лучшие прогнозисты по доходам и активности. Соревнуйтесь с лучшими умами платформы.",
+    "totalPlayers": "Всего игроков",
+    "totalPredictions": "Всего прогнозов",
+    "totalPrizePool": "Общий призовой фонд",
+    "globalRankings": "Мировой рейтинг",
+    "topEarnings": "Топ по доходам",
+    "mostActive": "Самые активные",
+    "totalEarned": "Заработано",
+    "winRate": "Винрейт"
+  },
+  "Register": {
+    "title": "Докажи свою правоту.",
+    "subtitle": "Присоединяйся к сообществу интеллектуалов, где каждое мнение имеет вес и ценность.",
+    "createAccount": "Создать аккаунт",
+    "alreadyHaveAccount": "Уже есть аккаунт?",
+    "signIn": "Войти",
+    "username": "Имя пользователя",
+    "usernamePlaceholder": "Например, CryptoKing",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "password": "Пароль",
+    "passwordPlaceholder": "••••••••",
+    "creating": "Создание...",
+    "startJourney": "Начать путь",
+    "orVia": "Или через",
+    "google": "Google",
+    "apple": "Apple",
+    "predictors": "+2,000 предсказателей",
+    "validation": {
+      "required": "Пожалуйста, заполните все поля",
+      "passwordLength": "Пароль должен содержать минимум 6 символов"
+    }
+  },
+  "Login": {
+    "title": "С возвращением.",
+    "subtitle": "Продолжи свой путь прогнозов и интеллектуальных дебатов.",
+    "signIn": "Войти",
+    "noAccount": "Нет аккаунта?",
+    "createAccount": "Создать",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "password": "Пароль",
+    "passwordPlaceholder": "••••••••",
+    "rememberMe": "Запомнить меня",
+    "forgotPassword": "Забыли пароль?",
+    "signingIn": "Вход...",
+    "signInButton": "Войти",
+    "orVia": "Или через",
+    "google": "Google",
+    "apple": "Apple",
+    "predictors": "+2,000 предсказателей"
+  },
+  "Onboarding": {
+    "step1": {
+      "title": "Что вам интересно?",
+      "subtitle": "Выберите темы, чтобы мы могли персонализировать вашу ленту.",
+      "interests": {
+        "sports": "Спорт",
+        "politics": "Политика",
+        "tech": "Технологии",
+        "crypto": "Криптовалюты",
+        "entertainment": "Развлечения",
+        "economy": "Экономика"
+      },
+      "continue": "Продолжить"
+    },
+    "step2": {
+      "title": "Как вы будете участвовать?",
+      "subtitle": "Это поможет нам подобрать для вас подходящие пари.",
+      "levels": {
+        "active": {
+          "title": "Активно спорю",
+          "description": "Я готов рисковать и доказывать свою правоту деньгами."
+        },
+        "casual": {
+          "title": "Иногда",
+          "description": "Участвую только в самых интересных событиях."
+        },
+        "observer": {
+          "title": "Просто наблюдаю",
+          "description": "Хочу следить за трендами и мнением толпы."
+        }
+      },
+      "back": "Назад",
+      "finish": "Завершить"
+    }
+  },
+  "Profile": {
+    "share": "Поделиться",
+    "winRate": "Винрейт",
+    "joined": "Вступил {date}",
+    "activePredictions": "Активные прогнозы",
+    "wins": "Победы",
+    "totalEarnings": "Всего заработано",
+    "globalRank": "Ранг",
+    "predictorLevel": "Уровень прогнозиста {level}",
+    "eliteAnalyst": "Элитный аналитик",
+    "location": "Москва, РФ",
+    "tabs": {
+      "all": "Все",
+      "active": "Активные",
+      "completed": "Завершенные"
+    },
+    "empty": {
+      "title": "Прогнозы не найдены",
+      "desc": "Вы еще не делали прогнозов в этой категории.",
+      "create": "Создать прогноз"
+    }
+  }
+}
