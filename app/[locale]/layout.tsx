@@ -33,7 +33,7 @@ export default async function RootLayout({
       <body className={`${inter.variable} font-sans antialiased bg-gray-50 text-gray-900`}>
         <NextIntlClientProvider messages={messages}>
           <Header />
-          <main className="min-h-screen pb-24 pt-4">
+          <main className="min-h-screen pb-24 pt-4 md:pt-20">
             {children}
           </main>
           <BottomNavigation />

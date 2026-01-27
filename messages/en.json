@@ -4,7 +4,8 @@
     "ranking": "Ranking",
     "profile": "Profile",
     "create": "Create",
-    "trends": "Trends"
+    "trends": "Trends",
+    "messages": "Messages"
   },
   "Home": {
     "title_part1": "Challenge the",
@@ -159,6 +160,7 @@
   },
   "Profile": {
     "share": "Share",
+    "messages": "Messages",
     "winRate": "Win Rate",
     "joined": "Joined {date}",
     "activePredictions": "Active Predictions",
@@ -178,5 +180,26 @@
       "desc": "You haven't made any predictions in this category yet.",
       "create": "Create Prediction"
     }
+  },
+  "BetComments": {
+    "title": "Comments",
+    "placeholder": "Add a comment...",
+    "send": "Send",
+    "noComments": "No comments yet. Be the first!",
+    "reply": "Reply"
+  },
+  "Chat": {
+    "title": "Messages",
+    "placeholder": "Type a message...",
+    "send": "Send",
+    "noMessages": "No messages yet.",
+    "search": "Search conversations...",
+    "you": "You",
+    "startChat": "Start Chat",
+    "viewProfile": "View Profile",
+    "clearChat": "Clear Chat",
+    "blockUser": "Block User",
+    "noSearchResults": "No conversations found",
+    "tryDifferentSearch": "Try a different search term"
   }
 }

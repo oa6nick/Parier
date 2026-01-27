@@ -23,6 +23,8 @@ const betsData: BetData[] = [
     tags: ["Bitcoin", "BTC", "Halving", "ETF"],
     commentsCount: 1,
     betsCount: 134,
+    likesCount: 24,
+    likedByMe: true,
   },
   {
     id: "2",
@@ -39,6 +41,8 @@ const betsData: BetData[] = [
     tags: ["Dune", "Movie", "Blockbuster"],
     commentsCount: 0,
     betsCount: 23,
+    likesCount: 5,
+    likedByMe: false,
   },
   {
     id: "3",
@@ -54,6 +58,8 @@ const betsData: BetData[] = [
     tags: ["S&P 500", "Stocks", "Index"],
     commentsCount: 3,
     betsCount: 67,
+    likesCount: 18,
+    likedByMe: false,
   },
   {
     id: "4",
@@ -69,6 +75,8 @@ const betsData: BetData[] = [
     tags: ["Football", "World Cup", "Russia"],
     commentsCount: 5,
     betsCount: 89,
+    likesCount: 32,
+    likedByMe: true,
   },
   {
     id: "5",
@@ -84,6 +92,8 @@ const betsData: BetData[] = [
     tags: ["Ethereum", "ETH", "DeFi"],
     commentsCount: 2,
     betsCount: 45,
+    likesCount: 15,
+    likedByMe: false,
   },
   {
     id: "6",
@@ -99,6 +109,8 @@ const betsData: BetData[] = [
     tags: ["Apple", "AR", "Technology"],
     commentsCount: 4,
     betsCount: 56,
+    likesCount: 21,
+    likedByMe: false,
   },
   {
     id: "7",
@@ -114,6 +126,8 @@ const betsData: BetData[] = [
     tags: ["Politics", "USA", "Elections"],
     commentsCount: 12,
     betsCount: 234,
+    likesCount: 89,
+    likedByMe: true,
   },
   {
     id: "8",
@@ -129,6 +143,8 @@ const betsData: BetData[] = [
     tags: ["Tesla", "TSLA", "Stocks"],
     commentsCount: 1,
     betsCount: 34,
+    likesCount: 11,
+    likedByMe: false,
   },
   {
     id: "9",
@@ -144,6 +160,8 @@ const betsData: BetData[] = [
     tags: ["Solana", "SOL", "Cryptocurrency"],
     commentsCount: 0,
     betsCount: 28,
+    likesCount: 9,
+    likedByMe: false,
   },
   {
     id: "10",
@@ -159,6 +177,8 @@ const betsData: BetData[] = [
     tags: ["Olympics", "Sports", "Russia"],
     commentsCount: 2,
     betsCount: 41,
+    likesCount: 16,
+    likedByMe: false,
   },
   {
     id: "11",
@@ -174,6 +194,8 @@ const betsData: BetData[] = [
     tags: ["Avatar", "Movie", "Blockbuster"],
     commentsCount: 3,
     betsCount: 78,
+    likesCount: 45,
+    likedByMe: true,
   },
   {
     id: "12",
@@ -189,6 +211,8 @@ const betsData: BetData[] = [
     tags: ["GPT-5", "AI", "OpenAI"],
     commentsCount: 6,
     betsCount: 92,
+    likesCount: 56,
+    likedByMe: false,
   },
   {
     id: "13",
@@ -204,6 +228,8 @@ const betsData: BetData[] = [
     tags: ["Inflation", "Economy", "Russia"],
     commentsCount: 1,
     betsCount: 19,
+    likesCount: 7,
+    likedByMe: false,
   },
   {
     id: "14",
@@ -219,6 +245,8 @@ const betsData: BetData[] = [
     tags: ["BNB", "Binance", "Cryptocurrency"],
     commentsCount: 2,
     betsCount: 37,
+    likesCount: 14,
+    likedByMe: false,
   },
   {
     id: "15",
@@ -234,6 +262,8 @@ const betsData: BetData[] = [
     tags: ["Amazon", "AMZN", "Stocks"],
     commentsCount: 4,
     betsCount: 63,
+    likesCount: 29,
+    likedByMe: true,
   },
   {
     id: "16",
@@ -249,6 +279,8 @@ const betsData: BetData[] = [
     tags: ["Hockey", "World Cup", "Russia"],
     commentsCount: 1,
     betsCount: 15,
+    likesCount: 6,
+    likedByMe: false,
   },
   {
     id: "17",
@@ -264,6 +296,8 @@ const betsData: BetData[] = [
     tags: ["Cardano", "ADA", "Cryptocurrency"],
     commentsCount: 0,
     betsCount: 22,
+    likesCount: 8,
+    likedByMe: false,
   },
   {
     id: "18",
@@ -279,6 +313,8 @@ const betsData: BetData[] = [
     tags: ["Microsoft", "MSFT", "Stocks"],
     commentsCount: 2,
     betsCount: 48,
+    likesCount: 19,
+    likedByMe: false,
   },
   {
     id: "19",
@@ -294,6 +330,8 @@ const betsData: BetData[] = [
     tags: ["Swimming", "World Championships", "Russia"],
     commentsCount: 1,
     betsCount: 31,
+    likesCount: 12,
+    likedByMe: false,
   },
 ];
 

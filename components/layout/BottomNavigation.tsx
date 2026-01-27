@@ -5,7 +5,7 @@ import { Link, usePathname } from "@/navigation";
 import {
   Search,
   Users,
-  TrendingUp,
+  MessageCircle,
   User,
   Plus,
 } from "lucide-react";
@@ -19,14 +19,14 @@ export const BottomNavigation: React.FC = () => {
   const navItems = [
     { id: "feed", href: "/", icon: Search, label: t('feed') },
     { id: "rating", href: "/rating", icon: Users, label: t('ranking') },
-    { id: "trends", href: "/", icon: TrendingUp, label: t('trends') },
+    { id: "messages", href: "/messages", icon: MessageCircle, label: t('messages') },
     { id: "profile", href: "/profile", icon: User, label: t('profile') },
   ];
 
   return (
     <nav className="md:hidden fixed bottom-6 left-4 right-4 h-16 bg-white/90 backdrop-blur-xl border border-white/20 shadow-glass rounded-2xl z-50 flex items-center justify-between px-2">
       {navItems.map((item, index) => {
-        const isActive = pathname === item.href;
+        const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
         
         // Add create button in the middle
         if (index === 2) {

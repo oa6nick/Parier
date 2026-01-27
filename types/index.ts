@@ -41,6 +41,36 @@ export type Bet = {
   tags: string[];
   commentsCount: number;
   betsCount: number;
+  likesCount: number;
+  likedByMe: boolean;
+};
+
+export type Comment = {
+  id: string;
+  author: User;
+  content: string;
+  createdAt: Date;
+  likesCount: number;
+  likedByMe: boolean;
+};
+
+export type MessageStatus = "sending" | "sent" | "delivered" | "read";
+
+export type Message = {
+  id: string;
+  senderId: string;
+  content: string;
+  createdAt: Date;
+  read: boolean;
+  status?: MessageStatus;
+};
+
+export type Conversation = {
+  id: string;
+  participants: User[];
+  lastMessage?: Message;
+  unreadCount: number;
+  updatedAt: Date;
 };
 
 export type PlatformStats = {

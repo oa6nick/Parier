@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { Calendar, MapPin, Trophy, Target, Award, DollarSign, TrendingUp, Check, Settings, Share2, MessageCircle } from "lucide-react";
+import React, { useState, use } from "react";
+import { Calendar, MapPin, Trophy, Target, Award, DollarSign, TrendingUp, Check, ArrowLeft, MessageCircle } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { RatingStars } from "@/components/ui/RatingStars";
 import { StatCard } from "@/components/ui/StatCard";
@@ -9,19 +9,37 @@ import { BetCard } from "@/components/features/BetCard";
 import { users } from "@/lib/mockData/users";
 import { getBets } from "@/lib/mockData/bets";
 import { getCategories } from "@/lib/mockData/categories";
+import { findOrCreateConversation } from "@/lib/mockData/chat";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { useTranslations, useFormatter, useLocale } from "next-intl";
-import { Link } from "@/navigation";
+import { Link, useRouter } from "@/navigation";
+import { notFound } from "next/navigation";
 
-export default function ProfilePage() {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default function UserProfilePage({ params }: PageProps) {
+  const { id } = use(params);
   const t = useTranslations('Profile');
+  const tChat = useTranslations('Chat');
   const format = useFormatter();
   const locale = useLocale();
+  const router = useRouter();
   const categories = getCategories(locale);
   const bets = getBets(locale);
-  const currentUser = users[0]; // "You"
-  const userBets = bets.filter((bet) => bet.author.id === currentUser.id);
+  const currentUser = users[0];
+  
+  const user = users.find((u) => u.id === id);
+  
+  if (!user) {
+    notFound();
+  }
+
+  const userBets = bets.filter((bet) => bet.author.id === user.id);
   const [activeTab, setActiveTab] = useState<"all" | "active" | "completed">("all");
 
   const filteredBets = userBets.filter((bet) => {
@@ -33,16 +51,31 @@ export default function ProfilePage() {
   const userStats = {
     activeBets: userBets.filter((b) => b.status === "open").length,
     wonBets: userBets.filter((b) => b.status === "completed").length,
-    totalWinnings: 0,
-    rating: currentUser.rank || 0,
+    totalWinnings: user.earnings || 0,
+    rating: user.rank || 0,
   };
 
   const userInterests = categories.filter((cat) =>
-    currentUser.interests?.includes(cat.id)
+    user.interests?.includes(cat.id)
   );
+
+  const handleStartChat = () => {
+    // Find existing conversation or create new one
+    const conversation = findOrCreateConversation(user.id);
+    router.push(`/messages/${conversation.id}`);
+  };
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      {/* Back Button */}
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+      >
+        <ArrowLeft className="w-5 h-5" />
+        <span className="font-medium">Back</span>
+      </button>
+
       {/* Profile Header Card */}
       <div className="relative bg-white rounded-3xl p-8 shadow-soft border border-gray-100 mb-8 overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/5 to-secondary/5 rounded-bl-full -mr-16 -mt-16 pointer-events-none" />
@@ -51,10 +84,10 @@ export default function ProfilePage() {
           <div className="relative">
             <div className="p-1 bg-gradient-to-br from-primary to-secondary rounded-full">
               <div className="p-1 bg-white rounded-full">
-                <Avatar src={currentUser.avatar} alt={currentUser.username} size="lg" className="w-32 h-32" />
+                <Avatar src={user.avatar} alt={user.username} size="lg" className="w-32 h-32" />
               </div>
             </div>
-            {currentUser.verified && (
+            {user.verified && (
               <div className="absolute bottom-2 right-2 w-8 h-8 bg-blue-500 rounded-full border-4 border-white flex items-center justify-center shadow-md">
                 <Check className="w-4 h-4 text-white" />
               </div>
@@ -64,54 +97,52 @@ export default function ProfilePage() {
           <div className="flex-1 w-full">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-1">{currentUser.username}</h1>
-                <p className="text-gray-500 font-medium">{t('predictorLevel', {level: 5})} • {t('eliteAnalyst')}</p>
+                <h1 className="text-3xl font-bold text-gray-900 mb-1">{user.username}</h1>
+                <p className="text-gray-500 font-medium">{t('predictorLevel', {level: Math.floor((user.rating || 0) / 20) + 1})} • {t('eliteAnalyst')}</p>
               </div>
               <div className="flex gap-3">
-                <Link href="/messages">
-                  <Button variant="primary" size="sm" className="rounded-full">
-                    <MessageCircle className="w-4 h-4 mr-2" /> {t('messages')}
+                {user.id !== currentUser.id && (
+                  <Button variant="primary" size="sm" className="rounded-full" onClick={handleStartChat}>
+                    <MessageCircle className="w-4 h-4 mr-2" /> {tChat('startChat')}
                   </Button>
-                </Link>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  <Share2 className="w-4 h-4 mr-2" /> {t('share')}
-                </Button>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Settings className="w-5 h-5 text-gray-400" />
-                </Button>
+                )}
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-6 mb-6">
               <div className="flex items-center gap-2 px-3 py-1 bg-yellow-50 rounded-lg border border-yellow-100">
-                <RatingStars rating={currentUser.rating} size="md" />
-                <span className="text-sm font-bold text-yellow-700 ml-1">4.8</span>
+                <RatingStars rating={user.rating} size="md" />
+                <span className="text-sm font-bold text-yellow-700 ml-1">{user.rating.toFixed(1)}</span>
               </div>
               <div className="flex items-center gap-2 px-3 py-1 bg-green-50 rounded-lg border border-green-100">
                 <Trophy className="w-4 h-4 text-green-600" />
-                <span className="text-sm font-bold text-green-700">{currentUser.winRate}% {t('winRate')}</span>
+                <span className="text-sm font-bold text-green-700">{user.winRate}% {t('winRate')}</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <Calendar className="w-4 h-4" />
-                <span>{t('joined', {date: 'July 2025'})}</span>
+                <span>{t('joined', {date: new Date(user.joinedDate).toLocaleDateString(locale === 'ru' ? 'ru-RU' : 'en-US', { month: 'long', year: 'numeric' })})}</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <MapPin className="w-4 h-4" />
-                <span>{t('location')}</span>
-              </div>
+              {user.location && (
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <MapPin className="w-4 h-4" />
+                  <span>{user.location}</span>
+                </div>
+              )}
             </div>
 
             {/* Interests */}
-            <div className="flex flex-wrap gap-2">
-              {userInterests.map((interest) => (
-                <span
-                  key={interest.id}
-                  className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200"
-                >
-                  {interest.name}
-                </span>
-              ))}
-            </div>
+            {userInterests.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {userInterests.map((interest) => (
+                  <span
+                    key={interest.id}
+                    className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200"
+                  >
+                    {interest.name}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -172,8 +203,7 @@ export default function ProfilePage() {
               <Target className="w-8 h-8 text-gray-300" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('empty.title')}</h3>
-            <p className="text-gray-500 mb-6">{t('empty.desc')}</p>
-            <Button>{t('empty.create')}</Button>
+            <p className="text-gray-500">{t('empty.desc')}</p>
           </div>
         )}
       </div>
