@@ -247,7 +247,7 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ conversation, initialMessage
                 {!isMe && (
                   <div className="flex-shrink-0 w-8">
                     {showAvatar ? (
-                      <Avatar src={otherUser.avatar} alt={otherUser.username} size="xs" />
+                      <Avatar src={otherUser.avatar} alt={otherUser.username} size="sm" />
                     ) : (
                       <div className="w-8" />
                     )}

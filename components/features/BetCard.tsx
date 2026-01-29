@@ -3,16 +3,18 @@
 import React, { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ru, enUS } from "date-fns/locale";
-import { Clock, Users, Share2, Lightbulb, Check, ArrowUpRight, X, TrendingUp, AlertCircle, Heart, MessageCircle } from "lucide-react";
+import { Clock, Users, Share2, Lightbulb, Check, ArrowUpRight, X, TrendingUp, AlertCircle, Heart, MessageCircle, ExternalLink } from "lucide-react";
 import { Bet } from "@/types";
 import { Avatar } from "@/components/ui/Avatar";
 import { RatingStars } from "@/components/ui/RatingStars";
 import { Tag } from "@/components/ui/Tag";
 import { Button } from "@/components/ui/Button";
 import { useTranslations, useFormatter, useLocale } from "next-intl";
-import { useRouter } from "@/navigation";
+import { useRouter, Link } from "@/navigation";
 import { cn } from "@/lib/utils";
 import { CommentsModal } from "@/components/features/CommentsModal";
+import { AuthPromptModal } from "@/components/features/AuthPromptModal";
+import { useAuth } from "@/context/AuthContext";
 import { users } from "@/lib/mockData/users";
 import { getComments } from "@/lib/mockData/comments";
 
@@ -26,7 +28,9 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
   const format = useFormatter();
   const locale = useLocale();
   const router = useRouter();
+  const { isAuthenticated, user } = useAuth();
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isAuthPromptOpen, setIsAuthPromptOpen] = useState(false);
   const [betAmount, setBetAmount] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>("");
@@ -37,22 +41,48 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const [comments, setComments] = useState(getComments(bet.id));
   const [commentsCount, setCommentsCount] = useState(bet.commentsCount);
+  const [isCopied, setIsCopied] = useState(false);
 
-  const currentUser = users[0]; // Mock current user
+  const currentUser = user || users[0]; // Use authenticated user or fallback to mock
 
   const timeAgo = formatDistanceToNow(bet.createdAt, {
     addSuffix: true,
     locale: locale === 'ru' ? ru : enUS,
   });
 
-  const handleBetClick = () => {
-    const isLoggedIn = true; 
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     
-    if (!isLoggedIn) {
-      router.push("/auth/login");
-      return;
-    }
+    const shareData = {
+      title: bet.title,
+      text: t('shareText', {
+        title: bet.title,
+        outcome: bet.outcome,
+        coefficient: bet.coefficient
+      }),
+      url: window.location.origin,
+    };
 
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          console.error('Error sharing:', err);
+        }
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      } catch (err) {
+        console.error('Error copying to clipboard:', err);
+      }
+    }
+  };
+
+  const handleBetClick = () => {
     if (bet.status !== "open") {
       return;
     }
@@ -85,6 +115,11 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
 
     if (amount > maxBet) {
       setError(tModal('errors.maxBet', { max: format.number(maxBet) }));
+      return;
+    }
+
+    if (!isAuthenticated) {
+      setIsAuthPromptOpen(true);
       return;
     }
 
@@ -204,12 +239,14 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
             </div>
 
             {/* Title */}
-            <h2 className={cn(
-              "relative text-xl font-bold text-gray-900 mb-4 leading-tight transition-colors duration-300 line-clamp-2 break-words",
-              !isFlipped && "group-hover:text-primary"
-            )}>
-              {bet.title}
-            </h2>
+            <Link href={`/bet/${bet.id}`} className="block">
+              <h2 className={cn(
+                "relative text-xl font-bold text-gray-900 mb-4 leading-tight transition-colors duration-300 line-clamp-2 break-words",
+                !isFlipped && "group-hover:text-primary hover:text-primary"
+              )}>
+                {bet.title}
+              </h2>
+            </Link>
 
             {/* Outcome */}
             <div className="relative bg-gray-50/80 backdrop-blur-sm border border-gray-100 rounded-xl p-4 mb-6">
@@ -224,25 +261,27 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
               </div>
             </div>
 
-            {/* Bet details */}
-            <div className="relative grid grid-cols-3 gap-3 mb-6">
-              <div className="bg-gray-50 rounded-xl p-3 border border-gray-100/50 flex flex-col min-w-0">
-                <div className="text-xs text-gray-400 mb-2 font-medium leading-tight">{t('pool')}</div>
-                <div className="text-lg font-bold text-gray-900 leading-tight break-all">
-                  ${format.number(bet.betAmount)}
-                </div>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3 border border-gray-100/50 flex flex-col min-w-0">
-                <div className="text-xs text-gray-400 mb-2 font-medium leading-tight">{t('odds')}</div>
-                <div className="text-lg font-bold text-primary leading-tight">{bet.coefficient}x</div>
-              </div>
-              <div className="bg-secondary/5 rounded-xl p-3 border border-secondary/10 flex flex-col min-w-0">
-                <div className="text-xs text-secondary-dark/70 mb-2 font-medium leading-tight">{t('potential')}</div>
-                <div className="text-lg font-bold text-secondary-dark leading-tight break-all">
-                  ${format.number(bet.potentialWinnings)}
-                </div>
-              </div>
-            </div>
+      {/* Bet details */}
+      <div className="relative grid grid-cols-3 gap-3 mb-6">
+        <div className="bg-gray-50 rounded-xl p-3 border border-gray-100/50 flex flex-col min-w-0">
+          <div className="text-xs text-gray-400 mb-2 font-medium leading-tight">{t('pool')}</div>
+          <div className="text-lg font-bold text-gray-900 leading-tight break-all">
+            {format.number(bet.betAmount)}
+          </div>
+          <div className="text-[10px] text-gray-400 mt-0.5">{t('tokens')}</div>
+        </div>
+        <div className="bg-gray-50 rounded-xl p-3 border border-gray-100/50 flex flex-col min-w-0">
+          <div className="text-xs text-gray-400 mb-2 font-medium leading-tight">{t('odds')}</div>
+          <div className="text-lg font-bold text-primary leading-tight">{bet.coefficient}x</div>
+        </div>
+        <div className="bg-secondary/5 rounded-xl p-3 border border-secondary/10 flex flex-col min-w-0">
+          <div className="text-xs text-secondary-dark/70 mb-2 font-medium leading-tight">{t('potential')}</div>
+          <div className="text-lg font-bold text-secondary-dark leading-tight break-all">
+            {format.number(bet.potentialWinnings)}
+          </div>
+          <div className="text-[10px] text-secondary-dark/60 mt-0.5">{t('tokens')}</div>
+        </div>
+      </div>
 
             {/* Footer: Engagement and actions */}
             <div className="mt-auto relative flex items-center justify-between pt-4 border-t border-gray-100 gap-3">
@@ -276,9 +315,38 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
               </div>
               
               <div className="flex items-center gap-2 flex-shrink-0">
-                <Button variant="ghost" size="icon" className="rounded-full w-9 h-9 flex-shrink-0 p-0">
-                  <Share2 className="w-4 h-4" />
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="rounded-full w-9 h-9 flex-shrink-0 p-0 relative transition-colors"
+                  onClick={handleShare}
+                  title={t('share')}
+                >
+                  <div className={cn(
+                    "absolute inset-0 flex items-center justify-center transition-all duration-200",
+                    isCopied ? "opacity-100 rotate-0 scale-100" : "opacity-0 rotate-90 scale-50"
+                  )}>
+                    <Check className="w-4 h-4 text-green-500" />
+                  </div>
+                  <div className={cn(
+                    "absolute inset-0 flex items-center justify-center transition-all duration-200",
+                    isCopied ? "opacity-0 -rotate-90 scale-50" : "opacity-100 rotate-0 scale-100"
+                  )}>
+                    <Share2 className="w-4 h-4" />
+                  </div>
                 </Button>
+
+                <Link href={`/bet/${bet.id}`}>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="rounded-full w-9 h-9 flex-shrink-0 p-0 relative transition-colors"
+                    title={t('details')}
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </Button>
+                </Link>
+
                 <Button 
                   variant="primary" 
                   size="sm" 
@@ -319,31 +387,31 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
                 {tModal('prediction')}
               </h3>
               <p className="text-gray-900 font-medium mb-3">{bet.title}</p>
-              <div className="grid grid-cols-2 gap-3 text-sm pt-3 border-t border-gray-200">
-                <div>
-                  <span className="text-gray-500">{tModal('currentPool')}</span>
-                  <p className="font-bold text-gray-900">${format.number(bet.betAmount)}</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">{tModal('odds')}</span>
-                  <p className="font-bold text-primary">{bet.coefficient}x</p>
-                </div>
+            <div className="grid grid-cols-2 gap-3 text-sm pt-3 border-t border-gray-200">
+              <div>
+                <span className="text-gray-500">{tModal('currentPool')}</span>
+                <p className="font-bold text-gray-900">{format.number(bet.betAmount)} {t('tokens')}</p>
               </div>
+              <div>
+                <span className="text-gray-500">{tModal('odds')}</span>
+                <p className="font-bold text-primary">{bet.coefficient}x</p>
+              </div>
+            </div>
             </div>
 
             {/* Bet Amount Input */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {tModal('betAmount')}
+                {tModal('betAmount')} ({t('tokens')})
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium z-10">$</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium z-10">{t('tokenSymbol')}</span>
                 <input
                   type="text"
                   value={betAmount}
                   onChange={(e) => handleAmountChange(e.target.value)}
                   placeholder="0"
-                  className="flex h-12 w-full rounded-xl border-2 border-gray-200 bg-white pl-8 pr-4 py-2 text-lg font-bold ring-offset-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary transition-all duration-200"
+                  className="flex h-12 w-full rounded-xl border-2 border-gray-200 bg-white pl-12 pr-4 py-2 text-lg font-bold ring-offset-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary transition-all duration-200"
                   required
                 />
               </div>
@@ -365,7 +433,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     )}
                   >
-                    ${quickAmount}
+                    {format.number(quickAmount)}
                   </button>
                 ))}
               </div>
@@ -387,12 +455,12 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
                   </span>
                   <TrendingUp className="w-5 h-5 text-secondary" />
                 </div>
-                <p className="text-2xl font-bold text-secondary-dark">
-                  ${format.number(potentialWin)}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {tModal('ifWin')}
-                </p>
+              <p className="text-2xl font-bold text-secondary-dark">
+                {format.number(potentialWin)} {t('tokens')}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                {tModal('ifWin')}
+              </p>
               </div>
             )}
 
@@ -428,11 +496,11 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
                     <span className="animate-spin mr-2">⏳</span>
                     {tModal('placing')}
                   </>
-                ) : (
-                  <>
-                    {tModal('placeBet')} ${amount > 0 ? format.number(amount) : "0"}
-                  </>
-                )}
+              ) : (
+                <>
+                  {tModal('placeBet')} {amount > 0 ? format.number(amount) : "0"} {t('tokens')}
+                </>
+              )}
               </Button>
             </div>
           </div>
@@ -446,6 +514,12 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
         isOpen={isCommentsOpen}
         onClose={() => setIsCommentsOpen(false)}
         onAddComment={handleAddComment}
+      />
+
+      <AuthPromptModal
+        isOpen={isAuthPromptOpen}
+        onClose={() => setIsAuthPromptOpen(false)}
+        redirectUrl={`/bet/${bet.id}`}
       />
     </>
   );

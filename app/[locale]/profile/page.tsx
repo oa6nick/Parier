@@ -1,14 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
-import { Calendar, MapPin, Trophy, Target, Award, DollarSign, TrendingUp, Check, Settings, Share2, MessageCircle } from "lucide-react";
+import { Calendar, MapPin, Trophy, Target, Award, DollarSign, TrendingUp, Check, Settings, Share2, MessageCircle, Wallet } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { RatingStars } from "@/components/ui/RatingStars";
 import { StatCard } from "@/components/ui/StatCard";
 import { BetCard } from "@/components/features/BetCard";
+import { WalletBalance } from "@/components/features/WalletBalance";
+import { ReferralCard } from "@/components/features/ReferralCard";
 import { users } from "@/lib/mockData/users";
 import { getBets } from "@/lib/mockData/bets";
 import { getCategories } from "@/lib/mockData/categories";
+import { getTokenBalance } from "@/lib/mockData/wallet";
+import { getReferralStats, generateReferralCode } from "@/lib/mockData/referrals";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { useTranslations, useFormatter, useLocale } from "next-intl";
@@ -41,8 +45,12 @@ export default function ProfilePage() {
     currentUser.interests?.includes(cat.id)
   );
 
+  const tokenBalance = getTokenBalance(currentUser.id);
+  const referralCode = currentUser.referralCode || generateReferralCode(currentUser.id);
+  const referralStats = getReferralStats(currentUser.id);
+
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Profile Header Card */}
       <div className="relative bg-white rounded-3xl p-8 shadow-soft border border-gray-100 mb-8 overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/5 to-secondary/5 rounded-bl-full -mr-16 -mt-16 pointer-events-none" />
@@ -68,17 +76,26 @@ export default function ProfilePage() {
                 <p className="text-gray-500 font-medium">{t('predictorLevel', {level: 5})} • {t('eliteAnalyst')}</p>
               </div>
               <div className="flex gap-3">
-                <Link href="/messages">
+                <Link href="/wallet">
                   <Button variant="primary" size="sm" className="rounded-full">
+                    <Wallet className="w-4 h-4 mr-2" /> {format.number(tokenBalance.balance)}
+                  </Button>
+                </Link>
+                <Link href="/messages">
+                  <Button variant="outline" size="sm" className="rounded-full">
                     <MessageCircle className="w-4 h-4 mr-2" /> {t('messages')}
                   </Button>
                 </Link>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  <Share2 className="w-4 h-4 mr-2" /> {t('share')}
-                </Button>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Settings className="w-5 h-5 text-gray-400" />
-                </Button>
+                <Link href="/share">
+                  <Button variant="outline" size="sm" className="rounded-full">
+                    <Share2 className="w-4 h-4 mr-2" /> {t('share')}
+                  </Button>
+                </Link>
+                <Link href="/settings">
+                  <Button variant="ghost" size="icon" className="rounded-full">
+                    <Settings className="w-5 h-5 text-gray-400" />
+                  </Button>
+                </Link>
               </div>
             </div>
 
@@ -116,6 +133,29 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {/* Wallet and Referral Section */}
+      <div className="grid md:grid-cols-2 gap-6 mb-10">
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900">{t('wallet')}</h2>
+            <Link href="/wallet">
+              <Button variant="ghost" size="sm">
+                {t('viewAll')} →
+              </Button>
+            </Link>
+          </div>
+          <WalletBalance balance={tokenBalance} />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">{t('referralProgram')}</h2>
+          <ReferralCard
+            referralCode={referralCode}
+            totalReferrals={referralStats.totalReferrals}
+            totalEarnings={referralStats.totalEarnings}
+          />
+        </div>
+      </div>
+
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         <StatCard
@@ -133,7 +173,7 @@ export default function ProfilePage() {
         <StatCard
           icon={DollarSign}
           label={t('totalEarnings')}
-          value={`$${userStats.totalWinnings}`}
+          value={`${format.number(tokenBalance.totalWon)}`}
           iconColor="text-yellow-500"
         />
         <StatCard

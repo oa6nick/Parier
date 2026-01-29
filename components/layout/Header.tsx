@@ -2,22 +2,33 @@
 
 import React from "react";
 import { Link, usePathname, useRouter } from "@/navigation";
-import { Plus, User, Menu, Globe } from "lucide-react";
+import { Plus, User, Menu, Globe, Wallet, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations, useLocale, useFormatter } from "next-intl";
+import { getTokenBalance } from "@/lib/mockData/wallet";
+import { useAuth } from "@/context/AuthContext";
 
 export const Header: React.FC = () => {
   const pathname = usePathname();
   const t = useTranslations('Navigation');
+  const tLogin = useTranslations('Login');
+  const tRegister = useTranslations('Register');
   const locale = useLocale();
   const router = useRouter();
+  const format = useFormatter();
+  
+  const { user, isAuthenticated } = useAuth();
+  const balance = user ? getTokenBalance(user.id) : { balance: 0 };
 
   const navItems = [
     { href: "/", label: t('feed') },
     { href: "/rating", label: t('ranking') },
-    { href: "/profile", label: t('profile') },
   ];
+
+  if (isAuthenticated) {
+    navItems.push({ href: "/profile", label: t('profile') });
+  }
 
   const toggleLocale = () => {
     const newLocale = locale === 'en' ? 'ru' : 'en';
@@ -59,19 +70,54 @@ export const Header: React.FC = () => {
             })}
             <div className="w-px h-6 bg-gray-200 mx-2"></div>
             
-            <button 
-              onClick={toggleLocale}
-              className="px-3 py-2 rounded-xl text-sm font-semibold text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 flex items-center gap-1"
-            >
-              <Globe className="w-4 h-4" />
-              {locale.toUpperCase()}
-            </button>
+            {isAuthenticated ? (
+              <>
+                <Link href="/wallet">
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer group">
+                    <Wallet className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-bold text-primary">
+                      {format.number(balance.balance)}
+                    </span>
+                  </div>
+                </Link>
+                
+                <button 
+                  onClick={toggleLocale}
+                  className="px-3 py-2 rounded-xl text-sm font-semibold text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 flex items-center gap-1"
+                >
+                  <Globe className="w-4 h-4" />
+                  {locale.toUpperCase()}
+                </button>
 
-            <Link href="/create">
-              <Button variant="primary" size="sm" className="shadow-glow ml-2">
-                <Plus className="w-4 h-4" /> {t('create')}
-              </Button>
-            </Link>
+                <Link href="/create">
+                  <Button variant="primary" size="sm" className="shadow-glow ml-2">
+                    <Plus className="w-4 h-4" /> {t('create')}
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <button 
+                  onClick={toggleLocale}
+                  className="px-3 py-2 rounded-xl text-sm font-semibold text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 flex items-center gap-1"
+                >
+                  <Globe className="w-4 h-4" />
+                  {locale.toUpperCase()}
+                </button>
+                
+                <Link href="/login">
+                  <Button variant="ghost" size="sm" className="ml-2">
+                    {tLogin('signIn')}
+                  </Button>
+                </Link>
+                
+                <Link href="/register">
+                  <Button variant="primary" size="sm" className="shadow-glow ml-2">
+                    {tRegister('createAccount')}
+                  </Button>
+                </Link>
+              </>
+            )}
           </nav>
 
           {/* Mobile menu button */}

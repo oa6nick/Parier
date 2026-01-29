@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../globals.css";
 import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 import { BottomNavigation } from "@/components/layout/BottomNavigation";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
+import { AuthProvider } from "@/context/AuthContext";
 
 const inter = Inter({ 
   subsets: ["latin", "cyrillic"], 
@@ -32,11 +34,16 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased bg-gray-50 text-gray-900`}>
         <NextIntlClientProvider messages={messages}>
-          <Header />
-          <main className="min-h-screen pb-24 pt-4 md:pt-20">
-            {children}
-          </main>
-          <BottomNavigation />
+          <AuthProvider>
+            <Header />
+            <main className="min-h-screen pt-16 flex flex-col">
+              <div className="flex-grow">
+                {children}
+              </div>
+              <Footer />
+            </main>
+            <BottomNavigation />
+          </AuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>
