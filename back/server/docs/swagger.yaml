@@ -1,0 +1,659 @@
+basePath: /api/v1
+definitions:
+  internal_handlers.KeycloakLogoutRequest:
+    properties:
+      realm:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  internal_handlers.LoginCodeRequest:
+    properties:
+      code:
+        type: string
+      iss:
+        type: string
+      redirect_uri:
+        type: string
+    required:
+    - code
+    - iss
+    - redirect_uri
+    type: object
+  internal_handlers.MediaResponse:
+    properties:
+      content_type:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      type_id:
+        type: string
+      type_name:
+        type: string
+      url:
+        type: string
+    type: object
+  internal_handlers.ProfileResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+      realm:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      username:
+        type: string
+    type: object
+  internal_handlers.PropertiesEnumResponse:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      property:
+        type: string
+      property_type:
+        $ref: '#/definitions/parier-server_internal_models.PropertyType'
+      value: {}
+      value_id:
+        type: string
+    type: object
+  internal_handlers.PropertiesEnumsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/internal_handlers.PropertiesEnumResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  internal_handlers.PropertiesTypeResponse:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      place:
+        $ref: '#/definitions/parier-server_internal_models.PropertyPlace'
+      type:
+        $ref: '#/definitions/parier-server_internal_models.PropertyType'
+    type: object
+  internal_handlers.PropertiesTypesResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/internal_handlers.PropertiesTypeResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  parier-server_internal_models.DefaultRequest:
+    properties:
+      language:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+    type: object
+  parier-server_internal_models.ErrorResponse:
+    properties:
+      details:
+        type: string
+      error:
+        type: string
+      success:
+        type: boolean
+    type: object
+  parier-server_internal_models.PropertyPlace:
+    enum:
+    - AGENT
+    - UNIT
+    - USER
+    type: string
+    x-enum-varnames:
+    - PropertyPlaceAgent
+    - PropertyPlaceUnit
+    - PropertyPlaceUser
+  parier-server_internal_models.PropertyType:
+    enum:
+    - DATE
+    - DECIMAL
+    - INTEGER
+    - LOCALIZATION
+    - BOOLEAN
+    - TEXT
+    - JSONOBJECT
+    - JSONARRAY
+    - MEDIA
+    - ENUM
+    type: string
+    x-enum-varnames:
+    - PropertyTypeDate
+    - PropertyTypeDecimal
+    - PropertyTypeInteger
+    - PropertyTypeLocalization
+    - PropertyTypeBoolean
+    - PropertyTypeText
+    - PropertyTypeJSONObject
+    - PropertyTypeJSONArray
+    - PropertyTypeMedia
+    - PropertyTypeEnum
+  parier-server_internal_models.SuccessResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  parier-server_internal_models.User:
+    properties:
+      data:
+        additionalProperties: true
+        type: object
+      email:
+        type: string
+      external_id:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+      realm:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+      session_id:
+        type: string
+      username:
+        type: string
+    type: object
+  parier-server_internal_repository.PropertiesEnumFilter:
+    properties:
+      language:
+        type: string
+      limit:
+        type: integer
+      offset:
+        type: integer
+      property_type:
+        type: string
+      search:
+        type: string
+      sort_by:
+        type: string
+      sort_dir:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+    type: object
+  parier-server_internal_repository.PropertiesTypeFilter:
+    properties:
+      group:
+        type: string
+      language:
+        type: string
+      limit:
+        type: integer
+      offset:
+        type: integer
+      place:
+        $ref: '#/definitions/parier-server_internal_models.PropertyPlace'
+      search:
+        type: string
+      sort_by:
+        type: string
+      sort_dir:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is the Oasix property management system API server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Oasix API
+  version: "1.0"
+paths:
+  /auth/login-code:
+    put:
+      consumes:
+      - application/json
+      description: Authenticate user through Keycloak and return tokens
+      parameters:
+      - description: Login credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.LoginCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.ProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      summary: Login via Keycloak
+      tags:
+      - auth
+  /auth/logout:
+    put:
+      consumes:
+      - application/json
+      description: Logout user from Keycloak
+      parameters:
+      - description: Logout parameters
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.KeycloakLogoutRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Logout user
+      tags:
+      - auth
+  /auth/profile:
+    post:
+      consumes:
+      - application/json
+      description: Get current user profile information from Keycloak
+      parameters:
+      - description: Profile parameters
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.DefaultRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.ProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get current user profile
+      tags:
+      - auth
+  /core/locales/{lang}/{ns}:
+    get:
+      consumes:
+      - application/json
+      description: Get locales
+      parameters:
+      - description: Language
+        in: path
+        name: lang
+        required: true
+        type: string
+      - description: Namespace
+        in: path
+        name: ns
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get locales
+      tags:
+      - core
+  /core/properties-enums:
+    post:
+      consumes:
+      - application/json
+      description: Get properties enums
+      parameters:
+      - description: Filter parameters
+        in: body
+        name: filter
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_repository.PropertiesEnumFilter'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.PropertiesEnumsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get properties enums
+      tags:
+      - core
+  /core/properties-types:
+    post:
+      consumes:
+      - application/json
+      description: Get paginated list of properties types with filtering
+      parameters:
+      - description: Filter parameters
+        in: body
+        name: filter
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_repository.PropertiesTypeFilter'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.PropertiesTypesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get paginated list of properties types
+      tags:
+      - core
+  /core/properties-types/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Get properties type by id
+      parameters:
+      - description: Properties type id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Filter parameters
+        in: body
+        name: filter
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.DefaultRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.PropertiesTypeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get properties type by id
+      tags:
+      - core
+  /media/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Get media file information
+      parameters:
+      - description: Media ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Get media parameters
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.DefaultRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.MediaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get media info
+      tags:
+      - media
+  /media/{id}/download:
+    get:
+      description: Download a file from S3 storage
+      parameters:
+      - description: Media ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Download file
+      tags:
+      - media
+  /media/{id}/raw:
+    get:
+      description: Raw a file from S3 storage
+      parameters:
+      - description: Media ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Raw file
+      tags:
+      - media
+securityDefinitions:
+  BasicAuth:
+    type: basic
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+  OAuth2Keycloak:
+    authorizationUrl: http://localhost:18080/realms/parier/protocol/openid-connect/auth
+    flow: implicit
+    scopes:
+      read_access: Grants read access
+      write_access: Grants write access
+    type: oauth2
+swagger: "2.0"

@@ -30,3 +30,326 @@ services:
       NEXTAUTH_URL: "${NEXT_AUTH_URL}"
       AUTH_TRUST_HOST: "${AUTH_TRUST_HOST}"
       DEFAULT_POSITION: "${DEFAULT_POSITION}"
+
+  # PostgreSQL database with PostGIS extension
+  postgres:
+    image: postgis/postgis:17-3.5-alpine
+    container_name: parier-postgres
+    environment:
+      POSTGRES_DB: parier_db
+      POSTGRES_USER: ${DB_API_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_API_PASSWORD:-postgres}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "15432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - parier-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_API_USERNAME:-postgres} -d parier_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+  
+  init-db:
+    build:
+      context: ./back/dbms
+      dockerfile: Dockerfile
+    container_name: parier-init-db
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - parier-network
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USERNAME: ${DB_API_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_API_PASSWORD:-postgres}
+      DB_NAME: parier_db
+      DB_SSL_MODE: disable
+      DB_TIMEZONE: UTC
+    restart: "no"
+
+  # MinIO S3 compatible object storage
+  minio:
+    image: minio/minio:latest
+    container_name: parier-minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+      MINIO_CONSOLE_ADDRESS: ":9001"
+    ports:
+      - "19000:9000"  # MinIO API
+      - "19001:9001"  # MinIO Console
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - parier-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # MinIO initialization service
+  minio-init:
+    build:
+      context: ./back/server/minio-init
+      dockerfile: Dockerfile
+    container_name: parier-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    networks:
+      - parier-network
+    environment:
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+      S3_BUCKET: parier-media
+      S3_ENDPOINT: http://minio:9000
+    restart: "no"
+
+  # parier API Server
+  api:
+    build:
+      context: ./back/server
+      dockerfile: Dockerfile
+    container_name: parier-api
+    environment:
+      # Database configuration
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USERNAME: ${DB_API_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_API_PASSWORD:-postgres}
+      DB_NAME: parier_db
+      DB_SSL_MODE: disable
+      DB_TIMEZONE: UTC
+      
+      # Server configuration
+      SERVER_PORT: "8080"
+      GIN_MODE: debug
+      READ_TIMEOUT: "10"
+      WRITE_TIMEOUT: "10"
+      
+      # Store configuration
+      STORE_SECRET: ${STORE_SECRET:-your-super-secret-jwt-key-change-in-production}
+      STORE_SESSION_DURATION: "24h"
+      
+      # Swagger configuration
+      SWAGGER_HOST: localhost:18081
+      SWAGGER_BASE_PATH: /api/v1
+      SWAGGER_TITLE: parier API
+      SWAGGER_VERSION: "1.0"
+      
+      # S3/MinIO configuration
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+      S3_REGION: us-east-1
+      S3_BUCKET: parier-media
+      S3_ENDPOINT: http://minio:9000
+      S3_USE_SSL: "false"
+      S3_FORCE_PATH_STYLE: "true"
+
+      # AI configuration
+      AI_TYPE: n8n
+      AI_URL: http://n8n:5678/webhook/64b27331-82ef-4250-b06a-5e55a2cc0341
+
+      # Frontend configuration
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-http://localhost:3000}
+      
+      # Keycloak configuration
+      KEYCLOAK_SERVER_URL: ${KEYCLOAK_SERVER_URL:-http://localhost:18080}
+      KEYCLOAK_DEFAULT_REALM: ${KEYCLOAK_DEFAULT_REALM:-parier}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-parier-api}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-JQrRgJOK6xMHrHzvgzCZhqalJg5Hr8LW}
+      KEYCLOAK_JWT_ISSUER: ${KEYCLOAK_SERVER_URL:-http://localhost:18080}/realms/{realm}
+      KEYCLOAK_CERT_ENDPOINT: ${KEYCLOAK_SERVER_URL:-http://localhost:18080}/realms/{realm}/protocol/openid-connect/certs
+    ports:
+      - "18081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      init-db:
+        condition: service_completed_successfully
+      minio:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+      keycloak:
+        condition: service_healthy
+    networks:
+      - parier-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # PostgreSQL database for Keycloak
+  keycloak-postgres:
+    image: postgres:17-alpine
+    container_name: parier-keycloak-postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: ${KEYCLOAK_DB_USERNAME:-keycloak}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - keycloak_postgres_data:/var/lib/postgresql/data
+    networks:
+      - parier-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${KEYCLOAK_DB_USERNAME:-keycloak} -d keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Keycloak Identity and Access Management
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4
+    container_name: parier-keycloak
+    command:
+      - start-dev
+      - --import-realm
+      - --health-enabled=true
+      - --hostname-strict=false
+      - --proxy-headers=xforwarded
+      - --hostname=${KC_HOSTNAME:-http://localhost:18080}
+      - --hostname-admin=${KC_HOSTNAME_ADMIN:-http://localhost:18080}
+    environment:
+      # Database configuration
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-postgres:5432/keycloak
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USERNAME:-keycloak}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak}
+      KC_HEALTH_ENABLED: "true"
+      
+      # Keycloak configuration
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD:-admin}
+      KC_HOSTNAME: ${KC_HOSTNAME:-http://localhost:18080}
+      KC_HOSTNAME_ADMIN: ${KC_HOSTNAME_ADMIN:-http://localhost:18080}
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_PROXY_HEADERS: xforwarded
+      
+      # Performance and scaling (removed clustering for single instance)
+      # KC_CACHE_STACK: kubernetes
+      # KC_CACHE_CONFIG_FILE: cache-ispn.xml
+      
+      # Logging
+      KC_LOG_LEVEL: INFO
+      KC_ROOT_LOG_LEVEL: INFO
+      
+      # Development settings (remove in production)
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "false"
+    ports:
+      - "18080:8080"
+    depends_on:
+      keycloak-postgres:
+        condition: service_healthy
+    networks:
+      - parier-network
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - ./keycloak/realms:/opt/keycloak/data/import:ro
+      - ./keycloak/theme:/opt/keycloak/themes:ro
+    healthcheck:
+      test: ['CMD-SHELL', '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { java.net.URI uri = java.net.URI.create(args[0]); System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)uri.toURL().openConnection()).getResponseCode() ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/ready']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # pgAdmin for database management (optional)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: parier-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@parier.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "15050:80"
+    depends_on:
+      - postgres
+    networks:
+      - parier-network
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    restart: unless-stopped
+
+  # n8n for workflow automation
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: parier-n8n
+    ports:
+      - "18082:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - parier-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5678/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  n8n-postgres:
+    image: pgvector/pgvector:0.8.1-pg18-trixie
+    container_name: parier-n8n-postgres
+    environment:
+      POSTGRES_DB: n8n
+      POSTGRES_USER: ${N8N_DB_USERNAME:-n8n}
+      POSTGRES_PASSWORD: ${N8N_DB_PASSWORD:-n8n}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "15433:5432"
+    volumes:
+      - n8n_postgres_data:/var/lib/postgresql/data
+      - ./n8n/init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - parier-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${N8N_DB_USERNAME:-n8n} -d n8n"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  keycloak_postgres_data:
+    driver: local
+  keycloak_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  minio_data:
+    driver: local
+  postgres_data:
+    driver: local
+  n8n_data:
+    driver: local
+  n8n_postgres_data:
+    driver: local
+
+networks:
+  parier-network:
+    driver: bridge 
