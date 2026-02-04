@@ -34,7 +34,7 @@ func (r *LocalizationRepository) GetWordByText(text string) (*models.TLWord, err
 	return &word, err
 }
 
-func (r *LocalizationRepository) GetWordOrDefault(id *uuid.UUID, lang *string) *string {
+func (r *LocalizationRepository) GetWordOrDefault(id *string, lang *string) *string {
 	if id == nil {
 		return nil
 	}
@@ -78,7 +78,7 @@ func (r *LocalizationRepository) GetLocales(lang *string, ns *string) (map[strin
 			if locWord.TextWord.CtModify.After(lastModified) {
 				lastModified = locWord.TextWord.CtModify
 			}
-			locales[locWord.CkLocalization.String()] = locWord.TextWord.CvText
+			locales[locWord.CkLocalization] = locWord.TextWord.CvText
 		}
 	}
 	return locales, lastModified, err
@@ -215,7 +215,7 @@ func (r *LocalizationRepository) CreateLocalization(loc *models.TLocalization) e
 	return r.db.Create(loc).Error
 }
 
-func (r *LocalizationRepository) GetLocalizationByID(id uuid.UUID) (*models.TLocalization, error) {
+func (r *LocalizationRepository) GetLocalizationByID(id string) (*models.TLocalization, error) {
 	var loc models.TLocalization
 	err := r.db.Where("ck_id = ? AND ct_delete IS NULL", id).
 		Preload("LocalizationWords", "ct_delete IS NULL").
@@ -313,7 +313,7 @@ func (r *LocalizationRepository) UpdateLocalization(loc *models.TLocalization) e
 	return r.db.Save(loc).Error
 }
 
-func (r *LocalizationRepository) DeleteLocalization(id uuid.UUID, userID string) error {
+func (r *LocalizationRepository) DeleteLocalization(id string, userID string) error {
 	return r.db.Model(&models.TLocalization{}).
 		Where("ck_id = ? AND ct_delete IS NULL", id).
 		Update("ct_delete", gorm.Expr("NOW()")).
@@ -326,7 +326,7 @@ func (r *LocalizationRepository) CreateLocalizationWord(locWord *models.TLocaliz
 	return r.db.Create(locWord).Error
 }
 
-func (r *LocalizationRepository) GetLocalizationWordByID(localizationID uuid.UUID, langID string) (*models.TLocalizationWord, error) {
+func (r *LocalizationRepository) GetLocalizationWordByID(localizationID string, langID string) (*models.TLocalizationWord, error) {
 	var locWord models.TLocalizationWord
 	err := r.db.Where("ck_localization = ? AND ck_lang = ? AND ct_delete IS NULL", localizationID, langID).
 		Preload("Localization", "ct_delete IS NULL").
@@ -340,7 +340,7 @@ func (r *LocalizationRepository) UpdateLocalizationWord(locWord *models.TLocaliz
 	return r.db.Save(locWord).Error
 }
 
-func (r *LocalizationRepository) DeleteLocalizationWord(localizationID uuid.UUID, langID string, userID string) error {
+func (r *LocalizationRepository) DeleteLocalizationWord(localizationID string, langID string, userID string) error {
 	return r.db.Model(&models.TLocalizationWord{}).
 		Where("ck_localization = ? AND ck_lang = ? AND ct_delete IS NULL", localizationID, langID).
 		Update("ct_delete", gorm.Expr("NOW()")).
@@ -349,7 +349,7 @@ func (r *LocalizationRepository) DeleteLocalizationWord(localizationID uuid.UUID
 
 // === HELPER METHODS ===
 
-func (r *LocalizationRepository) GetLocalizedText(localizationID uuid.UUID, langID string) (string, error) {
+func (r *LocalizationRepository) GetLocalizedText(localizationID string, langID string) (string, error) {
 	// Try to get localized version
 	var locWord models.TLocalizationWord
 	err := r.db.Where("ck_localization = ? AND ck_lang = ? AND ct_delete IS NULL", localizationID, langID).

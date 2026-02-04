@@ -10,10 +10,10 @@ import (
 
 // TDMedia - Типы медиа
 type TDMedia struct {
-	CkId          string     `json:"ck_id" gorm:"column:ck_id;type:varchar(40);primaryKey"`
-	CkName        uuid.UUID  `json:"ck_name" gorm:"column:ck_name;type:uuid;not null"`
-	CkDescription *uuid.UUID `json:"ck_description,omitempty" gorm:"column:ck_description;type:uuid"`
-	CvMimeType    string     `json:"cv_mime_type" gorm:"column:cv_mime_type;type:varchar(255);not null;default:'application/octet-stream'"`
+	CkId          string  `json:"ck_id" gorm:"column:ck_id;type:varchar(40);primaryKey"`
+	CkName        string  `json:"ck_name" gorm:"column:ck_name;type:varchar(255);not null"`
+	CkDescription *string `json:"ck_description,omitempty" gorm:"column:ck_description;type:varchar(255)"`
+	CvMimeType    string  `json:"cv_mime_type" gorm:"column:cv_mime_type;type:varchar(255);not null;default:'application/octet-stream'"`
 
 	// Relations
 	NameLocalization        *TLocalization `json:"name_localization,omitempty" gorm:"foreignKey:CkName;references:CkId"`
@@ -51,8 +51,8 @@ type TDPropertiesType struct {
 	CkId          string        `json:"ck_id" gorm:"column:ck_id;type:varchar(100);primaryKey"`
 	CrType        PropertyType  `json:"cr_type" gorm:"column:cr_type;type:varchar(255);not null"`
 	CrPlace       PropertyPlace `json:"cr_place" gorm:"column:cr_place;type:varchar(100);not null"`
-	CkName        uuid.UUID     `json:"ck_name" gorm:"column:ck_name;type:uuid;not null"`
-	CkDescription *uuid.UUID    `json:"ck_description,omitempty" gorm:"column:ck_description;type:uuid"`
+	CkName        string        `json:"ck_name" gorm:"column:ck_name;type:varchar(255)uid;not null"`
+	CkDescription *string       `json:"ck_description,omitempty" gorm:"column:ck_description;type:varchar(255)"`
 
 	// Relations
 	NameLocalization        *TLocalization     `json:"name_localization,omitempty" gorm:"foreignKey:CkName;references:CkId"`
@@ -70,9 +70,9 @@ func (TDPropertiesType) TableName() string {
 
 // TDPropertiesTypeGroup - Группы свойств
 type TDPropertiesTypeGroup struct {
-	CkId          uuid.UUID  `json:"ck_id" gorm:"column:ck_id;type:uuid;primaryKey;default:uuid_generate_v4()"`
-	CkName        uuid.UUID  `json:"ck_name" gorm:"column:ck_name;type:uuid;not null"`
-	CkDescription *uuid.UUID `json:"ck_description,omitempty" gorm:"column:ck_description;type:uuid"`
+	CkId          uuid.UUID `json:"ck_id" gorm:"column:ck_id;type:uuid;primaryKey;default:uuid_generate_v4()"`
+	CkName        string    `json:"ck_name" gorm:"column:ck_name;type:varchar(255);not null"`
+	CkDescription *string   `json:"ck_description,omitempty" gorm:"column:ck_description;type:varchar(255)"`
 
 	// Relations
 	NameLocalization        *TLocalization         `json:"name_localization,omitempty" gorm:"foreignKey:CkName;references:CkId"`
@@ -91,10 +91,10 @@ type TDPropertiesEnum struct {
 	CkId           uuid.UUID    `json:"ck_id" gorm:"column:ck_id;type:uuid;primaryKey;default:uuid_generate_v4()"`
 	CkPropertyType string       `json:"ck_property_type" gorm:"column:ck_property_type;type:varchar(100);not null;index"`
 	CrValueType    PropertyType `json:"cr_value_type" gorm:"column:cr_value_type;type:varchar(20);not null"`
-	CkName         uuid.UUID    `json:"ck_name" gorm:"column:ck_name;type:uuid;not null"`
-	CkDescription  *uuid.UUID   `json:"ck_description,omitempty" gorm:"column:ck_description;type:uuid"`
+	CkName         string       `json:"ck_name" gorm:"column:ck_name;type:varchar(255);not null"`
+	CkDescription  *string      `json:"ck_description,omitempty" gorm:"column:ck_description;type:varchar(255)"`
 	CvText         *string      `json:"cv_text,omitempty" gorm:"column:cv_text;type:text"`
-	CkLocalization *uuid.UUID   `json:"ck_localization,omitempty" gorm:"column:ck_localization;type:uuid"`
+	CkLocalization *string      `json:"ck_localization,omitempty" gorm:"column:ck_localization;type:varchar(255)"`
 	CnDecimal      *float64     `json:"cn_decimal,omitempty" gorm:"column:cn_decimal;type:decimal"`
 	CnNumber       *int         `json:"cn_number,omitempty" gorm:"column:cn_number;type:int"`
 	CtDate         *time.Time   `json:"ct_date,omitempty" gorm:"column:ct_date;type:timestamp"`

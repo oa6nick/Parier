@@ -244,7 +244,6 @@ func (h *CoreHandler) getPropertyValueEnum(prop models.TDPropertiesEnum, lang *s
 		value = *prop.CkMedia
 		valueID = prop.CkMedia
 	case models.PropertyTypeLocalization:
-		valueID = prop.CkLocalization
 		value = h.coreService.LocRepo.GetWordOrDefault(prop.CkLocalization, lang)
 	case models.PropertyTypeText:
 		value = *prop.CvText

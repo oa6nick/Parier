@@ -18,7 +18,7 @@ func NewLocalizationService(repo *repository.LocalizationRepository) *Localizati
 
 // === WORD MANAGEMENT ===
 
-func (s *LocalizationService) GetWordOrDefault(wordID *uuid.UUID, lang *string) *string {
+func (s *LocalizationService) GetWordOrDefault(wordID *string, lang *string) *string {
 	return s.repo.GetWordOrDefault(wordID, lang)
 }
 
@@ -139,7 +139,7 @@ func (s *LocalizationService) CreateLanguage(req *CreateLanguageRequest, userID 
 
 	lang := &models.TDLang{
 		CkId:          req.Code,
-		CkName:        nameWord.CkId,
+		CkName:        nameWord.CkId.String(),
 		ClDefault:     req.IsDefault,
 		CvCodeAndroid: req.AndroidCode,
 		CvCodeIos:     req.IOSCode,
@@ -213,7 +213,7 @@ func (s *LocalizationService) UpdateLanguage(id string, req *UpdateLanguageReque
 		if err != nil {
 			return nil, err
 		}
-		lang.CkName = nameWord.CkId
+		lang.CkName = nameWord.CkId.String()
 	}
 
 	if req.IsDefault != nil {
@@ -304,7 +304,7 @@ func (s *LocalizationService) CreateLocalization(wordID uuid.UUID, langID string
 	return locWord, nil
 }
 
-func (s *LocalizationService) GetLocalizationByID(id uuid.UUID) (*models.TLocalization, error) {
+func (s *LocalizationService) GetLocalizationByID(id string) (*models.TLocalization, error) {
 	loc, err := s.repo.GetLocalizationByID(id)
 	if err != nil {
 		return nil, &ServiceError{
@@ -340,7 +340,7 @@ func (s *LocalizationService) GetLocalizationsByLanguage(langID string) ([]model
 	return localizationWords, nil
 }
 
-func (s *LocalizationService) DeleteLocalization(id uuid.UUID, userID string) error {
+func (s *LocalizationService) DeleteLocalization(id string, userID string) error {
 	// Check if localization exists
 	_, err := s.repo.GetLocalizationByID(id)
 	if err != nil {
@@ -365,7 +365,7 @@ func (s *LocalizationService) DeleteLocalization(id uuid.UUID, userID string) er
 
 // === LOCALIZATION WORD MANAGEMENT ===
 
-func (s *LocalizationService) CreateLocalizationWord(localizationID uuid.UUID, langID string, wordID uuid.UUID, userID string) (*models.TLocalizationWord, error) {
+func (s *LocalizationService) CreateLocalizationWord(localizationID string, langID string, wordID uuid.UUID, userID string) (*models.TLocalizationWord, error) {
 	// Validate localization exists
 	_, err := s.repo.GetLocalizationByID(localizationID)
 	if err != nil {
@@ -418,7 +418,7 @@ func (s *LocalizationService) CreateLocalizationWord(localizationID uuid.UUID, l
 	return locWord, nil
 }
 
-func (s *LocalizationService) GetLocalizationWordByID(localizationID uuid.UUID, langID string) (*models.TLocalizationWord, error) {
+func (s *LocalizationService) GetLocalizationWordByID(localizationID string, langID string) (*models.TLocalizationWord, error) {
 	locWord, err := s.repo.GetLocalizationWordByID(localizationID, langID)
 	if err != nil {
 		return nil, &ServiceError{
@@ -430,7 +430,7 @@ func (s *LocalizationService) GetLocalizationWordByID(localizationID uuid.UUID, 
 	return locWord, nil
 }
 
-func (s *LocalizationService) UpdateLocalizationWord(localizationID uuid.UUID, langID string, wordID uuid.UUID, userID string) (*models.TLocalizationWord, error) {
+func (s *LocalizationService) UpdateLocalizationWord(localizationID string, langID string, wordID uuid.UUID, userID string) (*models.TLocalizationWord, error) {
 	locWord, err := s.repo.GetLocalizationWordByID(localizationID, langID)
 	if err != nil {
 		return nil, &ServiceError{
@@ -465,7 +465,7 @@ func (s *LocalizationService) UpdateLocalizationWord(localizationID uuid.UUID, l
 	return locWord, nil
 }
 
-func (s *LocalizationService) DeleteLocalizationWord(localizationID uuid.UUID, langID string, userID string) error {
+func (s *LocalizationService) DeleteLocalizationWord(localizationID string, langID string, userID string) error {
 	// Check if localization word exists
 	_, err := s.repo.GetLocalizationWordByID(localizationID, langID)
 	if err != nil {
@@ -490,7 +490,7 @@ func (s *LocalizationService) DeleteLocalizationWord(localizationID uuid.UUID, l
 
 // === HELPER METHODS ===
 
-func (s *LocalizationService) GetLocalizedText(localizationID uuid.UUID, langID string) (string, error) {
+func (s *LocalizationService) GetLocalizedText(localizationID string, langID string) (string, error) {
 	text, err := s.repo.GetLocalizedText(localizationID, langID)
 	if err != nil {
 		return "", &ServiceError{

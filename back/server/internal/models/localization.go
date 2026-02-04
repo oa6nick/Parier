@@ -18,7 +18,7 @@ func (TLWord) TableName() string {
 // TDLang - Языки
 type TDLang struct {
 	CkId          string            `json:"ck_id" gorm:"column:ck_id;type:varchar(20);primaryKey"`
-	CkName        uuid.UUID         `json:"ck_name" gorm:"column:ck_name;type:uuid;not null"`
+	CkName        string            `json:"ck_name" gorm:"column:ck_name;type:varchar(255);not null"`
 	ClDefault     bool              `json:"cl_default" gorm:"column:cl_default;not null;default:false"`
 	CvCodeAndroid string            `json:"cv_code_android" gorm:"column:cv_code_android;type:varchar(255);not null"`
 	CvCodeIos     string            `json:"cv_code_ios" gorm:"column:cv_code_ios;type:varchar(255);not null"`
@@ -37,7 +37,7 @@ func (TDLang) TableName() string {
 
 // TLocalization - Ссылки на переводы (только базовые поля)
 type TLocalization struct {
-	CkId   uuid.UUID        `json:"ck_id" gorm:"column:ck_id;type:uuid;primaryKey;default:uuid_generate_v4()"`
+	CkId   string           `json:"ck_id" gorm:"column:ck_id;type:varchar(255);primaryKey;default:uuid_generate_v4()::text"`
 	CrType LocalizationType `json:"cr_type" gorm:"column:cr_type;type:varchar(20);not null"`
 
 	// Relations
@@ -52,7 +52,7 @@ func (TLocalization) TableName() string {
 
 // TLocalizationWord - Мапинг языка и перевода
 type TLocalizationWord struct {
-	CkLocalization uuid.UUID `json:"ck_localization" gorm:"column:ck_localization;type:uuid;primaryKey"`
+	CkLocalization string    `json:"ck_localization" gorm:"column:ck_localization;type:varchar(255);primaryKey"`
 	CkLang         string    `json:"ck_lang" gorm:"column:ck_lang;type:varchar(20);primaryKey"`
 	CkText         uuid.UUID `json:"ck_text" gorm:"column:ck_text;type:uuid;not null"`
 
