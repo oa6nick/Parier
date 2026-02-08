@@ -499,6 +499,31 @@ COMMENT ON COLUMN t_user_properties.ck_modify IS 'Идентификатор п�
 COMMENT ON COLUMN t_user_properties.ct_modify IS 'Дата модификации';
 COMMENT ON COLUMN t_user_properties.ct_delete IS 'Дата логического удаления';
 
+-- Таблица: t_user_wallet - Кошельки пользователей
+CREATE TABLE t_user_wallet (
+    ck_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ck_user UUID NOT NULL,
+    cn_value DECIMAL NOT NULL,
+    ck_create VARCHAR(255) NOT NULL,
+    ct_create TIMESTAMP NOT NULL DEFAULT now(),
+    ck_modify VARCHAR(255) NOT NULL,
+    ct_modify TIMESTAMP NOT NULL DEFAULT now(),
+    ct_delete TIMESTAMP NULL,
+    CONSTRAINT fk_t_user_wallet_ck_user FOREIGN KEY (ck_user) REFERENCES t_user(ck_id)
+);
+
+COMMENT ON TABLE t_user_wallet IS 'Кошельки пользователей';
+COMMENT ON COLUMN t_user_wallet.ck_id IS 'Идентификатор';
+COMMENT ON COLUMN t_user_wallet.ck_user IS 'Идентификатор пользователя';
+COMMENT ON COLUMN t_user_wallet.cn_value IS 'Значение';
+COMMENT ON COLUMN t_user_wallet.ck_create IS 'Идентификатор создателя';
+COMMENT ON COLUMN t_user_wallet.ct_create IS 'Дата создания';
+COMMENT ON COLUMN t_user_wallet.ck_modify IS 'Идентификатор пользователя';
+COMMENT ON COLUMN t_user_wallet.ct_modify IS 'Дата модификации';
+COMMENT ON COLUMN t_user_wallet.ct_delete IS 'Дата логического удаления';
+
+CREATE UNIQUE INDEX uk_t_user_wallet_ck_user ON t_user_wallet(ck_user);
+
 
 -- =====================================================
 -- ИНДЕКСЫ
