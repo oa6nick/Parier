@@ -15,6 +15,10 @@ func NewParierRepository(db *gorm.DB) *ParierRepository {
 	return &ParierRepository{db: db}
 }
 
+func (r *ParierRepository) GetDB() *gorm.DB {
+	return r.db
+}
+
 // === T_D_CATEGORY ===
 
 func (r *ParierRepository) CreateCategory(category *models.TDCategory) error {

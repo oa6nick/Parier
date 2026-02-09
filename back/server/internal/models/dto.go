@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/google/uuid"
 	"mime/multipart"
+
+	"github.com/google/uuid"
 )
 
 // ================== DTO СТРУКТУРЫ ==================
@@ -38,7 +39,6 @@ type User struct {
 }
 
 // ================== ЗАПРОСЫ ==================
-
 
 // ================== ФИЛЬТРЫ ==================
 
@@ -115,8 +115,6 @@ type OrderRequest struct {
 	Format    *string        `json:"format" form:"format"`
 }
 
-
-
 type ChatMessageDTO struct {
 	Action  ChatActionType `json:"action"`
 	Message string         `json:"message"`
@@ -149,4 +147,22 @@ type DownloadResponse struct {
 	Content     []byte
 	ContentType string
 	Filename    string
+}
+
+type DictionaryRequest struct {
+	Language *string `json:"language,omitempty" form:"language"`
+	User     *User   `json:"user,omitempty" form:"user"`
+	Search   *string `json:"search,omitempty" form:"search"`
+}
+
+type DictionaryItemString struct {
+	Id          string  `json:"id"`
+	Name        string  `json:"name"`
+	Description *string `json:"description,omitempty"`
+}
+
+type DictionaryItemUuid struct {
+	Id          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Description *string   `json:"description,omitempty"`
 }

@@ -13,6 +13,7 @@ type Services struct {
 	Media        *MediaService
 	Keycloak     *KeycloakService
 	Core         *CoreService
+	Parier       *ParierService
 }
 
 // NewServices creates a new Services instance with all dependencies
@@ -22,11 +23,13 @@ func NewServices(db *gorm.DB, cfg *config.Config) (*Services, error) {
 	mediaRepo := repository.NewMediaRepository(db)
 	userRepo := repository.NewUserRepository(db)
 	coreRepo := repository.NewCoreRepository(db)
+	parierRepo := repository.NewParierRepository(db)
 
 	// Initialize services
 	localizationService := NewLocalizationService(locRepo)
 	keycloakService := NewKeycloakService(&cfg.Keycloak, userRepo, locRepo)
 	coreService := NewCoreService(coreRepo, locRepo)
+	parierService := NewParierService(parierRepo, locRepo)
 	// Initialize MediaService
 	mediaService, err := NewMediaService(mediaRepo, locRepo, &cfg.S3, cfg)
 	if err != nil {
@@ -37,6 +40,7 @@ func NewServices(db *gorm.DB, cfg *config.Config) (*Services, error) {
 		Media:        mediaService,
 		Keycloak:     keycloakService,
 		Core:         coreService,
+		Parier:       parierService,
 	}, nil
 }
 
