@@ -139,7 +139,7 @@ func (s *LocalizationService) CreateLanguage(req *CreateLanguageRequest, userID 
 
 	lang := &models.TDLang{
 		CkId:          req.Code,
-		CkName:        nameWord.CkId.String(),
+		CkName:        nameWord.CkId,
 		ClDefault:     req.IsDefault,
 		CvCodeAndroid: req.AndroidCode,
 		CvCodeIos:     req.IOSCode,
@@ -213,7 +213,7 @@ func (s *LocalizationService) UpdateLanguage(id string, req *UpdateLanguageReque
 		if err != nil {
 			return nil, err
 		}
-		lang.CkName = nameWord.CkId.String()
+		lang.CkName = nameWord.CkId
 	}
 
 	if req.IsDefault != nil {

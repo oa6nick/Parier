@@ -5,7 +5,7 @@
 CREATE TABLE IF NOT EXISTS t_d_category (
     ck_id varchar(255) PRIMARY KEY,
     ck_name varchar(255) NOT NULL,
-    ck_description VARCHAR(255) NOT NULL,
+    ck_description VARCHAR(255) NULL,
     ck_create VARCHAR(255) NOT NULL,
     ct_create TIMESTAMP NOT NULL DEFAULT now(),
     ck_modify VARCHAR(255) NOT NULL,
@@ -31,7 +31,7 @@ CREATE UNIQUE INDEX uk_t_d_category_ck_id ON t_d_category(UPPER(TRIM(ck_id)));
 CREATE TABLE IF NOT EXISTS t_d_verification_source (
     ck_id varchar(255) PRIMARY KEY,
     ck_name varchar(255) NOT NULL,
-    ck_description VARCHAR(255) NOT NULL,
+    ck_description VARCHAR(255) NULL,
     ck_create VARCHAR(255) NOT NULL,
     ct_create TIMESTAMP NOT NULL DEFAULT now(),
     ck_modify VARCHAR(255) NOT NULL,
@@ -57,7 +57,7 @@ CREATE UNIQUE INDEX uk_t_d_verification_source_ck_id ON t_d_verification_source(
 CREATE TABLE IF NOT EXISTS t_d_bet_status (
     ck_id varchar(255) PRIMARY KEY,
     ck_name varchar(255) NOT NULL,
-    ck_description VARCHAR(255) NOT NULL,
+    ck_description VARCHAR(255) NULL,
     ck_create VARCHAR(255) NOT NULL,
     ct_create TIMESTAMP NOT NULL DEFAULT now(),
     ck_modify VARCHAR(255) NOT NULL,
@@ -83,7 +83,7 @@ CREATE UNIQUE INDEX uk_t_d_bet_status_ck_id ON t_d_bet_status(UPPER(TRIM(ck_id))
 CREATE TABLE IF NOT EXISTS t_d_bet_type (
     ck_id varchar(255) PRIMARY KEY,
     ck_name varchar(255) NOT NULL,
-    ck_description VARCHAR(255) NOT NULL,
+    ck_description VARCHAR(255) NULL,
     ck_create VARCHAR(255) NOT NULL,
     ct_create TIMESTAMP NOT NULL DEFAULT now(),
     ck_modify VARCHAR(255) NOT NULL,
@@ -109,7 +109,7 @@ CREATE UNIQUE INDEX uk_t_d_bet_type_ck_id ON t_d_bet_type(UPPER(TRIM(ck_id)));
 CREATE TABLE IF NOT EXISTS t_d_like_type (
     ck_id varchar(255) PRIMARY KEY,
     ck_name varchar(255) NOT NULL,
-    ck_description VARCHAR(255) NOT NULL,
+    ck_description VARCHAR(255) NULL,
     ck_create VARCHAR(255) NOT NULL,
     ct_create TIMESTAMP NOT NULL DEFAULT now(),
     ck_modify VARCHAR(255) NOT NULL,
@@ -135,9 +135,9 @@ CREATE UNIQUE INDEX uk_t_d_like_type_ck_id ON t_d_like_type(UPPER(TRIM(ck_id)));
 CREATE TABLE IF NOT EXISTS t_bet (
     ck_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     ck_author uuid NOT NULL,
-    ck_category uuid NOT NULL,
-    ck_type uuid NOT NULL,
-    ck_status uuid NOT NULL,
+    ck_category varchar(255) NOT NULL,
+    ck_type varchar(255) NOT NULL,
+    ck_status varchar(255) NOT NULL,
     ck_verification_source varchar(255) NOT NULL,
     cn_coefficient DECIMAL NOT NULL,
     ct_deadline TIMESTAMP NOT NULL,
@@ -325,7 +325,7 @@ COMMENT ON COLUMN t_bet_like.ct_delete IS 'Дата логического уд�
 
 CREATE UNIQUE INDEX uk_t_bet_like_ck_bet_and_ck_author_and_ck_type ON t_bet_like(ck_bet, ck_author);
 
---Таблица: t_bet_bet - Ставки в ставках
+--Таблица: t_bet_properties - Ставки в ставках
 CREATE TABLE IF NOT EXISTS t_bet_properties (
     ck_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     ck_bet uuid NOT NULL,
@@ -447,7 +447,7 @@ CREATE UNIQUE INDEX uk_t_bet_rating_ck_bet_and_ck_user ON t_bet_rating(ck_bet, c
 CREATE TABLE IF NOT EXISTS t_chat (
     ck_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     ck_author uuid NOT NULL,
-    ck_description VARCHAR(255) NOT NULL,
+    ck_description VARCHAR(255) NULL,
     cr_type VARCHAR(20) NOT NULL CHECK (cr_type IN ('PUBLIC', 'PRIVATE')),
     ck_create VARCHAR(255) NOT NULL,
     ct_create TIMESTAMP NOT NULL DEFAULT now(),

@@ -17,8 +17,8 @@ func (TLWord) TableName() string {
 
 // TDLang - Языки
 type TDLang struct {
-	CkId          string            `json:"ck_id" gorm:"column:ck_id;type:varchar(20);primaryKey"`
-	CkName        string            `json:"ck_name" gorm:"column:ck_name;type:varchar(255);not null"`
+	CkId          string   `json:"ck_id" gorm:"column:ck_id;type:varchar(20);primaryKey"`
+	CkName        uuid.UUID `json:"ck_name" gorm:"column:ck_name;type:uuid;not null"`
 	ClDefault     bool              `json:"cl_default" gorm:"column:cl_default;not null;default:false"`
 	CvCodeAndroid string            `json:"cv_code_android" gorm:"column:cv_code_android;type:varchar(255);not null"`
 	CvCodeIos     string            `json:"cv_code_ios" gorm:"column:cv_code_ios;type:varchar(255);not null"`
@@ -27,7 +27,6 @@ type TDLang struct {
 
 	// Relations
 	NameWord *TLWord `json:"name_word,omitempty" gorm:"foreignKey:CkName;references:CkId"`
-
 	BaseModel
 }
 

@@ -8,11 +8,11 @@ import (
 
 // TDRole - Роли
 type TDRole struct {
-	CkId          string     `json:"ck_id" gorm:"column:ck_id;type:varchar(255);primaryKey;uniqueIndex"`
-	CkName        uuid.UUID  `json:"ck_name" gorm:"column:ck_name;type:uuid;not null"`
-	CkDescription *uuid.UUID `json:"ck_description,omitempty" gorm:"column:ck_description;type:uuid"`
-	ClDefault     bool       `json:"cl_default" gorm:"column:cl_default;not null;default:false"`
-	CrPlace       RolePlace  `json:"cr_place" gorm:"column:cr_place;type:varchar(20);not null"`
+	CkId          string    `json:"ck_id" gorm:"column:ck_id;type:varchar(255);primaryKey;uniqueIndex"`
+	CkName        string    `json:"ck_name" gorm:"column:ck_name;type:varchar(255);not null"`
+	CkDescription *string   `json:"ck_description,omitempty" gorm:"column:ck_description;type:varchar(255)"`
+	ClDefault     bool      `json:"cl_default" gorm:"column:cl_default;not null;default:false"`
+	CrPlace       RolePlace `json:"cr_place" gorm:"column:cr_place;type:varchar(20);not null"`
 
 	// Relations
 	NameLocalization        *TLocalization    `json:"name_localization,omitempty" gorm:"foreignKey:CkName;references:CkId"`
@@ -36,6 +36,8 @@ type TUser struct {
 	// Relations
 	UserRoles      []TUserRole       `json:"user_roles,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
 	UserProperties []TUserProperties `json:"user_properties,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	Wallet         *TUserWallet      `json:"wallet,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	Sessions       []TSession        `json:"sessions,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
 
 	BaseModel
 }
@@ -110,24 +112,42 @@ type TUserProperties struct {
 	CkType         string     `json:"ck_type" gorm:"column:ck_type;type:varchar(100);not null"`
 	CkUser         uuid.UUID  `json:"ck_user" gorm:"column:ck_user;type:uuid;not null;index"`
 	CvText         *string    `json:"cv_text,omitempty" gorm:"column:cv_text;type:text"`
-	CkLocalization *uuid.UUID `json:"ck_localization,omitempty" gorm:"column:ck_localization;type:uuid"`
+	CkLocalization *string    `json:"ck_localization,omitempty" gorm:"column:ck_localization;type:varchar(255)"`
 	CnDecimal      *float64   `json:"cn_decimal,omitempty" gorm:"column:cn_decimal;type:decimal"`
 	CnNumber       *int       `json:"cn_number,omitempty" gorm:"column:cn_number;type:int"`
 	CtDate         *time.Time `json:"ct_date,omitempty" gorm:"column:ct_date;type:timestamp"`
 	ClBool         *bool      `json:"cl_bool,omitempty" gorm:"column:cl_bool;type:boolean"`
 	CkMedia        *uuid.UUID `json:"ck_media,omitempty" gorm:"column:ck_media;type:uuid"`
+	CkEnum         *uuid.UUID `json:"ck_enum,omitempty" gorm:"column:ck_enum;type:uuid"`
 
 	// Relations
 	PropertyType *TDPropertiesType `json:"property_type,omitempty" gorm:"foreignKey:CkType;references:CkId"`
 	User         *TUser            `json:"user,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
 	Localization *TLocalization    `json:"localization,omitempty" gorm:"foreignKey:CkLocalization;references:CkId"`
 	Media        *TMedia           `json:"media,omitempty" gorm:"foreignKey:CkMedia;references:CkId"`
+	Enum         *TDPropertiesEnum `json:"enum,omitempty" gorm:"foreignKey:CkEnum;references:CkId"`
 
 	BaseModel
 }
 
 func (TUserProperties) TableName() string {
 	return "t_user_properties"
+}
+
+// TUserWallet - Кошельки пользователей
+type TUserWallet struct {
+	CkId    uuid.UUID `json:"ck_id" gorm:"column:ck_id;type:uuid;primaryKey;default:uuid_generate_v4()"`
+	CkUser  uuid.UUID `json:"ck_user" gorm:"column:ck_user;type:uuid;not null;uniqueIndex"`
+	CnValue float64   `json:"cn_value" gorm:"column:cn_value;type:decimal;not null"`
+
+	// Relations
+	User *TUser `json:"user,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+
+	BaseModel
+}
+
+func (TUserWallet) TableName() string {
+	return "t_user_wallet"
 }
 
 type TSession struct {
@@ -145,7 +165,6 @@ type TSession struct {
 func (TSession) TableName() string {
 	return "t_session"
 }
-
 
 // ================== DTO STRUCTS ==================
 

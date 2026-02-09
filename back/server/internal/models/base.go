@@ -210,3 +210,28 @@ const (
 	PaymentPlanTypeAfterBuild PaymentPlanType = "AFTER_BUILD"
 	PaymentPlanTypeAfterDays  PaymentPlanType = "AFTER_DAYS"
 )
+
+// ChatType - тип чата (PUBLIC, PRIVATE)
+type ChatType string
+
+const (
+	ChatTypePublic  ChatType = "PUBLIC"
+	ChatTypePrivate ChatType = "PRIVATE"
+)
+
+// ChatCredentialsType - тип credentials (TOKEN, API_KEY, PASSWORD)
+type ChatCredentialsType string
+
+const (
+	ChatCredentialsTypeToken    ChatCredentialsType = "TOKEN"
+	ChatCredentialsTypeAPIKey   ChatCredentialsType = "API_KEY"
+	ChatCredentialsTypePassword ChatCredentialsType = "PASSWORD"
+)
+
+// ChatUserBanType - тип бана (BAN, MUTE)
+type ChatUserBanType string
+
+const (
+	ChatUserBanTypeBan  ChatUserBanType = "BAN"
+	ChatUserBanTypeMute ChatUserBanType = "MUTE"
+)

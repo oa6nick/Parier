@@ -51,7 +51,7 @@ type TDPropertiesType struct {
 	CkId          string        `json:"ck_id" gorm:"column:ck_id;type:varchar(100);primaryKey"`
 	CrType        PropertyType  `json:"cr_type" gorm:"column:cr_type;type:varchar(255);not null"`
 	CrPlace       PropertyPlace `json:"cr_place" gorm:"column:cr_place;type:varchar(100);not null"`
-	CkName        string        `json:"ck_name" gorm:"column:ck_name;type:varchar(255)uid;not null"`
+	CkName        string        `json:"ck_name" gorm:"column:ck_name;type:varchar(255);not null"`
 	CkDescription *string       `json:"ck_description,omitempty" gorm:"column:ck_description;type:varchar(255)"`
 
 	// Relations
