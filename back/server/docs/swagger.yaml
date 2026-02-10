@@ -1,5 +1,18 @@
 basePath: /api/v1
 definitions:
+  internal_handlers.BetResponse:
+    properties:
+      count:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/parier-server_internal_models.BetResponse'
+        type: array
+      success:
+        type: boolean
+      total:
+        type: integer
+    type: object
   internal_handlers.KeycloakLogoutRequest:
     properties:
       realm:
@@ -107,6 +120,107 @@ definitions:
       total:
         type: integer
     type: object
+  parier-server_internal_models.BetCreateRequest:
+    properties:
+      amount:
+        type: number
+      category_id:
+        type: string
+      deadline:
+        type: string
+      description:
+        type: string
+      language:
+        type: string
+      status_id:
+        type: string
+      title:
+        type: string
+      type_id:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+      verification_source_id:
+        items:
+          type: string
+        type: array
+    type: object
+  parier-server_internal_models.BetRequest:
+    properties:
+      category_id:
+        type: string
+      coefficient:
+        type: string
+      deadline:
+        type: string
+      description:
+        type: string
+      language:
+        type: string
+      limit:
+        type: integer
+      max_amount:
+        type: string
+      min_amount:
+        type: string
+      offset:
+        type: integer
+      sort_by:
+        type: string
+      sort_dir:
+        type: string
+      status_id:
+        type: string
+      title:
+        type: string
+      type_id:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+      verification_source_id:
+        items:
+          type: string
+        type: array
+    type: object
+  parier-server_internal_models.BetResponse:
+    properties:
+      amount:
+        type: number
+      category_id:
+        type: string
+      category_name:
+        type: string
+      coefficient:
+        type: number
+      created_at:
+        type: string
+      deadline:
+        type: string
+      deleted_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      is_liked_by_me:
+        type: boolean
+      status_id:
+        type: string
+      status_name:
+        type: string
+      title:
+        type: string
+      type_id:
+        type: string
+      type_name:
+        type: string
+      updated_at:
+        type: string
+      verification_sources:
+        items:
+          $ref: '#/definitions/parier-server_internal_models.VerificationSourceResponse'
+        type: array
+    type: object
   parier-server_internal_models.DefaultRequest:
     properties:
       language:
@@ -205,6 +319,13 @@ definitions:
       session_id:
         type: string
       username:
+        type: string
+    type: object
+  parier-server_internal_models.VerificationSourceResponse:
+    properties:
+      id:
+        type: string
+      name:
         type: string
     type: object
   parier-server_internal_repository.PropertiesEnumFilter:
@@ -659,8 +780,83 @@ paths:
       summary: Raw file
       tags:
       - media
+  /parier/bet:
+    post:
+      consumes:
+      - application/json
+      description: Get bets
+      parameters:
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.BetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.BetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get bets
+      tags:
+      - parier
+    put:
+      consumes:
+      - application/json
+      description: Create bet
+      parameters:
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.BetCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.BetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Create bet
+      tags:
+      - parier
   /parier/bet-statuses:
-    get:
+    post:
       consumes:
       - application/json
       description: Get bet statuses
@@ -698,7 +894,7 @@ paths:
       tags:
       - parier
   /parier/bet-types:
-    get:
+    post:
       consumes:
       - application/json
       description: Get bet types
@@ -736,7 +932,7 @@ paths:
       tags:
       - parier
   /parier/categories:
-    get:
+    post:
       consumes:
       - application/json
       description: Get categories
@@ -774,7 +970,7 @@ paths:
       tags:
       - parier
   /parier/like-types:
-    get:
+    post:
       consumes:
       - application/json
       description: Get like types
@@ -812,7 +1008,7 @@ paths:
       tags:
       - parier
   /parier/verification-sources:
-    get:
+    post:
       consumes:
       - application/json
       description: Get verification sources

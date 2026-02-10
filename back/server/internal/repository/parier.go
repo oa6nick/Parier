@@ -383,6 +383,20 @@ func (r *ParierRepository) DeleteBetLike(id uuid.UUID, userID string) error {
 		Error
 }
 
+// === T_BET_AMOUNT ===
+
+func (r *ParierRepository) GetAllBetAmountsByBetID(betID uuid.UUID) ([]models.TBetAmount, error) {
+	var betAmounts []models.TBetAmount
+	err := r.db.Where("ck_bet = ? AND ct_delete IS NULL", betID).Order("ck_id ASC").Find(&betAmounts).Error
+	return betAmounts, err
+}
+
+func (r *ParierRepository) GetAllBetAmountsByBetIDAndUserID(betID uuid.UUID, userID uuid.UUID) ([]models.TBetAmount, error) {
+	var betAmounts []models.TBetAmount
+	err := r.db.Where("ck_bet = ? AND ck_user = ? AND ct_delete IS NULL", betID, userID).Order("ck_id ASC").Find(&betAmounts).Error
+	return betAmounts, err
+}
+
 // === T_BET_PROPERTIES ===
 
 func (r *ParierRepository) CreateBetProperties(betProperties *models.TBetProperties) error {
@@ -500,6 +514,37 @@ func (r *ParierRepository) UpdateBetRating(betRating *models.TBetRating) error {
 
 func (r *ParierRepository) DeleteBetRating(id uuid.UUID, userID string) error {
 	return r.db.Model(&models.TBetRating{}).
+		Update("ct_delete", gorm.Expr("NOW()")).
+		Update("ct_modify", gorm.Expr("NOW()")).
+		Update("ck_modify", userID).
+		Where("ck_id = ? AND ct_delete IS NULL", id).
+		Error
+}
+
+// === T_BET_VERIFICATION_SOURCE ===
+
+func (r *ParierRepository) CreateBetVerificationSource(betVerificationSource *models.TBetVerificationSource) error {
+	return r.db.Create(betVerificationSource).Error
+}
+
+func (r *ParierRepository) GetBetVerificationSourceByID(id uuid.UUID) (*models.TBetVerificationSource, error) {
+	var betVerificationSource models.TBetVerificationSource
+	err := r.db.Where("ck_id = ? AND ct_delete IS NULL", id).First(&betVerificationSource).Error
+	return &betVerificationSource, err
+}
+
+func (r *ParierRepository) GetAllBetVerificationSources() ([]models.TBetVerificationSource, error) {
+	var betVerificationSources []models.TBetVerificationSource
+	err := r.db.Where("ct_delete IS NULL").Order("ck_id ASC").Find(&betVerificationSources).Error
+	return betVerificationSources, err
+}
+
+func (r *ParierRepository) UpdateBetVerificationSource(betVerificationSource *models.TBetVerificationSource) error {
+	return r.db.Save(betVerificationSource).Error
+}
+
+func (r *ParierRepository) DeleteBetVerificationSource(id uuid.UUID, userID string) error {
+	return r.db.Model(&models.TBetVerificationSource{}).
 		Update("ct_delete", gorm.Expr("NOW()")).
 		Update("ct_modify", gorm.Expr("NOW()")).
 		Update("ck_modify", userID).

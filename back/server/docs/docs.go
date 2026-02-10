@@ -673,8 +673,132 @@ const docTemplate = `{
                 }
             }
         },
+        "/parier/bet": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "OAuth2Keycloak": []
+                    },
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "Create bet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "parier"
+                ],
+                "summary": "Create bet",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/parier-server_internal_models.BetCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/parier-server_internal_models.BetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/parier-server_internal_models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/parier-server_internal_models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/parier-server_internal_models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "OAuth2Keycloak": []
+                    },
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "Get bets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "parier"
+                ],
+                "summary": "Get bets",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/parier-server_internal_models.BetRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.BetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/parier-server_internal_models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/parier-server_internal_models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/parier-server_internal_models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/parier/bet-statuses": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -737,7 +861,7 @@ const docTemplate = `{
             }
         },
         "/parier/bet-types": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -800,7 +924,7 @@ const docTemplate = `{
             }
         },
         "/parier/categories": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -863,7 +987,7 @@ const docTemplate = `{
             }
         },
         "/parier/like-types": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -926,7 +1050,7 @@ const docTemplate = `{
             }
         },
         "/parier/verification-sources": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -990,6 +1114,26 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "internal_handlers.BetResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/parier-server_internal_models.BetResponse"
+                    }
+                },
+                "success": {
+                    "type": "boolean"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "internal_handlers.KeycloakLogoutRequest": {
             "type": "object",
             "properties": {
@@ -1153,6 +1297,159 @@ const docTemplate = `{
                 }
             }
         },
+        "parier-server_internal_models.BetCreateRequest": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "category_id": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "status_id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type_id": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/parier-server_internal_models.User"
+                },
+                "verification_source_id": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "parier-server_internal_models.BetRequest": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                },
+                "coefficient": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "max_amount": {
+                    "type": "string"
+                },
+                "min_amount": {
+                    "type": "string"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "sort_by": {
+                    "type": "string"
+                },
+                "sort_dir": {
+                    "type": "string"
+                },
+                "status_id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type_id": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/parier-server_internal_models.User"
+                },
+                "verification_source_id": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "parier-server_internal_models.BetResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "category_id": {
+                    "type": "string"
+                },
+                "category_name": {
+                    "type": "string"
+                },
+                "coefficient": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_liked_by_me": {
+                    "type": "boolean"
+                },
+                "status_id": {
+                    "type": "string"
+                },
+                "status_name": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type_id": {
+                    "type": "string"
+                },
+                "type_name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "verification_sources": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/parier-server_internal_models.VerificationSourceResponse"
+                    }
+                }
+            }
+        },
         "parier-server_internal_models.DefaultRequest": {
             "type": "object",
             "properties": {
@@ -1290,6 +1587,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "parier-server_internal_models.VerificationSourceResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }

@@ -108,3 +108,42 @@ func VerifySession(signature string, secret string) (uuid.UUID, bool) {
 // Возвращает:
 //   - *T: Указатель на новую переменную
 func Ptr[T any](x T) *T { return &x }
+
+// ValidatePageAndPageSize проверяет и возвращает значения offset и limit
+//
+// Параметры:
+//   - offsetref: Указатель на значение offset
+//   - limitref: Указатель на значение limit
+//
+// Возвращает:
+//   - offset: Значение offset
+//   - limit: Значение limit
+func ValidatePageAndPageSize(offsetref, limitref *int) (offset, limit int) {
+	offset = 0
+	limit = 1000
+	if offsetref != nil {
+		offset = *offsetref
+	}
+	if limitref != nil {
+		limit = *limitref
+	}
+	return offset, limit
+}
+
+// ValidateSort проверяет и возвращает значения сортировки
+//
+// Параметры:
+//   - sortref: Указатель на значение сортировки
+//   - sorttyperef: Указатель на значение типа сортировки
+//
+// Возвращает:
+//   - order: Значение сортировки
+func ValidateSort(sortref, sorttyperef *string) (order string) {
+	order = "ct_create DESC"
+	if sortref != nil && sorttyperef != nil {
+		order = *sortref + " " + *sorttyperef
+	} else if sortref != nil {
+		order = *sortref + " DESC"
+	}
+	return order
+}

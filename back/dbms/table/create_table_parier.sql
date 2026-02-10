@@ -135,10 +135,11 @@ CREATE UNIQUE INDEX uk_t_d_like_type_ck_id ON t_d_like_type(UPPER(TRIM(ck_id)));
 CREATE TABLE IF NOT EXISTS t_bet (
     ck_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     ck_author uuid NOT NULL,
+    ck_name varchar(255) NOT NULL,
+    ck_description VARCHAR(255) NULL,
     ck_category varchar(255) NOT NULL,
     ck_type varchar(255) NOT NULL,
     ck_status varchar(255) NOT NULL,
-    ck_verification_source varchar(255) NOT NULL,
     cn_coefficient DECIMAL NOT NULL,
     ct_deadline TIMESTAMP NOT NULL,
     ck_create VARCHAR(255) NOT NULL,
@@ -150,22 +151,50 @@ CREATE TABLE IF NOT EXISTS t_bet (
     CONSTRAINT fk_t_bet_ck_category FOREIGN KEY (ck_category) REFERENCES t_d_category(ck_id),
     CONSTRAINT fk_t_bet_ck_type FOREIGN KEY (ck_type) REFERENCES t_d_bet_type(ck_id),
     CONSTRAINT fk_t_bet_ck_status FOREIGN KEY (ck_status) REFERENCES t_d_bet_status(ck_id),
-    CONSTRAINT fk_t_bet_ck_verification_source FOREIGN KEY (ck_verification_source) REFERENCES t_d_verification_source(ck_id)
+    CONSTRAINT fk_t_bet_ck_name FOREIGN KEY (ck_name) REFERENCES t_localization(ck_id),
+    CONSTRAINT fk_t_bet_ck_description FOREIGN KEY (ck_description) REFERENCES t_localization(ck_id)
 );
 
 COMMENT ON TABLE t_bet IS 'Ставка';
 COMMENT ON COLUMN t_bet.ck_id IS 'Идентификатор';
 COMMENT ON COLUMN t_bet.ck_author IS 'Идентификатор автора';
+COMMENT ON COLUMN t_bet.ck_name IS 'Наименование';
+COMMENT ON COLUMN t_bet.ck_description IS 'Описание';
 COMMENT ON COLUMN t_bet.ck_category IS 'Идентификатор категории';
 COMMENT ON COLUMN t_bet.ck_type IS 'Идентификатор типа';
 COMMENT ON COLUMN t_bet.ck_status IS 'Идентификатор статуса';
-COMMENT ON COLUMN t_bet.ck_verification_source IS 'Идентификатор источника';
 COMMENT ON COLUMN t_bet.cn_coefficient IS 'Коэффициент';
 COMMENT ON COLUMN t_bet.ct_deadline IS 'Срок';
 COMMENT ON COLUMN t_bet.ct_create IS 'Дата создания';
 COMMENT ON COLUMN t_bet.ck_modify IS 'Идентификатор пользователя';
 COMMENT ON COLUMN t_bet.ct_modify IS 'Дата модификации';
 COMMENT ON COLUMN t_bet.ct_delete IS 'Дата логического удаления';
+
+-- Таблица: t_bet_verification_source - Источники проверки
+CREATE TABLE IF NOT EXISTS t_bet_verification_source (
+    ck_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ck_bet uuid NOT NULL,
+    ck_verification_source varchar(255) NOT NULL,
+    ck_create VARCHAR(255) NOT NULL,
+    ct_create TIMESTAMP NOT NULL DEFAULT now(),
+    ck_modify VARCHAR(255) NOT NULL,
+    ct_modify TIMESTAMP NOT NULL DEFAULT now(),
+    ct_delete TIMESTAMP NULL,
+    CONSTRAINT fk_t_bet_verification_source_ck_bet FOREIGN KEY (ck_bet) REFERENCES t_bet(ck_id)
+    CONSTRAINT fk_t_bet_verification_source_ck_verification_source FOREIGN KEY (ck_verification_source) REFERENCES t_d_verification_source(ck_id)
+);
+
+COMMENT ON TABLE t_bet_verification_source IS 'Источники проверки';
+COMMENT ON COLUMN t_bet_verification_source.ck_id IS 'Идентификатор';
+COMMENT ON COLUMN t_bet_verification_source.ck_bet IS 'Идентификатор ставки';
+COMMENT ON COLUMN t_bet_verification_source.ck_verification_source IS 'Идентификатор источника';
+COMMENT ON COLUMN t_bet_verification_source.ck_create IS 'Идентификатор создателя';
+COMMENT ON COLUMN t_bet_verification_source.ct_create IS 'Дата создания';
+COMMENT ON COLUMN t_bet_verification_source.ck_modify IS 'Идентификатор пользователя';
+COMMENT ON COLUMN t_bet_verification_source.ct_modify IS 'Дата модификации';
+COMMENT ON COLUMN t_bet_verification_source.ct_delete IS 'Дата логического удаления';
+
+CREATE UNIQUE INDEX uk_t_bet_verification_source_ck_bet_and_ck_verification_source ON t_bet_verification_source(ck_bet, ck_verification_source);
 
 -- Таблица: t_bet_tag - Теги ставки
 CREATE TABLE IF NOT EXISTS t_bet_tag (

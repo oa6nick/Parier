@@ -3,6 +3,8 @@ package service
 import (
 	"parier-server/internal/models"
 	"parier-server/internal/repository"
+	"parier-server/internal/util"
+	"strconv"
 )
 
 type ParierService struct {
@@ -142,4 +144,170 @@ func (s *ParierService) GetLikeTypes(request models.DictionaryRequest) ([]models
 		})
 	}
 	return result, err
+}
+
+func (s *ParierService) CreateBet(request models.BetCreateRequest) (*models.BetResponse, error) {
+	name, err := s.repoLocalization.GetOrCreateNewLocalization(request.Title, *request.Language, request.User.ID.String())
+	if err != nil {
+		return nil, err
+	}
+	description := util.IfThenElseFunc(request.Description != nil, func() *string {
+		desc, err := s.repoLocalization.GetOrCreateNewLocalization(*request.Description, *request.Language, request.User.ID.String())
+		if err != nil {
+			return nil
+		}
+
+		return &desc.CkLocalization
+	}, func() *string { return nil })
+	bet := models.TBet{
+		CkCategory:    request.CategoryID,
+		CkType:        request.TypeID,
+		CkStatus:      request.StatusID,
+		CnCoefficient: 1,
+		CtDeadline:    request.Deadline,
+		CkName:        name.CkLocalization,
+		CkDescription: description,
+	}
+	err = s.repo.CreateBet(&bet)
+	if err != nil {
+		return nil, err
+	}
+	res := models.BetResponse{
+		ID:                  bet.CkId,
+		CategoryID:          bet.CkCategory,
+		CategoryName:        *s.repoLocalization.GetWordOrDefault(&bet.Category.CkName, request.Language),
+		StatusID:            bet.CkStatus,
+		StatusName:          *s.repoLocalization.GetWordOrDefault(&bet.Status.CkName, request.Language),
+		TypeID:              bet.CkType,
+		TypeName:            *s.repoLocalization.GetWordOrDefault(&bet.Type.CkName, request.Language),
+		Title:               *s.repoLocalization.GetWordOrDefault(&bet.CkName, request.Language),
+		Description:         s.repoLocalization.GetWordOrDefault(bet.CkDescription, request.Language),
+		Amount:              0,
+		Coefficient:         bet.CnCoefficient,
+		Deadline:            bet.CtDeadline,
+		CreatedAt:           bet.CtCreate,
+		UpdatedAt:           bet.CtModify,
+		DeletedAt:           bet.CtDelete,
+		IsLikedByMe:         false,
+		VerificationSources: make([]models.VerificationSourceResponse, 0),
+	}
+	for _, verificationSourceID := range request.VerificationSourceID {
+		verificationSource, err := s.repo.GetVerificationSourceByID(verificationSourceID)
+		if err != nil {
+			return nil, err
+		}
+		err = s.repo.CreateBetVerificationSource(&models.TBetVerificationSource{
+			CkBet:                bet.CkId,
+			CkVerificationSource: verificationSource.CkId,
+		})
+		if err != nil {
+			return nil, err
+		}
+		res.VerificationSources = append(res.VerificationSources, models.VerificationSourceResponse{
+			ID:   verificationSource.CkId,
+			Name: *s.repoLocalization.GetWordOrDefault(&verificationSource.CkName, request.Language),
+		})
+	}
+
+	return &res, nil
+}
+
+func (s *ParierService) GetBets(request models.BetRequest) ([]*models.BetResponse, int64, error) {
+	db := s.repo.GetDB()
+	query := db.Model(&models.TBet{})
+	if request.CategoryID != nil {
+		query = query.Where("ck_category = ?", request.CategoryID)
+	}
+	if request.StatusID != nil {
+		query = query.Where("ck_status = ?", request.StatusID)
+	}
+	if request.TypeID != nil {
+		query = query.Where("ck_type = ?", request.TypeID)
+	}
+	if request.Title != nil {
+		subquery := db.Model(&models.TLocalizationWord{}).
+			Select("ck_localization").
+			Joins("join t_l_word tlw on t_localization_word.ck_text = tlw.ck_id").
+			Where("tlw.cv_text ilike ?", "%"+*request.Title+"%")
+		query = query.Where("ck_name in (?)", subquery)
+	}
+	if request.Description != nil {
+		subquery := db.Model(&models.TLocalizationWord{}).
+			Select("ck_localization").
+			Joins("join t_l_word tlw on t_localization_word.ck_text = tlw.ck_id").
+			Where("tlw.cv_text ilike ?", "%"+*request.Description+"%")
+		query = query.Where("ck_description in (?)", subquery)
+	}
+	if request.MinAmount != nil {
+		minAmount, err := strconv.ParseFloat(*request.MinAmount, 64)
+		if err != nil {
+			return nil, 0, err
+		}
+		subquery := db.Model(&models.TBetAmount{}).
+			Select("ck_bet, sum(cn_amount) as total_amount").
+			Group("ck_bet").
+			Having("total_amount >= ?", minAmount)
+		query = query.Where("ck_bet in (select ck_bet from ?)", subquery)
+	}
+	if request.MaxAmount != nil {
+		maxAmount, err := strconv.ParseFloat(*request.MaxAmount, 64)
+		if err != nil {
+			return nil, 0, err
+		}
+		subquery := db.Model(&models.TBetAmount{}).
+			Select("ck_bet, sum(cn_amount) as total_amount").
+			Group("ck_bet").
+			Having("total_amount <= ?", maxAmount)
+		query = query.Where("ck_bet in (select ck_bet from ?)", subquery)
+	}
+	if request.Coefficient != nil {
+		query = query.Where("cn_coefficient = ?", request.Coefficient)
+	}
+	if request.Deadline != nil {
+		query = query.Where("ct_deadline = ?", request.Deadline)
+	}
+	offset, limit := util.ValidatePageAndPageSize(request.Offset, request.Limit)
+	sort := util.ValidateSort(request.SortBy, request.SortDir)
+	query = query.Order(sort)
+	var bets []models.TBet
+	var total int64
+	err := query.Count(&total).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	err = query.Offset(offset).Limit(limit).Find(&bets).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var result []*models.BetResponse
+	for _, bet := range bets {
+		amounts, err := s.repo.GetAllBetAmountsByBetID(bet.CkId)
+		totalAmount := 0.0
+		if err == nil {
+			for _, amount := range amounts {
+				totalAmount += amount.CnAmount
+			}
+		}
+		result = append(result, &models.BetResponse{
+			ID:                  bet.CkId,
+			CategoryID:          bet.CkCategory,
+			CategoryName:        *s.repoLocalization.GetWordOrDefault(&bet.Category.CkName, request.Language),
+			StatusID:            bet.CkStatus,
+			StatusName:          *s.repoLocalization.GetWordOrDefault(&bet.Status.CkName, request.Language),
+			TypeID:              bet.CkType,
+			TypeName:            *s.repoLocalization.GetWordOrDefault(&bet.Type.CkName, request.Language),
+			Title:               *s.repoLocalization.GetWordOrDefault(&bet.CkName, request.Language),
+			Description:         s.repoLocalization.GetWordOrDefault(bet.CkDescription, request.Language),
+			Amount:              totalAmount,
+			Coefficient:         bet.CnCoefficient,
+			Deadline:            bet.CtDeadline,
+			CreatedAt:           bet.CtCreate,
+			UpdatedAt:           bet.CtModify,
+			DeletedAt:           bet.CtDelete,
+			IsLikedByMe:         false,
+			VerificationSources: make([]models.VerificationSourceResponse, 0),
+		})
+	}
+	return result, total, nil
 }

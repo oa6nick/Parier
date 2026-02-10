@@ -2,6 +2,7 @@ package models
 
 import (
 	"mime/multipart"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -165,4 +166,55 @@ type DictionaryItemUuid struct {
 	Id          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Description *string   `json:"description,omitempty"`
+}
+
+type BetRequest struct {
+	CategoryID           *string   `json:"category_id,omitempty" form:"category_id"`
+	VerificationSourceID *[]string `json:"verification_source_id,omitempty" form:"verification_source_id"`
+	StatusID             *string   `json:"status_id,omitempty" form:"status_id"`
+	TypeID               *string   `json:"type_id,omitempty" form:"type_id"`
+	Title                *string   `json:"title,omitempty" form:"title"`
+	Description          *string   `json:"description,omitempty" form:"description"`
+	MinAmount            *string   `json:"min_amount,omitempty" form:"min_amount"`
+	MaxAmount            *string   `json:"max_amount,omitempty" form:"max_amount"`
+	Coefficient          *string   `json:"coefficient,omitempty" form:"coefficient"`
+	Deadline             *string   `json:"deadline,omitempty" form:"deadline"`
+	PaginationRequest
+}
+
+type VerificationSourceResponse struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type BetResponse struct {
+	ID                  uuid.UUID                    `json:"id"`
+	CategoryID          string                       `json:"category_id"`
+	CategoryName        string                       `json:"category_name"`
+	VerificationSources []VerificationSourceResponse `json:"verification_sources"`
+	StatusID            string                       `json:"status_id"`
+	StatusName          string                       `json:"status_name"`
+	TypeID              string                       `json:"type_id"`
+	TypeName            string                       `json:"type_name"`
+	Title               string                       `json:"title"`
+	Description         *string                      `json:"description,omitempty"`
+	Amount              float64                      `json:"amount"`
+	Coefficient         float64                      `json:"coefficient"`
+	Deadline            time.Time                    `json:"deadline"`
+	CreatedAt           time.Time                    `json:"created_at"`
+	UpdatedAt           time.Time                    `json:"updated_at"`
+	DeletedAt           *time.Time                   `json:"deleted_at,omitempty"`
+	IsLikedByMe         bool                         `json:"is_liked_by_me"`
+}
+
+type BetCreateRequest struct {
+	CategoryID           string    `json:"category_id" form:"category_id"`
+	VerificationSourceID []string  `json:"verification_source_id" form:"verification_source_id"`
+	StatusID             string    `json:"status_id" form:"status_id"`
+	TypeID               string    `json:"type_id" form:"type_id"`
+	Title                string    `json:"title" form:"title"`
+	Description          *string   `json:"description" form:"description"`
+	Amount               float64   `json:"amount" form:"amount"`
+	Deadline             time.Time `json:"deadline" form:"deadline"`
+	DefaultRequest
 }
