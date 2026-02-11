@@ -41,12 +41,14 @@
             "redirectUris": [
                 "http://localhost:8080/*",
                 "http://localhost:8085/*",
-                "http://localhost:18081/*"
+                "http://localhost:18081/*",
+                "http://localhost:3000/*"
             ],
             "webOrigins": [
                 "http://localhost:8080",
                 "http://localhost:8085",
-                "http://localhost:18081"
+                "http://localhost:18081",
+                "http://localhost:3000"
             ],
             "defaultClientScopes": [
                 "web-origins",

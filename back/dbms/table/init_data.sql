@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset artemov_i:init_localization_data_fn dbms:postgresql splitStatements:false stripComments:false
+--changeset artemov_i:init_localization_data_fn runOnChange:true dbms:postgresql splitStatements:false stripComments:false
 select 'Создание функции для создания или выбора слова';
 CREATE OR REPLACE FUNCTION f_create_or_select_word(pv_word varchar)
  RETURNS uuid
@@ -8,15 +8,15 @@ CREATE OR REPLACE FUNCTION f_create_or_select_word(pv_word varchar)
  SET search_path TO 'public'
 AS $$
 declare
-  ck_id uuid;
+  vk_id uuid;
 begin
-  select ck_id into ck_id from t_l_word where cv_text = trim(pv_word);
+  select ck_id into vk_id from t_l_word where cv_text = trim(pv_word);
   if not found then
     insert into t_l_word (cv_text, ck_create, ck_modify) 
     values (trim(pv_word), 'system', 'system') 
-    returning ck_id into ck_id;
+    returning ck_id into vk_id;
   end if;
-  return ck_id;
+  return vk_id;
 end;$$;
 
 --rollback DROP FUNCTION f_create_or_select_word(varchar);
@@ -166,7 +166,7 @@ INSERT INTO t_d_category (ck_id, ck_name, ck_description, ck_create, ck_modify) 
     ('TECHNOLOGY', 'category.technology', null, 'system', 'system'),
     ('ENTERTAINMENT', 'category.entertainment', null, 'system', 'system'),
     ('STOCK-MARKET', 'category.stock-market', null, 'system', 'system'),
-    ('ECONOMY', 'category.economy', null, 'system', 'system'),
+    ('ECONOMY', 'category.economy', null, 'system', 'system')
     ON CONFLICT (ck_id) DO NOTHING;
 
 --rollback DROP TABLE t_d_category;
@@ -189,7 +189,7 @@ INSERT INTO t_d_verification_source (ck_id, ck_name, ck_description, ck_create, 
     ('FIFA', 'verification-source.fifa', null, 'system', 'system'),
     ('IIHF', 'verification-source.iihf', null, 'system', 'system'),
     ('APPLE', 'verification-source.apple', null, 'system', 'system'),
-    ('OFFICIAL-ELECTION-RESULTS', 'verification-source.official-election-results', null, 'system', 'system'),
+    ('OFFICIAL-ELECTION-RESULTS', 'verification-source.official-election-results', null, 'system', 'system')
     ON CONFLICT (ck_id) DO NOTHING;
 
 --rollback DROP TABLE t_d_verification_source;
@@ -222,7 +222,7 @@ select 'Создание типов ставок';
 INSERT INTO t_d_bet_type (ck_id, ck_name, ck_description, ck_create, ck_modify) VALUES 
     ('SINGLE', 'bet-type.single', null, 'system', 'system'),
     ('MULTIPLE', 'bet-type.multiple', null, 'system', 'system'),
-    ('SYSTEM', 'bet-type.system', null, 'system', 'system'),
+    ('SYSTEM', 'bet-type.system', null, 'system', 'system')
     ON CONFLICT (ck_id) DO NOTHING;
 
 --rollback DROP TABLE t_d_bet_type;
@@ -235,7 +235,7 @@ INSERT INTO t_d_bet_type (ck_id, ck_name, ck_description, ck_create, ck_modify) 
 select 'Создание типов лайков';
 INSERT INTO t_d_like_type (ck_id, ck_name, ck_description, ck_create, ck_modify) VALUES 
     ('LIKE', 'like-type.like', null, 'system', 'system'),
-    ('DISLIKE', 'like-type.dislike', null, 'system', 'system'),
+    ('DISLIKE', 'like-type.dislike', null, 'system', 'system')
     ON CONFLICT (ck_id) DO NOTHING;
 
 --rollback DROP TABLE t_d_like_type;

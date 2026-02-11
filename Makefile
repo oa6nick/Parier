@@ -169,6 +169,12 @@ rebuild: ## Rebuild and restart API service
 	docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file $(FILE_ENV) rm -fs api
 	docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file $(FILE_ENV) up -d api
 
+.PHONY: re-init-db
+re-init-db: ## Rebuild and restart init-db service
+	docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file $(FILE_ENV) build init-db
+	docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file $(FILE_ENV) rm -fs init-db
+	docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file $(FILE_ENV) up -d init-db
+
 .PHONY: re-minio
 re-minio: ## Rebuild and restart MinIO service
 	docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file $(FILE_ENV) build minio-init

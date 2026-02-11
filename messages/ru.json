@@ -5,7 +5,9 @@
     "profile": "Профиль",
     "create": "Создать",
     "trends": "Тренды",
-    "messages": "Сообщения"
+    "messages": "Сообщения",
+    "login": "Войти",
+    "logout": "Выйти"
   },
   "Home": {
     "title_part1": "Брось вызов",

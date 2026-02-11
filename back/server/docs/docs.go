@@ -712,7 +712,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/parier-server_internal_models.BetResponse"
+                            "$ref": "#/definitions/internal_handlers.BetCreateResponse"
                         }
                     },
                     "400": {
@@ -836,7 +836,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/parier-server_internal_models.DictionaryItemString"
+                            "$ref": "#/definitions/internal_handlers.DictionaryResponse"
                         }
                     },
                     "400": {
@@ -899,7 +899,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/parier-server_internal_models.DictionaryItemString"
+                            "$ref": "#/definitions/internal_handlers.DictionaryResponse"
                         }
                     },
                     "400": {
@@ -962,7 +962,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/parier-server_internal_models.DictionaryItemString"
+                            "$ref": "#/definitions/internal_handlers.DictionaryResponse"
                         }
                     },
                     "400": {
@@ -1025,7 +1025,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/parier-server_internal_models.DictionaryItemString"
+                            "$ref": "#/definitions/internal_handlers.DictionaryResponse"
                         }
                     },
                     "400": {
@@ -1088,7 +1088,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/parier-server_internal_models.DictionaryItemString"
+                            "$ref": "#/definitions/internal_handlers.DictionaryResponse"
                         }
                     },
                     "400": {
@@ -1114,6 +1114,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "internal_handlers.BetCreateResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/parier-server_internal_models.BetResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "internal_handlers.BetResponse": {
             "type": "object",
             "properties": {
@@ -1131,6 +1145,23 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "internal_handlers.DictionaryResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/parier-server_internal_models.DictionaryItemString"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
                 }
             }
         },
@@ -1301,9 +1332,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "amount": {
-                    "type": "number"
+                    "type": "string"
                 },
                 "category_id": {
+                    "type": "string"
+                },
+                "coefficient": {
                     "type": "string"
                 },
                 "deadline": {

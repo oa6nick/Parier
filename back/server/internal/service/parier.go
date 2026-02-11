@@ -160,15 +160,41 @@ func (s *ParierService) CreateBet(request models.BetCreateRequest) (*models.BetR
 		return &desc.CkLocalization
 	}, func() *string { return nil })
 	bet := models.TBet{
-		CkCategory:    request.CategoryID,
-		CkType:        request.TypeID,
-		CkStatus:      request.StatusID,
-		CnCoefficient: 1,
+		CkCategory: request.CategoryID,
+		CkType:     request.TypeID,
+		CkStatus:   request.StatusID,
+		CkAuthor:   request.User.ID,
+		CnCoefficient: util.IfThenElseFunc(request.Coefficient != "", func() float64 {
+			coefficient, err := strconv.ParseFloat(request.Coefficient, 64)
+			if err != nil {
+				return 0
+			}
+			return coefficient
+		}, func() float64 { return 1 }),
+		CnAmount: util.IfThenElseFunc(request.Amount != "", func() float64 {
+			amount, err := strconv.ParseFloat(request.Amount, 64)
+			if err != nil {
+				return 0
+			}
+			return amount
+		}, func() float64 { return 0 }),
 		CtDeadline:    request.Deadline,
 		CkName:        name.CkLocalization,
 		CkDescription: description,
 	}
 	err = s.repo.CreateBet(&bet)
+	if err != nil {
+		return nil, err
+	}
+	bet.Category, err = s.repo.GetCategoryByID(bet.CkCategory)
+	if err != nil {
+		return nil, err
+	}
+	bet.Status, err = s.repo.GetBetStatusByID(bet.CkStatus)
+	if err != nil {
+		return nil, err
+	}
+	bet.Type, err = s.repo.GetBetTypeByID(bet.CkType)
 	if err != nil {
 		return nil, err
 	}
@@ -282,13 +308,6 @@ func (s *ParierService) GetBets(request models.BetRequest) ([]*models.BetRespons
 
 	var result []*models.BetResponse
 	for _, bet := range bets {
-		amounts, err := s.repo.GetAllBetAmountsByBetID(bet.CkId)
-		totalAmount := 0.0
-		if err == nil {
-			for _, amount := range amounts {
-				totalAmount += amount.CnAmount
-			}
-		}
 		result = append(result, &models.BetResponse{
 			ID:                  bet.CkId,
 			CategoryID:          bet.CkCategory,
@@ -299,7 +318,7 @@ func (s *ParierService) GetBets(request models.BetRequest) ([]*models.BetRespons
 			TypeName:            *s.repoLocalization.GetWordOrDefault(&bet.Type.CkName, request.Language),
 			Title:               *s.repoLocalization.GetWordOrDefault(&bet.CkName, request.Language),
 			Description:         s.repoLocalization.GetWordOrDefault(bet.CkDescription, request.Language),
-			Amount:              totalAmount,
+			Amount:              bet.CnAmount,
 			Coefficient:         bet.CnCoefficient,
 			Deadline:            bet.CtDeadline,
 			CreatedAt:           bet.CtCreate,

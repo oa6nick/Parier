@@ -40,9 +40,10 @@ func (r *LocalizationRepository) GetWordOrDefault(id *string, lang *string) *str
 	}
 	var word models.TLWord
 	subQuery := r.db.Model(&models.TLocalizationWord{}).
-		Select("coalesce(tlw.ck_text, t_localization_word.ck_text)").
+		Select("coalesce(tlw.ck_text, tlw2.ck_text, t_localization_word.ck_text)").
 		Joins("left join t_localization_word tlw on t_localization_word.ck_localization=tlw.ck_localization and tlw.ck_lang = ?", r.GetLanguageOrDefault(lang)).
-		Where("t_localization_word.ck_localization = ? and t_localization_word.ck_lang in (select tdl.ck_id from t_d_lang tdl where tdl.cl_default)", id)
+		Joins("left join t_localization_word tlw2 on t_localization_word.ck_localization=tlw2.ck_localization and tlw2.ck_lang in (select tdl.ck_id from t_d_lang tdl where tdl.cl_default)").
+		Where("t_localization_word.ck_localization = ?", id)
 	err := r.db.Model(&word).Where("ck_id in (?)", subQuery).First(&word).Error
 	if err != nil {
 		return nil

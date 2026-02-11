@@ -17,6 +17,16 @@ type BetResponse struct {
 	Data []models.BetResponse `json:"data"`
 }
 
+type BetCreateResponse struct {
+	models.SuccessResponse
+	Data models.BetResponse `json:"data"`
+}
+
+type DictionaryResponse struct {
+	models.SuccessResponse
+	Data []models.DictionaryItemString `json:"data"`
+}
+
 func NewParierHandler(service *service.ParierService) *ParierHandler {
 	return &ParierHandler{service: service}
 }
@@ -31,7 +41,7 @@ func NewParierHandler(service *service.ParierService) *ParierHandler {
 // @Security OAuth2Keycloak
 // @Security BasicAuth
 // @Param request body models.DictionaryRequest true "Request"
-// @Success 200 {object} models.DictionaryItemString
+// @Success 200 {object} DictionaryResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
@@ -61,7 +71,7 @@ func (h *ParierHandler) GetCategories(c *gin.Context) {
 // @Security OAuth2Keycloak
 // @Security BasicAuth
 // @Param request body models.DictionaryRequest true "Request"
-// @Success 200 {object} models.DictionaryItemString
+// @Success 200 {object} DictionaryResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
@@ -91,7 +101,7 @@ func (h *ParierHandler) GetVerificationSources(c *gin.Context) {
 // @Security OAuth2Keycloak
 // @Security BasicAuth
 // @Param request body models.DictionaryRequest true "Request"
-// @Success 200 {object} models.DictionaryItemString
+// @Success 200 {object} DictionaryResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
@@ -121,7 +131,7 @@ func (h *ParierHandler) GetBetStatuses(c *gin.Context) {
 // @Security OAuth2Keycloak
 // @Security BasicAuth
 // @Param request body models.DictionaryRequest true "Request"
-// @Success 200 {object} models.DictionaryItemString
+// @Success 200 {object} DictionaryResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
@@ -151,7 +161,7 @@ func (h *ParierHandler) GetBetTypes(c *gin.Context) {
 // @Security OAuth2Keycloak
 // @Security BasicAuth
 // @Param request body models.DictionaryRequest true "Request"
-// @Success 200 {object} models.DictionaryItemString
+// @Success 200 {object} DictionaryResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
@@ -212,7 +222,7 @@ func (h *ParierHandler) GetBets(c *gin.Context) {
 // @Security OAuth2Keycloak
 // @Security BasicAuth
 // @Param request body models.BetCreateRequest true "Request"
-// @Success 200 {object} models.BetResponse
+// @Success 200 {object} BetCreateResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse

@@ -5,7 +5,9 @@
     "profile": "Profile",
     "create": "Create",
     "trends": "Trends",
-    "messages": "Messages"
+    "messages": "Messages",
+    "login": "Login",
+    "logout": "Logout"
   },
   "Home": {
     "title_part1": "Challenge the",

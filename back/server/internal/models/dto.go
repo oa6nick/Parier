@@ -214,7 +214,8 @@ type BetCreateRequest struct {
 	TypeID               string    `json:"type_id" form:"type_id"`
 	Title                string    `json:"title" form:"title"`
 	Description          *string   `json:"description" form:"description"`
-	Amount               float64   `json:"amount" form:"amount"`
+	Coefficient          string    `json:"coefficient" form:"coefficient"`
+	Amount               string    `json:"amount" form:"amount"`
 	Deadline             time.Time `json:"deadline" form:"deadline"`
 	DefaultRequest
 }

@@ -1,5 +1,14 @@
 basePath: /api/v1
 definitions:
+  internal_handlers.BetCreateResponse:
+    properties:
+      data:
+        $ref: '#/definitions/parier-server_internal_models.BetResponse'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
   internal_handlers.BetResponse:
     properties:
       count:
@@ -12,6 +21,17 @@ definitions:
         type: boolean
       total:
         type: integer
+    type: object
+  internal_handlers.DictionaryResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/parier-server_internal_models.DictionaryItemString'
+        type: array
+      message:
+        type: string
+      success:
+        type: boolean
     type: object
   internal_handlers.KeycloakLogoutRequest:
     properties:
@@ -123,8 +143,10 @@ definitions:
   parier-server_internal_models.BetCreateRequest:
     properties:
       amount:
-        type: number
+        type: string
       category_id:
+        type: string
+      coefficient:
         type: string
       deadline:
         type: string
@@ -835,7 +857,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/parier-server_internal_models.BetResponse'
+            $ref: '#/definitions/internal_handlers.BetCreateResponse'
         "400":
           description: Bad Request
           schema:
@@ -873,7 +895,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/parier-server_internal_models.DictionaryItemString'
+            $ref: '#/definitions/internal_handlers.DictionaryResponse'
         "400":
           description: Bad Request
           schema:
@@ -911,7 +933,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/parier-server_internal_models.DictionaryItemString'
+            $ref: '#/definitions/internal_handlers.DictionaryResponse'
         "400":
           description: Bad Request
           schema:
@@ -949,7 +971,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/parier-server_internal_models.DictionaryItemString'
+            $ref: '#/definitions/internal_handlers.DictionaryResponse'
         "400":
           description: Bad Request
           schema:
@@ -987,7 +1009,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/parier-server_internal_models.DictionaryItemString'
+            $ref: '#/definitions/internal_handlers.DictionaryResponse'
         "400":
           description: Bad Request
           schema:
@@ -1025,7 +1047,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/parier-server_internal_models.DictionaryItemString'
+            $ref: '#/definitions/internal_handlers.DictionaryResponse'
         "400":
           description: Bad Request
           schema:

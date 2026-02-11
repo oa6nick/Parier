@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"parier-server/internal/models"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -97,10 +98,17 @@ type BucketStatusResponse struct {
 // GetLanguage extracts language parameter
 func GetLanguage(c *gin.Context, langReq *string) *string {
 	if langReq != nil {
-		return langReq
+		lang := strings.ToUpper(*langReq)
+		return &lang
 	}
 	lang := c.Query("lang")
 	if lang != "" {
+		lang = strings.ToUpper(lang)
+		return &lang
+	}
+	lang = c.GetHeader("Accept-Language")
+	if lang != "" {
+		lang = strings.ToUpper(lang)
 		return &lang
 	}
 	lang = c.GetString("lang")

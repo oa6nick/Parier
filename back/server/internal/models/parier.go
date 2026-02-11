@@ -111,6 +111,7 @@ type TBet struct {
 	CkStatus      string    `json:"ck_status" gorm:"column:ck_status;type:varchar(255);not null"`
 	CnCoefficient float64   `json:"cn_coefficient" gorm:"column:cn_coefficient;type:decimal;not null"`
 	CkName        string    `json:"ck_name" gorm:"column:ck_name;type:varchar(255);not null"`
+	CnAmount      float64   `json:"cn_amount" gorm:"column:cn_amount;type:decimal;not null"`
 	CkDescription *string   `json:"ck_description,omitempty" gorm:"column:ck_description;type:varchar(255)"`
 	CtDeadline    time.Time `json:"ct_deadline" gorm:"column:ct_deadline;type:timestamp;not null"`
 

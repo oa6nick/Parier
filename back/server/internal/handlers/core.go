@@ -199,6 +199,16 @@ func (h *CoreHandler) GetPropertiesEnums(c *gin.Context) {
 func (h *CoreHandler) GetLocales(c *gin.Context) {
 	lang := c.Param("lang")
 	ns := c.Param("ns")
+	if lang == "" || ns == "" {
+		SendError(c, http.StatusBadRequest, "Language and namespace are required", "")
+		return
+	}
+	if lang != "" {
+		lang = strings.ToUpper(lang)
+	}
+	if ns != "" {
+		ns = strings.ToUpper(ns)
+	}
 	if c.GetHeader("If-Modified-Since") != "" {
 		since, err := time.Parse(http.TimeFormat, c.GetHeader("If-Modified-Since"))
 		if err != nil {

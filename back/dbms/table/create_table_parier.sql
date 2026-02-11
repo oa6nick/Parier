@@ -141,6 +141,7 @@ CREATE TABLE IF NOT EXISTS t_bet (
     ck_type varchar(255) NOT NULL,
     ck_status varchar(255) NOT NULL,
     cn_coefficient DECIMAL NOT NULL,
+    cn_amount DECIMAL NOT NULL,
     ct_deadline TIMESTAMP NOT NULL,
     ck_create VARCHAR(255) NOT NULL,
     ct_create TIMESTAMP NOT NULL DEFAULT now(),
@@ -164,6 +165,7 @@ COMMENT ON COLUMN t_bet.ck_category IS 'Идентификатор катего�
 COMMENT ON COLUMN t_bet.ck_type IS 'Идентификатор типа';
 COMMENT ON COLUMN t_bet.ck_status IS 'Идентификатор статуса';
 COMMENT ON COLUMN t_bet.cn_coefficient IS 'Коэффициент';
+COMMENT ON COLUMN t_bet.cn_amount IS 'Сумма';
 COMMENT ON COLUMN t_bet.ct_deadline IS 'Срок';
 COMMENT ON COLUMN t_bet.ct_create IS 'Дата создания';
 COMMENT ON COLUMN t_bet.ck_modify IS 'Идентификатор пользователя';
@@ -180,7 +182,7 @@ CREATE TABLE IF NOT EXISTS t_bet_verification_source (
     ck_modify VARCHAR(255) NOT NULL,
     ct_modify TIMESTAMP NOT NULL DEFAULT now(),
     ct_delete TIMESTAMP NULL,
-    CONSTRAINT fk_t_bet_verification_source_ck_bet FOREIGN KEY (ck_bet) REFERENCES t_bet(ck_id)
+    CONSTRAINT fk_t_bet_verification_source_ck_bet FOREIGN KEY (ck_bet) REFERENCES t_bet(ck_id),
     CONSTRAINT fk_t_bet_verification_source_ck_verification_source FOREIGN KEY (ck_verification_source) REFERENCES t_d_verification_source(ck_id)
 );
 
