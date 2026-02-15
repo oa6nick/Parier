@@ -18,6 +18,7 @@ const betsData: BetData[] = [
     status: "open",
     deadline: new Date("2026-02-15"),
     eventDate: new Date("2025-12-31"),
+    location: "Global",
     verificationSource: "CoinMarketCap, CoinGecko",
     createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
     tags: ["Bitcoin", "BTC", "Halving", "ETF"],
@@ -36,6 +37,7 @@ const betsData: BetData[] = [
     status: "open",
     deadline: new Date("2026-02-20"),
     eventDate: new Date("2026-02-15"),
+    location: "USA",
     verificationSource: "Box Office Mojo",
     createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
     tags: ["Dune", "Movie", "Blockbuster"],
@@ -53,6 +55,7 @@ const betsData: BetData[] = [
     potentialWinnings: 12500,
     status: "open",
     deadline: new Date("2025-12-31"),
+    location: "USA",
     verificationSource: "Yahoo Finance, Bloomberg",
     createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
     tags: ["S&P 500", "Stocks", "Index"],
@@ -70,6 +73,7 @@ const betsData: BetData[] = [
     potentialWinnings: 10000,
     status: "open",
     deadline: new Date("2026-07-15"),
+    location: "Russia",
     verificationSource: "FIFA official website",
     createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
     tags: ["Football", "World Cup", "Russia"],
@@ -172,6 +176,7 @@ const betsData: BetData[] = [
     potentialWinnings: 5040,
     status: "open",
     deadline: new Date("2026-02-28"),
+    location: "France",
     verificationSource: "Olympics official website",
     createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000),
     tags: ["Olympics", "Sports", "Russia"],
@@ -223,6 +228,7 @@ const betsData: BetData[] = [
     potentialWinnings: 5060,
     status: "open",
     deadline: new Date("2025-12-31"),
+    location: "Russia",
     verificationSource: "Rosstat",
     createdAt: new Date(Date.now() - 11 * 60 * 60 * 1000),
     tags: ["Inflation", "Economy", "Russia"],
@@ -335,14 +341,20 @@ const betsData: BetData[] = [
   },
 ];
 
-export const getBets = (locale: string = "en"): Bet[] => {
+export { betsData };
+export { betsTranslations };
+
+export const getBetByIdSync = (id: string, locale: string = "en"): Bet | undefined => {
+  return getBetsSync(locale).find((b) => b.id === id);
+};
+
+// For backward compatibility - sync version for components that need it (returns static only)
+export const getBetsSync = (locale: string = "en"): Bet[] => {
   const categories = getCategories(locale);
   const lang = locale === "ru" ? "ru" : "en";
-
   return betsData.map((bet) => {
     const translation = betsTranslations[bet.id]?.[lang];
     const category = categories.find((cat) => cat.id === bet.categoryId) || categories[0];
-
     return {
       ...bet,
       title: translation?.title || "",
@@ -353,6 +365,3 @@ export const getBets = (locale: string = "en"): Bet[] => {
     } as Bet;
   });
 };
-
-// For backward compatibility, export default English bets
-export const bets = getBets("en");

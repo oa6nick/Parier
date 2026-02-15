@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useId } from "react";
 import { X, TrendingUp, AlertCircle, CheckCircle } from "lucide-react";
 import { Bet } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { useTranslations, useFormatter } from "next-intl";
+import { useTranslations, useFormatter, useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 
 interface BetModalProps {
@@ -17,11 +17,13 @@ interface BetModalProps {
 
 export const BetModal: React.FC<BetModalProps> = ({ bet, isOpen, onClose, onConfirm }) => {
   const t = useTranslations('BetModal');
+  const tBetCard = useTranslations('BetCard');
   const format = useFormatter();
   const [betAmount, setBetAmount] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>("");
   const [isAnimating, setIsAnimating] = useState(false);
+  const inputId = useId();
 
   useEffect(() => {
     if (isOpen) {
@@ -134,7 +136,7 @@ export const BetModal: React.FC<BetModalProps> = ({ bet, isOpen, onClose, onConf
             <div className="mt-3 pt-3 border-t border-gray-200 grid grid-cols-2 gap-3 text-sm">
               <div>
                 <span className="text-gray-500">{t('currentPool')}</span>
-                <p className="font-bold text-gray-900">${format.number(bet.betAmount)}</p>
+                <p className="font-bold text-gray-900">{format.number(bet.betAmount)} {tBetCard('tokens')}</p>
               </div>
               <div>
                 <span className="text-gray-500">{t('odds')}</span>
@@ -150,17 +152,19 @@ export const BetModal: React.FC<BetModalProps> = ({ bet, isOpen, onClose, onConf
               isAnimating ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
             )}
           >
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('betAmount')}
+            <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 mb-2">
+              {t('betAmount')} ({tBetCard('tokens')})
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium z-10">$</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium z-10">{tBetCard('tokenSymbol')}</span>
               <input
+                id={inputId}
+                name="betAmount"
                 type="text"
                 value={betAmount}
                 onChange={(e) => handleAmountChange(e.target.value)}
                 placeholder="0"
-                className="flex h-12 w-full rounded-xl border-2 border-gray-200 bg-white pl-8 pr-4 py-2 text-lg font-bold ring-offset-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary transition-all duration-200"
+                className="flex h-12 w-full rounded-xl border-2 border-gray-200 bg-white pl-14 pr-4 py-2 text-lg font-bold ring-offset-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary transition-all duration-200"
                 required
               />
             </div>
@@ -182,7 +186,7 @@ export const BetModal: React.FC<BetModalProps> = ({ bet, isOpen, onClose, onConf
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   )}
                 >
-                  ${quickAmount}
+                  {format.number(quickAmount)}
                 </button>
               ))}
             </div>
@@ -210,7 +214,7 @@ export const BetModal: React.FC<BetModalProps> = ({ bet, isOpen, onClose, onConf
                 <TrendingUp className="w-5 h-5 text-secondary" />
               </div>
               <p className="text-2xl font-bold text-secondary-dark">
-                ${format.number(potentialWin)}
+                {format.number(potentialWin)} {tBetCard('tokens')}
               </p>
               <p className="text-xs text-gray-500 mt-1">
                 {t('ifWin')}
@@ -264,7 +268,7 @@ export const BetModal: React.FC<BetModalProps> = ({ bet, isOpen, onClose, onConf
               </>
             ) : (
               <>
-                {t('placeBet')} ${amount > 0 ? format.number(amount) : "0"}
+                {t('placeBet')} {amount > 0 ? format.number(amount) : "0"} {tBetCard('tokens')}
               </>
             )}
           </Button>

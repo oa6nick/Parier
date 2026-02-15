@@ -31,6 +31,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# mock data (created bets at runtime)
+/data/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

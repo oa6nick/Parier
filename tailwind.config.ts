@@ -30,9 +30,10 @@ const config: Config = {
         danger: "#EF4444",
       },
       boxShadow: {
-        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
-        'glow': '0 0 20px rgba(124, 58, 237, 0.4)',
-        'glow-lg': '0 0 40px rgba(124, 58, 237, 0.5)',
+        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.02)',
+        'soft-xl': '0 20px 40px -4px rgba(0, 0, 0, 0.04), 0 8px 16px -4px rgba(0, 0, 0, 0.02)',
+        'glow': '0 0 20px rgba(124, 58, 237, 0.15)',
+        'glow-lg': '0 0 40px rgba(124, 58, 237, 0.25)',
         'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
       },
       animation: {
@@ -41,6 +42,8 @@ const config: Config = {
         'scale-in': 'scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'float': 'float 6s ease-in-out infinite',
+        'scroll': 'scroll 1.5s infinite',
+        'gradient-x': 'gradient-x 3s ease infinite',
         'modal-slide-up': 'modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
       },
       keyframes: {
@@ -59,6 +62,20 @@ const config: Config = {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
+        },
+        scroll: {
+          '0%': { transform: 'translateY(0)', opacity: '1' },
+          '100%': { transform: 'translateY(8px)', opacity: '0' },
+        },
+        'gradient-x': {
+          '0%, 100%': {
+            'background-size': '200% 200%',
+            'background-position': 'left center'
+          },
+          '50%': {
+            'background-size': '200% 200%',
+            'background-position': 'right center'
+          },
         },
         modalSlideUp: {
           '0%': { opacity: '0', transform: 'translateY(20px) scale(0.95)' },

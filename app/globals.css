@@ -28,6 +28,43 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .layout-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* React Day Picker - use primary color */
+.rdp-root {
+  --rdp-accent-color: #7C3AED;
+  --rdp-accent-background-color: #ede9fe;
+}
+
+.rdp-day_button:hover:not([disabled]):not(.rdp-selected) {
+  background-color: rgba(124, 58, 237, 0.1);
+}
+
+/* Mobile drawer slide-in animation */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0.9;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+.mobile-drawer-slide-in {
+  animation: slideInRight 0.3s ease-out;
 }
 
 /* Custom scrollbar */

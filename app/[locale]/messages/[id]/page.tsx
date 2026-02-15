@@ -23,7 +23,7 @@ export default async function ChatPage({ params }: PageProps) {
   const messages = getMessages(id);
 
   return (
-    <div className="fixed inset-0 bg-gray-50 pt-16 pb-20 md:pb-0 overflow-hidden">
+    <div className="fixed inset-0 bg-gray-50 pt-20 pb-20 md:pb-0 overflow-hidden">
       <div className="max-w-2xl mx-auto h-full bg-white shadow-sm md:border-x md:border-gray-100 flex flex-col">
         <ChatRoom 
           conversation={conversation} 
