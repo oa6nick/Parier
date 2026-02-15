@@ -8,15 +8,27 @@ interface BetParticipantsProps {
   bet: Bet;
 }
 
+// Deterministic hash for consistent server/client rendering (avoids hydration mismatch)
+function hash(str: string): number {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) - h) + str.charCodeAt(i) | 0;
+  }
+  return Math.abs(h);
+}
+
 export const BetParticipants: React.FC<BetParticipantsProps> = ({ bet }) => {
-  // Mock participants list based on users
-  // In a real app, this would be fetched
-  const participants = users.slice(0, 8).map(user => ({
-    user,
-    amount: Math.round(Math.random() * 1000) + 50,
-    timestamp: new Date(Date.now() - Math.random() * 1000000000),
-    side: Math.random() > 0.5 ? 'For' : 'Against'
-  })).sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  // Mock participants - deterministic based on bet.id to avoid hydration mismatch
+  const participants = users.slice(0, 8).map((user, i) => {
+    const h = hash(`${bet.id}-${user.id}-${i}`);
+    const baseDate = new Date('2025-01-15T12:00:00').getTime();
+    return {
+      user,
+      amount: 50 + (h % 950),
+      timestamp: new Date(baseDate - (h % 86400000) * 7),
+      side: (h % 2) === 0 ? 'For' as const : 'Against' as const
+    };
+  }).sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
   return (
     <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">

@@ -1,18 +1,27 @@
 "use client";
 
-import React, { useState } from "react";
-import { Mic, Type, ArrowLeft, Wand2 } from "lucide-react";
+import React, { useState, useEffect, useId } from "react";
+import { Mic, Type, ArrowLeft, Wand2, CopyPlus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { getCategories } from "@/lib/mockData/categories";
+import { getBetByIdSync } from "@/lib/mockData/bets";
 import { Input } from "@/components/ui/Input";
-import { Link } from "@/navigation";
+import { DateInput } from "@/components/ui/DateInput";
+import { Link, useRouter } from "@/navigation";
 import { useTranslations, useLocale } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CreatePage() {
   const t = useTranslations('Create');
   const locale = useLocale();
+  const router = useRouter();
+  const { user } = useAuth();
   const categories = getCategories(locale);
+  const searchParams = useSearchParams();
   const [inputMethod, setInputMethod] = useState<"text" | "voice">("text");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     title: "",
     shortDescription: "",
@@ -26,13 +35,132 @@ export default function CreatePage() {
     verificationSource: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Pre-fill form from query parameters or from bet ID
+  useEffect(() => {
+    const fromBetId = searchParams?.get('from');
+    if (fromBetId) {
+      const bet = getBetByIdSync(fromBetId, locale);
+      if (bet) {
+        setFormData(prev => ({
+          ...prev,
+          title: bet.title,
+          shortDescription: bet.shortDescription,
+          fullDescription: bet.fullDescription,
+          outcome: bet.outcome,
+          category: bet.category.id,
+          betAmount: String(bet.betAmount),
+          coefficient: String(bet.coefficient),
+          deadline: bet.deadline.toISOString().split('T')[0],
+          eventDate: bet.eventDate ? bet.eventDate.toISOString().split('T')[0] : '',
+          verificationSource: bet.verificationSource || '',
+        }));
+      }
+      return;
+    }
+
+    const title = searchParams?.get('title');
+    const betAmount = searchParams?.get('betAmount');
+    const coefficient = searchParams?.get('coefficient');
+
+    if (title || betAmount || coefficient) {
+      setFormData(prev => ({
+        ...prev,
+        title: title || prev.title,
+        betAmount: betAmount || prev.betAmount,
+        coefficient: coefficient || prev.coefficient,
+      }));
+    }
+  }, [searchParams, locale]);
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    const now = new Date();
+    // Reset time part for fair comparison if needed, or just compare timestamps
+    
+    if (!formData.title.trim()) {
+      newErrors.title = t('form.errors.titleRequired') || "Title is required"; // Fallback if key missing
+    } else if (formData.title.length < 5) {
+      newErrors.title = "Title must be at least 5 characters";
+    }
+
+    if (!formData.shortDescription.trim()) {
+      newErrors.shortDescription = "Short description is required";
+    }
+
+    if (!formData.category) {
+      newErrors.category = "Category is required";
+    }
+
+    if (!formData.betAmount) {
+      newErrors.betAmount = "Pool amount is required";
+    } else if (Number(formData.betAmount) <= 0) {
+      newErrors.betAmount = "Pool amount must be positive";
+    }
+
+    if (!formData.coefficient) {
+      newErrors.coefficient = "Coefficient is required";
+    } else if (Number(formData.coefficient) <= 1.0) {
+      newErrors.coefficient = "Coefficient must be greater than 1.0";
+    }
+
+    if (!formData.deadline) {
+      newErrors.deadline = "Deadline is required";
+    } else {
+      const deadlineDate = new Date(formData.deadline);
+      if (deadlineDate <= now) {
+        newErrors.deadline = "Deadline must be in the future";
+      }
+    }
+
+    if (!formData.verificationSource.trim()) {
+      newErrors.verificationSource = "Verification source is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Prediction created! (Mock)");
+    if (!validateForm() || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/bets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: formData.title.trim(),
+          shortDescription: formData.shortDescription.trim(),
+          fullDescription: formData.fullDescription.trim(),
+          outcome: formData.outcome.trim(),
+          categoryId: formData.category,
+          betAmount: Number(formData.betAmount),
+          coefficient: Number(formData.coefficient),
+          deadline: formData.deadline + "T12:00:00",
+          eventDate: formData.eventDate ? formData.eventDate + "T12:00:00" : undefined,
+          verificationSource: formData.verificationSource.trim(),
+          authorId: user?.id || "1",
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Failed to create bet");
+      }
+
+      const { id } = await res.json();
+      router.push(`/bet/${id}`);
+    } catch (err) {
+      console.error(err);
+      alert(err instanceof Error ? err.message : "Failed to create bet");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | { target: { name: string; value: string } }
   ) => {
     setFormData({
       ...formData,
@@ -54,7 +182,20 @@ export default function CreatePage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <Link
+        href="/pick?mode=create"
+        className="mb-8 flex items-center gap-3 p-4 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all group"
+      >
+        <div className="p-2 rounded-xl bg-primary/10 group-hover:bg-primary/20">
+          <CopyPlus className="w-5 h-5 text-primary" />
+        </div>
+        <div className="text-left">
+          <span className="font-semibold text-gray-900 block">{t('createFromExisting')}</span>
+          <span className="text-sm text-gray-500">{t('createFromExistingDesc')}</span>
+        </div>
+      </Link>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         <button
           onClick={() => setInputMethod("text")}
           className={`flex items-center justify-center gap-3 p-6 rounded-2xl border transition-all duration-300 ${
@@ -110,6 +251,7 @@ export default function CreatePage() {
           onChange={handleChange}
           required
           placeholder={t('form.titlePlaceholder')}
+          error={errors.title}
         />
 
         <div>
@@ -120,9 +262,14 @@ export default function CreatePage() {
             onChange={handleChange}
             required
             rows={2}
-            className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+            className={`w-full rounded-xl border-2 bg-white px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 ${
+              errors.shortDescription ? "border-red-500 focus:ring-red-500" : "border-gray-200"
+            }`}
             placeholder={t('form.shortDescPlaceholder')}
           />
+          {errors.shortDescription && (
+            <p className="text-sm text-red-500 mt-1.5 ml-1">{errors.shortDescription}</p>
+          )}
         </div>
 
         <div>
@@ -133,7 +280,9 @@ export default function CreatePage() {
               value={formData.category}
               onChange={handleChange}
               required
-              className="w-full appearance-none rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+              className={`w-full appearance-none rounded-xl border-2 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 ${
+                errors.category ? "border-red-500 focus:ring-red-500" : "border-gray-200"
+              }`}
             >
               <option value="">{t('form.selectCategory')}</option>
               {categories.map((cat) => (
@@ -144,6 +293,9 @@ export default function CreatePage() {
               ▼
             </div>
           </div>
+          {errors.category && (
+            <p className="text-sm text-red-500 mt-1.5 ml-1">{errors.category}</p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -155,6 +307,7 @@ export default function CreatePage() {
             onChange={handleChange}
             required
             placeholder="1000"
+            error={errors.betAmount}
           />
           <Input
             label={t('form.coefficient')}
@@ -165,17 +318,19 @@ export default function CreatePage() {
             onChange={handleChange}
             required
             placeholder="2.5"
+            error={errors.coefficient}
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Input
+          <DateInput
             label={t('form.deadline')}
             name="deadline"
-            type="date"
             value={formData.deadline}
             onChange={handleChange}
             required
+            error={errors.deadline}
+            min={new Date().toISOString().split('T')[0]}
           />
           <Input
             label={t('form.verificationSource')}
@@ -184,6 +339,7 @@ export default function CreatePage() {
             onChange={handleChange}
             required
             placeholder={t('form.verificationPlaceholder')}
+            error={errors.verificationSource}
           />
         </div>
 
@@ -191,8 +347,8 @@ export default function CreatePage() {
           <Link href="/">
             <Button variant="ghost">{t('form.cancel')}</Button>
           </Link>
-          <Button type="submit" size="lg" className="px-8 shadow-glow">
-            {t('form.publish')}
+          <Button type="submit" size="lg" className="px-8 shadow-glow" disabled={isSubmitting}>
+            {isSubmitting ? t('form.publishing') : t('form.publish')}
           </Button>
         </div>
       </form>

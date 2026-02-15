@@ -39,6 +39,10 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
 
+  React.useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
+
   const updateFilter = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
     const newFilters = { ...localFilters, [key]: value };
     setLocalFilters(newFilters);
@@ -76,27 +80,27 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       <Button
         variant="outline"
         onClick={() => setIsOpen(!isOpen)}
-        className="gap-2 bg-white"
+        className="gap-2 bg-white hover:bg-gray-50 border-gray-200 text-gray-600 h-9 rounded-full px-4 text-sm font-medium shadow-sm transition-all border"
       >
-        <Filter className="w-4 h-4" />
+        <Filter className="w-3.5 h-3.5" />
         {t('filters')}
         {hasActiveFilters && (
-          <span className="w-2 h-2 bg-primary rounded-full" />
+          <span className="w-1.5 h-1.5 bg-primary rounded-full" />
         )}
         {isOpen ? (
-          <ChevronUp className="w-4 h-4 text-gray-400" />
+          <ChevronUp className="w-3.5 h-3.5 text-gray-500" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-gray-400" />
+          <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
         )}
       </Button>
 
       {isOpen && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/5 md:bg-transparent"
+            className="fixed inset-0 z-40 bg-black/20 md:bg-transparent"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-full right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 p-6 z-50 max-h-[85vh] overflow-y-auto origin-top-right animate-in fade-in zoom-in-95 duration-200 scrollbar-hide">
+          <div className="absolute top-full left-0 mt-2 w-[min(calc(100vw-2rem),384px)] bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 z-50 max-h-[80vh] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-gray-900">{t('filters')}</h3>
               <button

@@ -1,4 +1,38 @@
 {
+  "Admin": {
+    "title": "Admin — Token Allocation",
+    "subtitle": "Credit tokens by rule (automatic targeting)",
+    "creditForm": "Credit Tokens",
+    "ruleLabel": "Who receives tokens",
+    "rules": {
+      "all": "All users",
+      "new_users": "New users",
+      "low_balance": "Low balance",
+      "active": "Active users"
+    },
+    "ruleParams": {
+      "days": "Joined in last (days)",
+      "maxBalance": "Balance below (PRR)",
+      "minBets": "Minimum bets placed"
+    },
+    "preview": "{count} users will receive tokens",
+    "searchPlaceholder": "Search by ID or username...",
+    "amount": "Amount (tokens)",
+    "description": "Description",
+    "optional": "optional",
+    "descriptionPlaceholder": "e.g. Bonus for activity",
+    "credit": "Credit Tokens",
+    "crediting": "Crediting...",
+    "usersList": "Users & Balances",
+    "success": "Successfully credited {amount} tokens",
+    "successAll": "Credited {amount} tokens to {count} users",
+    "noUsersFound": "No users found",
+    "errors": {
+      "minAmount": "Amount must be at least 1",
+      "selectUser": "Please select a user",
+      "failed": "Failed to credit tokens"
+    }
+  },
   "AuthPrompt": {
     "title": "Join the Action",
     "subtitle": "You need to be logged in to place a bet.",
@@ -73,6 +107,8 @@
     "title": "Create Prediction",
     "subtitle": "Formulate your insight and back it with conviction.",
     "backToFeed": "Back to Feed",
+    "createFromExisting": "Create from existing bet",
+    "createFromExistingDesc": "Choose a bet to use as template",
     "textInput": "Text Input",
     "voiceInput": "AI Voice Assistant",
     "aiReady": "AI Assistant Ready",
@@ -92,8 +128,21 @@
       "verificationSource": "Verification Source",
       "verificationPlaceholder": "e.g., Bloomberg, Official Reports",
       "cancel": "Cancel",
-      "publish": "Publish Prediction"
+      "publish": "Publish Prediction",
+      "publishing": "Creating…"
     }
+  },
+  "DateInput": {
+    "placeholder": "Select date"
+  },
+  "Pick": {
+    "titleCreate": "Choose a bet to use as template",
+    "titleShare": "Choose a bet to share",
+    "subtitleCreate": "Select a prediction to base your new bet on. We'll pre-fill the form for you.",
+    "subtitleShare": "Select a prediction to view details and share the link.",
+    "back": "Back",
+    "useAsTemplate": "Use as template",
+    "viewAndShare": "View & Share"
   },
   "Rating": {
     "title": "Leaderboard",
@@ -144,6 +193,7 @@
     "forgotPassword": "Forgot password?",
     "signingIn": "Signing in...",
     "signInButton": "Sign In",
+    "signOut": "Sign Out",
     "orVia": "Or via",
     "google": "Google",
     "apple": "Apple",
@@ -270,7 +320,8 @@
       "bet": "Bet Placed",
       "win": "Bet Won",
       "referral_bonus": "Referral Bonus",
-      "referral_earnings": "Referral Earnings"
+      "referral_earnings": "Referral Earnings",
+      "admin_credit": "Admin Credit"
     }
   },
   "Referral": {
@@ -293,7 +344,21 @@
     "activePredictions": "{count} Active Predictions",
     "all": "All",
     "noResults": "No bets found",
-    "noResultsDesc": "Try adjusting your search or filters"
+    "noResultsDesc": "Try adjusting your search or filters",
+    "createBetForm": {
+      "title": "Create Bet",
+      "titlePlaceholder": "Prediction title...",
+      "poolAmount": "Pool Amount",
+      "coefficient": "Coefficient",
+      "createButton": "Create Bet",
+      "registerButton": "Sign Up",
+      "registerPrompt": "Sign up to create a bet",
+      "errors": {
+        "titleRequired": "Title is required",
+        "poolAmountPositive": "Pool amount must be greater than 0",
+        "coefficientInvalid": "Coefficient must be greater than 1"
+      }
+    }
   },
   "Profile": {
     "share": "Share",
@@ -346,6 +411,8 @@
   "Share": {
     "title": "Share Profile",
     "subtitle": "Show your stats to the world",
+    "shareBet": "Share a bet",
+    "shareBetDesc": "Choose a prediction to share its link",
     "copyLink": "Copy Link",
     "shareOn": "Share on",
     "social": {

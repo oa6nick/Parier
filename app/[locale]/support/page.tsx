@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useId } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown, ChevronUp, Send, HelpCircle, Mail } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -10,6 +10,7 @@ export default function SupportPage() {
   const t = useTranslations('Support');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [formStatus, setFormStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
+  const textareaId = useId();
 
   const faqs = [1, 2, 3];
 
@@ -94,21 +95,25 @@ export default function SupportPage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <Input 
                   label={t('contact.name')} 
+                  name="name"
                   required 
                   placeholder="John Doe"
                 />
                 <Input 
                   label={t('contact.email')} 
+                  name="email"
                   type="email" 
                   required 
                   placeholder="john@example.com"
                 />
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">
+                  <label htmlFor={textareaId} className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">
                     {t('contact.message')}
                   </label>
                   <textarea
+                    id={textareaId}
+                    name="message"
                     required
                     rows={4}
                     className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 resize-none"

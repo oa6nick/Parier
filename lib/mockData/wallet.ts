@@ -138,17 +138,43 @@ export const getTransactions = (userId: string): Transaction[] => {
 
 export const addTransaction = (transaction: Transaction): void => {
   transactions.unshift(transaction);
-  const balance = tokenBalances[transaction.userId];
-  if (balance) {
-    balance.balance += transaction.amount;
-    if (transaction.type === "deposit") {
-      balance.totalDeposited += transaction.amount;
-    } else if (transaction.type === "withdrawal") {
-      balance.totalWithdrawn += Math.abs(transaction.amount);
-    } else if (transaction.type === "win" || transaction.type === "referral_bonus" || transaction.type === "referral_earnings") {
-      balance.totalWon += transaction.amount;
-    } else if (transaction.type === "bet") {
-      balance.totalSpent += Math.abs(transaction.amount);
-    }
+  let balance = tokenBalances[transaction.userId];
+  if (!balance) {
+    balance = {
+      userId: transaction.userId,
+      balance: 0,
+      totalDeposited: 0,
+      totalWithdrawn: 0,
+      totalWon: 0,
+      totalSpent: 0,
+    };
+    tokenBalances[transaction.userId] = balance;
   }
+  balance.balance += transaction.amount;
+  if (transaction.type === "deposit" || transaction.type === "admin_credit") {
+    balance.totalDeposited += transaction.amount;
+  } else if (transaction.type === "withdrawal") {
+    balance.totalWithdrawn += Math.abs(transaction.amount);
+  } else if (transaction.type === "win" || transaction.type === "referral_bonus" || transaction.type === "referral_earnings") {
+    balance.totalWon += transaction.amount;
+  } else if (transaction.type === "bet") {
+    balance.totalSpent += Math.abs(transaction.amount);
+  }
+};
+
+export const creditTokens = (
+  userId: string,
+  amount: number,
+  description: string = "Admin credit"
+): number => {
+  if (amount <= 0) return getTokenBalance(userId).balance;
+  addTransaction({
+    id: `t${Date.now()}`,
+    userId,
+    type: "admin_credit",
+    amount,
+    description,
+    createdAt: new Date(),
+  });
+  return getTokenBalance(userId).balance;
 };

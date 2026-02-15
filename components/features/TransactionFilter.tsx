@@ -28,6 +28,7 @@ export const TransactionFilter: React.FC<TransactionFilterProps> = ({
     "win",
     "referral_bonus",
     "referral_earnings",
+    "admin_credit",
   ];
 
   return (

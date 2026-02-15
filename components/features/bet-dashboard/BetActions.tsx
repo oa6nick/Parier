@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import { Bet } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { useFormatter } from 'next-intl';
@@ -18,6 +18,7 @@ export const BetActions: React.FC<BetActionsProps> = ({ bet }) => {
   const [amount, setAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAuthPromptOpen, setIsAuthPromptOpen] = useState(false);
+  const inputId = useId();
 
   const handleBet = () => {
     if (!isAuthenticated) {
@@ -52,10 +53,12 @@ export const BetActions: React.FC<BetActionsProps> = ({ bet }) => {
 
       <div className="space-y-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 mb-2">
             Amount (PRR)
           </label>
           <input
+            id={inputId}
+            name="amount"
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}

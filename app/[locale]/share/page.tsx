@@ -5,8 +5,9 @@ import { useTranslations } from "next-intl";
 import { ReferralCard } from "@/components/features/ReferralCard";
 import { users } from "@/lib/mockData/users";
 import { getReferralStats, generateReferralCode } from "@/lib/mockData/referrals";
-import { Send, Twitter, Facebook, Link2 } from "lucide-react";
+import { Send, Twitter, Facebook, Link2, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Link } from "@/navigation";
 
 export default function SharePage() {
   const t = useTranslations('Share');
@@ -42,6 +43,22 @@ export default function SharePage() {
       </div>
 
       <div className="space-y-6">
+        <Link
+          href="/pick?mode=share"
+          className="block p-6 rounded-3xl border-2 border-gray-100 bg-white hover:border-primary/20 hover:shadow-soft transition-all group"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-2xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+              <Share2 className="w-6 h-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-gray-900 mb-1">{t('shareBet')}</h3>
+              <p className="text-sm text-gray-500">{t('shareBetDesc')}</p>
+            </div>
+            <span className="text-primary font-medium group-hover:underline">→</span>
+          </div>
+        </Link>
+
         <ReferralCard
           referralCode={referralCode}
           totalReferrals={referralStats.totalReferrals}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useId } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ru, enUS } from "date-fns/locale";
 import { Clock, Users, Share2, Lightbulb, Check, ArrowUpRight, X, TrendingUp, AlertCircle, Heart, MessageCircle, ExternalLink } from "lucide-react";
@@ -34,6 +34,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
   const [betAmount, setBetAmount] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>("");
+  const inputId = useId();
 
   // Social state
   const [liked, setLiked] = useState(bet.likedByMe);
@@ -82,7 +83,8 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
     }
   };
 
-  const handleBetClick = () => {
+  const handleBetClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (bet.status !== "open") {
       return;
     }
@@ -90,7 +92,8 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
     setIsFlipped(true);
   };
 
-  const handleBackClick = () => {
+  const handleBackClick = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     setIsFlipped(false);
     setBetAmount("");
     setError("");
@@ -102,7 +105,8 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
     setError("");
   };
 
-  const handleBetSubmit = () => {
+  const handleBetSubmit = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setError("");
     const amount = parseFloat(betAmount) || 0;
     const minBet = 10;
@@ -162,6 +166,13 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
     setCommentsCount(prev => prev + 1);
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Prevent navigation if text is selected
+    if (window.getSelection()?.toString()) return;
+    
+    router.push(`/bet/${bet.id}`);
+  };
+
   const amount = parseFloat(betAmount) || 0;
   const potentialWin = amount * bet.coefficient;
   const minBet = 10;
@@ -185,8 +196,9 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
         >
           {/* Front Side - Bet Card */}
           <div 
+            onClick={handleCardClick}
             className={cn(
-              "relative w-full h-full bg-white rounded-3xl p-6 shadow-soft border border-gray-100 transition-all duration-300 flex flex-col isolate",
+              "relative w-full h-full bg-white rounded-3xl p-6 shadow-soft border border-gray-100 transition-all duration-300 flex flex-col isolate cursor-pointer",
               !isFlipped && "hover:shadow-glow hover:-translate-y-1"
             )}
             style={{ 
@@ -239,14 +251,14 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
             </div>
 
             {/* Title */}
-            <Link href={`/bet/${bet.id}`} className="block">
+            <div className="block">
               <h2 className={cn(
                 "relative text-xl font-bold text-gray-900 mb-4 leading-tight transition-colors duration-300 line-clamp-2 break-words",
                 !isFlipped && "group-hover:text-primary hover:text-primary"
               )}>
                 {bet.title}
               </h2>
-            </Link>
+            </div>
 
             {/* Outcome */}
             <div className="relative bg-gray-50/80 backdrop-blur-sm border border-gray-100 rounded-xl p-4 mb-6">
@@ -336,7 +348,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
                   </div>
                 </Button>
 
-                <Link href={`/bet/${bet.id}`}>
+                <Link href={`/bet/${bet.id}`} onClick={(e) => e.stopPropagation()}>
                   <Button 
                     variant="ghost" 
                     size="icon" 
@@ -373,7 +385,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900">{tModal('title')}</h2>
               <button
-                onClick={handleBackClick}
+                onClick={(e) => handleBackClick(e)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 disabled={isSubmitting}
               >
@@ -401,12 +413,14 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
 
             {/* Bet Amount Input */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 mb-2">
                 {tModal('betAmount')} ({t('tokens')})
               </label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium z-10">{t('tokenSymbol')}</span>
                 <input
+                  id={inputId}
+                  name="betAmount"
                   type="text"
                   value={betAmount}
                   onChange={(e) => handleAmountChange(e.target.value)}
@@ -479,7 +493,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
             <div className="mt-auto flex gap-3 pt-4 border-t border-gray-100">
               <Button
                 variant="ghost"
-                onClick={handleBackClick}
+                onClick={(e) => handleBackClick(e)}
                 className="flex-1"
                 disabled={isSubmitting}
               >
@@ -496,11 +510,11 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
                     <span className="animate-spin mr-2">⏳</span>
                     {tModal('placing')}
                   </>
-              ) : (
-                <>
-                  {tModal('placeBet')} {amount > 0 ? format.number(amount) : "0"} {t('tokens')}
-                </>
-              )}
+                ) : (
+                  <>
+                    {tModal('placeBet')} {amount > 0 ? format.number(amount) : "0"} {t('tokens')}
+                  </>
+                )}
               </Button>
             </div>
           </div>

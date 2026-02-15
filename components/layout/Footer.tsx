@@ -9,7 +9,7 @@ export const Footer = () => {
 
   return (
     <footer className="bg-white border-t border-gray-200 pt-16 pb-24 md:pb-8 mt-auto">
-      <div className="container mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="col-span-1 md:col-span-1">
@@ -85,13 +85,15 @@ export const Footer = () => {
             <p className="text-gray-500 text-sm mb-4">
               {t('newsletterDesc')}
             </p>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input 
+                name="email"
+                aria-label="Email for newsletter"
                 type="email" 
                 placeholder={t('emailPlaceholder')}
                 className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
-              <button className="bg-primary text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors">
+              <button className="bg-primary text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors flex-shrink-0">
                 {t('subscribe')}
               </button>
             </div>
@@ -99,7 +101,7 @@ export const Footer = () => {
         </div>
 
         <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-gray-400" suppressHydrationWarning>
             © {currentYear} Parier. {t('rightsReserved')}
           </p>
           <div className="flex items-center gap-6 text-sm text-gray-400">

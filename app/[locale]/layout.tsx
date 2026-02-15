@@ -13,6 +13,7 @@ const inter = Inter({
   variable: "--font-inter",
   display: 'swap',
   adjustFontFallback: true,
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -36,8 +37,8 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <AuthProvider>
             <Header />
-            <main className="min-h-screen pt-16 flex flex-col">
-              <div className="flex-grow">
+            <main className="min-h-screen pt-20 flex flex-col bg-gray-50">
+              <div className="flex-grow flex flex-col" suppressHydrationWarning>
                 {children}
               </div>
               <Footer />

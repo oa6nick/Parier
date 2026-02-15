@@ -7,7 +7,7 @@ import { RatingStars } from "@/components/ui/RatingStars";
 import { StatCard } from "@/components/ui/StatCard";
 import { BetCard } from "@/components/features/BetCard";
 import { users } from "@/lib/mockData/users";
-import { getBets } from "@/lib/mockData/bets";
+import { getBetsSync } from "@/lib/mockData/bets";
 import { getCategories } from "@/lib/mockData/categories";
 import { findOrCreateConversation } from "@/lib/mockData/chat";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,7 @@ export default function UserProfilePage({ params }: PageProps) {
   const locale = useLocale();
   const router = useRouter();
   const categories = getCategories(locale);
-  const bets = getBets(locale);
+  const bets = getBetsSync(locale);
   const currentUser = users[0];
   
   const user = users.find((u) => u.id === id);

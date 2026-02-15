@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useId } from "react";
 import { X, TrendingUp, AlertCircle, CheckCircle } from "lucide-react";
 import { Bet } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -23,6 +23,7 @@ export const BetModal: React.FC<BetModalProps> = ({ bet, isOpen, onClose, onConf
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>("");
   const [isAnimating, setIsAnimating] = useState(false);
+  const inputId = useId();
 
   useEffect(() => {
     if (isOpen) {
@@ -151,12 +152,14 @@ export const BetModal: React.FC<BetModalProps> = ({ bet, isOpen, onClose, onConf
               isAnimating ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
             )}
           >
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 mb-2">
               {t('betAmount')} ({tBetCard('tokens')})
             </label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium z-10">{tBetCard('tokenSymbol')}</span>
               <input
+                id={inputId}
+                name="betAmount"
                 type="text"
                 value={betAmount}
                 onChange={(e) => handleAmountChange(e.target.value)}

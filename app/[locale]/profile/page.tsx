@@ -9,7 +9,7 @@ import { BetCard } from "@/components/features/BetCard";
 import { WalletBalance } from "@/components/features/WalletBalance";
 import { ReferralCard } from "@/components/features/ReferralCard";
 import { users } from "@/lib/mockData/users";
-import { getBets } from "@/lib/mockData/bets";
+import { getBetsSync } from "@/lib/mockData/bets";
 import { getCategories } from "@/lib/mockData/categories";
 import { getTokenBalance } from "@/lib/mockData/wallet";
 import { getReferralStats, generateReferralCode } from "@/lib/mockData/referrals";
@@ -23,7 +23,7 @@ export default function ProfilePage() {
   const format = useFormatter();
   const locale = useLocale();
   const categories = getCategories(locale);
-  const bets = getBets(locale);
+  const bets = getBetsSync(locale);
   const currentUser = users[0]; // "You"
   const userBets = bets.filter((bet) => bet.author.id === currentUser.id);
   const [activeTab, setActiveTab] = useState<"all" | "active" | "completed">("all");
@@ -75,24 +75,24 @@ export default function ProfilePage() {
                 <h1 className="text-3xl font-bold text-gray-900 mb-1">{currentUser.username}</h1>
                 <p className="text-gray-500 font-medium">{t('predictorLevel', {level: 5})} • {t('eliteAnalyst')}</p>
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-2 sm:gap-3">
                 <Link href="/wallet">
-                  <Button variant="primary" size="sm" className="rounded-full">
+                  <Button variant="primary" size="sm" className="rounded-full min-h-[44px]">
                     <Wallet className="w-4 h-4 mr-2" /> {format.number(tokenBalance.balance)}
                   </Button>
                 </Link>
                 <Link href="/messages">
-                  <Button variant="outline" size="sm" className="rounded-full">
+                  <Button variant="outline" size="sm" className="rounded-full min-h-[44px]">
                     <MessageCircle className="w-4 h-4 mr-2" /> {t('messages')}
                   </Button>
                 </Link>
                 <Link href="/share">
-                  <Button variant="outline" size="sm" className="rounded-full">
+                  <Button variant="outline" size="sm" className="rounded-full min-h-[44px]">
                     <Share2 className="w-4 h-4 mr-2" /> {t('share')}
                   </Button>
                 </Link>
                 <Link href="/settings">
-                  <Button variant="ghost" size="icon" className="rounded-full">
+                  <Button variant="ghost" size="icon" className="rounded-full min-w-[44px] min-h-[44px]">
                     <Settings className="w-5 h-5 text-gray-400" />
                   </Button>
                 </Link>
@@ -185,13 +185,13 @@ export default function ProfilePage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-gray-100/50 rounded-xl mb-8 w-fit">
+      <div className="flex gap-1 p-1 bg-gray-100/50 rounded-xl mb-8 w-full max-w-full overflow-x-auto no-scrollbar sm:w-fit">
         {(["all", "active", "completed"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={cn(
-              "px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 capitalize",
+              "px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 capitalize flex-shrink-0 min-h-[44px]",
               activeTab === tab
                 ? "bg-white text-gray-900 shadow-sm"
                 : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"

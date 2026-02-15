@@ -341,14 +341,20 @@ const betsData: BetData[] = [
   },
 ];
 
-export const getBets = (locale: string = "en"): Bet[] => {
+export { betsData };
+export { betsTranslations };
+
+export const getBetByIdSync = (id: string, locale: string = "en"): Bet | undefined => {
+  return getBetsSync(locale).find((b) => b.id === id);
+};
+
+// For backward compatibility - sync version for components that need it (returns static only)
+export const getBetsSync = (locale: string = "en"): Bet[] => {
   const categories = getCategories(locale);
   const lang = locale === "ru" ? "ru" : "en";
-
   return betsData.map((bet) => {
     const translation = betsTranslations[bet.id]?.[lang];
     const category = categories.find((cat) => cat.id === bet.categoryId) || categories[0];
-
     return {
       ...bet,
       title: translation?.title || "",
@@ -359,6 +365,3 @@ export const getBets = (locale: string = "en"): Bet[] => {
     } as Bet;
   });
 };
-
-// For backward compatibility, export default English bets
-export const bets = getBets("en");

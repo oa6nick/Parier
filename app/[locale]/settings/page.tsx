@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useId } from "react";
 import { User, Shield, Bell, LogOut, Trash2, Camera, Save, Check, Mail, Lock, MapPin, AtSign } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -27,6 +27,8 @@ export default function SettingsPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const bioId = useId();
 
   const handleSave = () => {
     setIsLoading(true);
@@ -115,12 +117,16 @@ export default function SettingsPage() {
                     <div className="grid md:grid-cols-2 gap-6">
                       <Input
                         label={t('displayName')}
+                        name="displayName"
+                        autoComplete="name"
                         value={displayName}
                         onChange={(e) => setDisplayName(e.target.value)}
                         icon={<User className="w-4 h-4" />}
                       />
                       <Input
                         label={t('username')}
+                        name="username"
+                        autoComplete="username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         icon={<AtSign className="w-4 h-4" />}
@@ -129,16 +135,19 @@ export default function SettingsPage() {
                     
                     <Input
                       label={t('location')}
+                      name="location"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
                       icon={<MapPin className="w-4 h-4" />}
                     />
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">
+                      <label htmlFor={bioId} className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">
                         {t('bio')}
                       </label>
                       <textarea
+                        id={bioId}
+                        name="bio"
                         className="w-full min-h-[120px] rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-sm ring-offset-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary transition-all duration-200 resize-none"
                         placeholder="Tell us about yourself..."
                       />
@@ -156,7 +165,9 @@ export default function SettingsPage() {
                   <div className="space-y-6">
                     <Input
                       label={t('email')}
+                      name="email"
                       type="email"
+                      autoComplete="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       icon={<Mail className="w-4 h-4" />}
@@ -167,7 +178,9 @@ export default function SettingsPage() {
                       <div className="space-y-4">
                         <Input
                           label={t('currentPassword')}
+                          name="currentPassword"
                           type="password"
+                          autoComplete="current-password"
                           value={currentPassword}
                           onChange={(e) => setCurrentPassword(e.target.value)}
                           icon={<Lock className="w-4 h-4" />}
@@ -175,14 +188,18 @@ export default function SettingsPage() {
                         <div className="grid md:grid-cols-2 gap-6">
                           <Input
                             label={t('newPassword')}
+                            name="newPassword"
                             type="password"
+                            autoComplete="new-password"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
                             icon={<Lock className="w-4 h-4" />}
                           />
                           <Input
                             label={t('confirmPassword')}
+                            name="confirmPassword"
                             type="password"
+                            autoComplete="new-password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             icon={<Lock className="w-4 h-4" />}

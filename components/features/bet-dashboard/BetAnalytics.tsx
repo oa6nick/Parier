@@ -44,7 +44,7 @@ export const BetAnalytics: React.FC<BetAnalyticsProps> = ({ bet }) => {
         <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
           <h3 className="text-lg font-bold text-gray-900 mb-6">Pool Growth</h3>
           <div style={{ width: '100%', height: 300 }}>
-            <ResponsiveContainer>
+            <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={graphData}>
                 <defs>
                   <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
@@ -67,7 +67,7 @@ export const BetAnalytics: React.FC<BetAnalyticsProps> = ({ bet }) => {
         <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
           <h3 className="text-lg font-bold text-gray-900 mb-6">Positions Distribution</h3>
           <div className="flex items-center justify-center" style={{ width: '100%', height: 300 }}>
-            <ResponsiveContainer>
+            <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
                   data={pieData}

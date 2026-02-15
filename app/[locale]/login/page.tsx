@@ -57,6 +57,7 @@ export default function LoginPage() {
         <div className="space-y-4">
           <Input
             label={t('email')}
+            name="email"
             type="email"
             placeholder={t('emailPlaceholder')}
             icon={<Mail className="w-4 h-4" />}
@@ -68,6 +69,7 @@ export default function LoginPage() {
           <div className="space-y-1">
             <Input
               label={t('password')}
+              name="password"
               type="password"
               placeholder={t('passwordPlaceholder')}
               icon={<Lock className="w-4 h-4" />}

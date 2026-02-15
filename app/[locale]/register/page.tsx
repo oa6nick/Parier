@@ -69,6 +69,7 @@ export default function RegisterPage() {
         <div className="space-y-4">
           <Input
             label={t('username')}
+            name="username"
             placeholder={t('usernamePlaceholder')}
             icon={<User className="w-4 h-4" />}
             value={username}
@@ -78,6 +79,7 @@ export default function RegisterPage() {
           
           <Input
             label={t('email')}
+            name="email"
             type="email"
             placeholder={t('emailPlaceholder')}
             icon={<Mail className="w-4 h-4" />}
@@ -88,6 +90,7 @@ export default function RegisterPage() {
           
           <Input
             label={t('password')}
+            name="password"
             type="password"
             placeholder={t('passwordPlaceholder')}
             icon={<Lock className="w-4 h-4" />}

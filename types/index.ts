@@ -92,7 +92,7 @@ export type UserStats = {
   rating: number;
 };
 
-export type TransactionType = "deposit" | "withdrawal" | "bet" | "win" | "referral_bonus" | "referral_earnings";
+export type TransactionType = "deposit" | "withdrawal" | "bet" | "win" | "referral_bonus" | "referral_earnings" | "admin_credit";
 
 export type Transaction = {
   id: string;
@@ -121,3 +121,5 @@ export type Referral = {
   createdAt: Date;
   totalEarnings: number;
 };
+
+export type CreditRuleType = "all" | "new_users" | "low_balance" | "active";

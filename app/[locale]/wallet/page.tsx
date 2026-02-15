@@ -11,7 +11,6 @@ import { TransactionFilter } from "@/components/features/TransactionFilter";
 import { getTokenBalance, getTransactions, addTransaction } from "@/lib/mockData/wallet";
 import { users } from "@/lib/mockData/users";
 import { TransactionType } from "@/types";
-import { BottomNavigation } from "@/components/layout/BottomNavigation";
 
 export default function WalletPage() {
   const t = useTranslations('Wallet');
@@ -36,25 +35,6 @@ export default function WalletPage() {
       description: "Deposit via card",
       createdAt: new Date(),
     });
-  };
-
-  const stats = {
-    totalDeposits: allTransactions
-      .filter((t) => t.type === "deposit")
-      .reduce((sum, t) => sum + t.amount, 0),
-    totalWithdrawals: Math.abs(
-      allTransactions
-        .filter((t) => t.type === "withdrawal")
-        .reduce((sum, t) => sum + t.amount, 0)
-    ),
-    totalWins: allTransactions
-      .filter((t) => t.type === "win")
-      .reduce((sum, t) => sum + t.amount, 0),
-    totalSpent: Math.abs(
-      allTransactions
-        .filter((t) => t.type === "bet")
-        .reduce((sum, t) => sum + t.amount, 0)
-    ),
   };
 
   return (
@@ -125,8 +105,6 @@ export default function WalletPage() {
         onClose={() => setIsDepositModalOpen(false)}
         onDeposit={handleDeposit}
       />
-
-      <BottomNavigation />
     </>
   );
 }
