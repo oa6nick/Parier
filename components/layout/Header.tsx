@@ -148,23 +148,13 @@ const HeaderContent: React.FC = () => {
 
                                 <div className="h-6 w-px bg-gray-200 hidden md:block"></div>
 
-                                <Link href="/login" className="hidden md:block">
+                                <Link href="/login" onClick={login} className="hidden md:block">
                                     <Button
                                         variant="ghost"
                                         size="sm"
                                         className="h-10 px-5 rounded-full text-sm font-medium hover:bg-gray-50 text-gray-600"
                                     >
                                         {tLogin('signIn')}
-                                    </Button>
-                                </Link>
-
-                                <Link href="/register" className="hidden md:block">
-                                    <Button
-                                        variant="primary"
-                                        size="sm"
-                                        className="h-10 px-6 rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/30 text-sm font-semibold"
-                                    >
-                                        {tRegister('createAccount')}
                                     </Button>
                                 </Link>
                             </>
