@@ -75,6 +75,7 @@ func (s *SessionStore) Cleanup() {
 }
 
 type KeycloakService struct {
+	cfg          *config.Config
 	config       *config.KeycloakConfig
 	httpClient   *http.Client
 	repo         *repository.UserRepository
@@ -97,9 +98,10 @@ type KeycloakLoginResponse struct {
 	} `json:"user"`
 }
 
-func NewKeycloakService(cfg *config.KeycloakConfig, repo *repository.UserRepository, locRepo *repository.LocalizationRepository) *KeycloakService {
+func NewKeycloakService(cfg *config.Config, keycloakConfig *config.KeycloakConfig, repo *repository.UserRepository, locRepo *repository.LocalizationRepository) *KeycloakService {
 	s := KeycloakService{
-		config: cfg,
+		cfg:    cfg,
+		config: keycloakConfig,
 		httpClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
@@ -110,7 +112,7 @@ func NewKeycloakService(cfg *config.KeycloakConfig, repo *repository.UserReposit
 			sessions: make(map[uuid.UUID]*Session),
 		},
 	}
-	for _, tenant := range cfg.TenantsIss {
+	for _, tenant := range keycloakConfig.TenantsIss {
 		s.TenantsIss[tenant.Iss] = &tenant
 	}
 	s.TenantsIss[s.config.GetRealmURL(s.config.DefaultRealm)] = &config.TenantConfig{
@@ -310,6 +312,45 @@ func (s *KeycloakService) ConvertToLocalUser(claims *KeycloakJWTClaims, tenant *
 			// Другие поля можно заполнить из атрибутов или дополнительных данных
 		}
 		s.repo.CreateUser(user)
+		s.repo.CreateUserProperty(&models.TUserProperties{
+			CkId:   uuid.New(),
+			CkUser: user.CkId,
+			CkType: "USER_USERNAME",
+			CvText: &claims.PreferredUsername,
+			BaseModel: models.BaseModel{
+				CkCreate: "system",
+				CkModify: "system",
+			},
+		})
+		s.repo.CreateUserProperty(&models.TUserProperties{
+			CkId:   uuid.New(),
+			CkUser: user.CkId,
+			CkType: "USER_EMAIL",
+			CvText: &claims.Email,
+			BaseModel: models.BaseModel{
+				CkCreate: "system",
+				CkModify: "system",
+			},
+		})
+		s.repo.CreateUserProperty(&models.TUserProperties{
+			CkId:   uuid.New(),
+			CkUser: user.CkId,
+			CkType: "USER_PHONE",
+			CvText: claims.Phone,
+			BaseModel: models.BaseModel{
+				CkCreate: "system",
+				CkModify: "system",
+			},
+		})
+		s.repo.CreateUserWallet(&models.TUserWallet{
+			CkId:    uuid.New(),
+			CkUser:  user.CkId,
+			CnValue: s.cfg.Wallet.DefaultBalance,
+			BaseModel: models.BaseModel{
+				CkCreate: "system",
+				CkModify: "system",
+			},
+		})
 	}
 	for _, role := range claims.RealmAccess.Roles {
 		if role, ok := models.RoleFromString(role); ok {

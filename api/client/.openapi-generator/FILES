@@ -6,6 +6,7 @@ common.ts
 configuration.ts
 docs/AuthApi.md
 docs/CoreApi.md
+docs/InternalHandlersBetCommentResponse.md
 docs/InternalHandlersBetCreateResponse.md
 docs/InternalHandlersBetResponse.md
 docs/InternalHandlersDictionaryResponse.md
@@ -19,6 +20,10 @@ docs/InternalHandlersPropertiesTypeResponse.md
 docs/InternalHandlersPropertiesTypesResponse.md
 docs/MediaApi.md
 docs/ParierApi.md
+docs/ParierServerInternalModelsAuthorResponse.md
+docs/ParierServerInternalModelsBetCommentCreateRequest.md
+docs/ParierServerInternalModelsBetCommentRequest.md
+docs/ParierServerInternalModelsBetCommentResponse.md
 docs/ParierServerInternalModelsBetCreateRequest.md
 docs/ParierServerInternalModelsBetRequest.md
 docs/ParierServerInternalModelsBetResponse.md

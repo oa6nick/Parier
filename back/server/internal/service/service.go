@@ -27,9 +27,9 @@ func NewServices(db *gorm.DB, cfg *config.Config) (*Services, error) {
 
 	// Initialize services
 	localizationService := NewLocalizationService(locRepo)
-	keycloakService := NewKeycloakService(&cfg.Keycloak, userRepo, locRepo)
+	keycloakService := NewKeycloakService(cfg, &cfg.Keycloak, userRepo, locRepo)
 	coreService := NewCoreService(coreRepo, locRepo)
-	parierService := NewParierService(parierRepo, locRepo)
+	parierService := NewParierService(parierRepo, locRepo, userRepo)
 	// Initialize MediaService
 	mediaService, err := NewMediaService(mediaRepo, locRepo, &cfg.S3, cfg)
 	if err != nil {

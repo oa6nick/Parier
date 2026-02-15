@@ -24,6 +24,7 @@ type Config struct {
 	AI       AICofig
 	MCP      MCPConfig
 	Frontend FrontendConfig
+	Wallet   WalletConfig
 }
 
 type AIType string
@@ -150,6 +151,10 @@ type MediaConfig struct {
 	Duration time.Duration
 }
 
+type WalletConfig struct {
+	DefaultBalance float64
+}
+
 // LoadConfig loads configuration from environment variables
 func LoadConfig() *Config {
 	// Load .env file if exists
@@ -239,7 +244,19 @@ func LoadConfig() *Config {
 		Frontend: FrontendConfig{
 			BaseURL: getEnv("FRONTEND_BASE_URL", "http://localhost:3000"),
 		},
+		Wallet: WalletConfig{
+			DefaultBalance: getEnvAsFloat("WALLET_DEFAULT_BALANCE", 0),
+		},
 	}
+}
+
+func getEnvAsFloat(name string, defaultVal float64) float64 {
+	valueStr := getEnv(name, "")
+	value, err := strconv.ParseFloat(valueStr, 64)
+	if err != nil {
+		return defaultVal
+	}
+	return value
 }
 
 func getEnvDuration(name string, defaultVal time.Duration) time.Duration {

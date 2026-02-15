@@ -18,7 +18,10 @@ func NewLocalizationRepository(db *gorm.DB) *LocalizationRepository {
 
 // === T_L_WORD ===
 
-func (r *LocalizationRepository) CreateWord(word *models.TLWord) error {
+func (r *LocalizationRepository) CreateWord(word *models.TLWord, tx *gorm.DB) error {
+	if tx != nil {
+		return tx.Create(word).Error
+	}
 	return r.db.Create(word).Error
 }
 
@@ -100,7 +103,7 @@ func (r *LocalizationRepository) GetLocalesAfter(lang *string, ns *string, after
 	return err == nil && total > 0
 }
 
-func (r *LocalizationRepository) GetOrCreateWord(text string, userID string) (*models.TLWord, error) {
+func (r *LocalizationRepository) GetOrCreateWord(text string, userID string, tx *gorm.DB) (*models.TLWord, error) {
 	word, err := r.GetWordByText(text)
 	if err == nil {
 		return word, nil
@@ -119,7 +122,7 @@ func (r *LocalizationRepository) GetOrCreateWord(text string, userID string) (*m
 		},
 	}
 
-	err = r.CreateWord(word)
+	err = r.CreateWord(word, tx)
 	if err != nil {
 		return nil, err
 	}
@@ -155,7 +158,10 @@ func (r *LocalizationRepository) DeleteWord(id uuid.UUID, userID string) error {
 
 // === T_D_LANG ===
 
-func (r *LocalizationRepository) CreateLanguage(lang *models.TDLang) error {
+func (r *LocalizationRepository) CreateLanguage(lang *models.TDLang, tx *gorm.DB) error {
+	if tx != nil {
+		return tx.Create(lang).Error
+	}
 	return r.db.Create(lang).Error
 }
 
@@ -212,7 +218,10 @@ func (r *LocalizationRepository) DeleteLanguage(id string, userID string) error 
 
 // === T_LOCALIZATION (НОВАЯ СТРУКТУРА) ===
 
-func (r *LocalizationRepository) CreateLocalization(loc *models.TLocalization) error {
+func (r *LocalizationRepository) CreateLocalization(loc *models.TLocalization, tx *gorm.DB) error {
+	if tx != nil {
+		return tx.Create(loc).Error
+	}
 	return r.db.Create(loc).Error
 }
 
@@ -236,16 +245,16 @@ func (r *LocalizationRepository) GetLocalizationByWordAndLang(wordID uuid.UUID, 
 	return &locWord, err
 }
 
-func (r *LocalizationRepository) GetOrCreateNewLocalization(text string, langID string, userID string) (*models.TLocalizationWord, error) {
-	word, err := r.GetOrCreateWord(text, userID)
+func (r *LocalizationRepository) GetOrCreateNewLocalization(text string, langID string, userID string, tx *gorm.DB) (*models.TLocalizationWord, error) {
+	word, err := r.GetOrCreateWord(text, userID, tx)
 	if err != nil {
 		return nil, err
 	}
 
-	return r.GetOrCreateLocalization(word.CkId, langID, userID)
+	return r.GetOrCreateLocalization(word.CkId, langID, userID, tx)
 }
 
-func (r *LocalizationRepository) GetOrCreateLocalization(wordID uuid.UUID, langID string, userID string) (*models.TLocalizationWord, error) {
+func (r *LocalizationRepository) GetOrCreateLocalization(wordID uuid.UUID, langID string, userID string, tx *gorm.DB) (*models.TLocalizationWord, error) {
 	locWord, err := r.GetLocalizationByWordAndLang(wordID, langID)
 	if err == nil {
 		return locWord, nil
@@ -264,7 +273,7 @@ func (r *LocalizationRepository) GetOrCreateLocalization(wordID uuid.UUID, langI
 		},
 	}
 
-	err = r.CreateLocalization(loc)
+	err = r.CreateLocalization(loc, tx)
 	if err != nil {
 		return nil, err
 	}
@@ -279,8 +288,12 @@ func (r *LocalizationRepository) GetOrCreateLocalization(wordID uuid.UUID, langI
 			CkModify: userID,
 		},
 	}
+	if tx != nil {
+		err = tx.Create(locWord).Error
+	} else {
+		err = r.db.Create(locWord).Error
+	}
 
-	err = r.db.Create(locWord).Error
 	if err != nil {
 		return nil, err
 	}

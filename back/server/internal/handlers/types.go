@@ -127,3 +127,13 @@ func GetUser(c *gin.Context) *models.User {
 	}
 	return user.(*models.User)
 }
+
+// GetUUID extracts UUID from context
+func GetUUID(c *gin.Context, param string) uuid.UUID {
+	idStr := c.Param(param)
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		return uuid.Nil
+	}
+	return id
+}

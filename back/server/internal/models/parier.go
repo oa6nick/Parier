@@ -116,18 +116,21 @@ type TBet struct {
 	CtDeadline    time.Time `json:"ct_deadline" gorm:"column:ct_deadline;type:timestamp;not null"`
 
 	// Relations
-	Author              *TUser                   `json:"author,omitempty" gorm:"foreignKey:CkAuthor;references:CkId"`
-	Category            *TDCategory              `json:"category,omitempty" gorm:"foreignKey:CkCategory;references:CkId"`
-	Type                *TDBetType               `json:"type,omitempty" gorm:"foreignKey:CkType;references:CkId"`
-	Status              *TDBetStatus             `json:"status,omitempty" gorm:"foreignKey:CkStatus;references:CkId"`
-	VerificationSources []TBetVerificationSource `json:"verification_sources,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
-	Tags                []TBetTag                `json:"tags,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
-	Media               []TBetMedia              `json:"media,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
-	Comments            []TBetComment            `json:"comments,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
-	Likes               []TBetLike               `json:"likes,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
-	Properties          []TBetProperties         `json:"properties,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
-	Amounts             []TBetAmount             `json:"amounts,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
-	Ratings             []TBetRating             `json:"ratings,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
+	Author                  *TUser                   `json:"author,omitempty" gorm:"foreignKey:CkAuthor;references:CkId"`
+	Category                *TDCategory              `json:"category,omitempty" gorm:"foreignKey:CkCategory;references:CkId"`
+	Type                    *TDBetType               `json:"type,omitempty" gorm:"foreignKey:CkType;references:CkId"`
+	Status                  *TDBetStatus             `json:"status,omitempty" gorm:"foreignKey:CkStatus;references:CkId"`
+	NameLocalization        *TLocalization           `json:"name_localization,omitempty" gorm:"foreignKey:CkName;references:CkId"`
+	DescriptionLocalization *TLocalization           `json:"description_localization,omitempty" gorm:"foreignKey:CkDescription;references:CkId"`
+	VerificationSources     []TBetVerificationSource `json:"verification_sources,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
+	Tags                    []TBetTag                `json:"tags,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
+	Media                   []TBetMedia              `json:"media,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
+	Comments                []TBetComment            `json:"comments,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
+	Likes                   []TBetLike               `json:"likes,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
+	Properties              []TBetProperties         `json:"properties,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
+	Amounts                 []TBetAmount             `json:"amounts,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
+	Ratings                 []TBetRating             `json:"ratings,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
+	UserBetHistory          []TUserBetHistory        `json:"user_bet_history,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
 
 	BaseModel
 }
@@ -190,11 +193,13 @@ func (TBetMedia) TableName() string {
 type TBetComment struct {
 	CkId      uuid.UUID  `json:"ck_id" gorm:"column:ck_id;type:uuid;primaryKey;default:uuid_generate_v4()"`
 	CkBet     uuid.UUID  `json:"ck_bet" gorm:"column:ck_bet;type:uuid;not null"`
+	CkAuthor  uuid.UUID  `json:"ck_author" gorm:"column:ck_author;type:uuid;not null"`
 	CvContent string     `json:"cv_content" gorm:"column:cv_content;type:text;not null"`
 	CkParent  *uuid.UUID `json:"ck_parent,omitempty" gorm:"column:ck_parent;type:uuid"`
 
 	// Relations
 	Bet      *TBet              `json:"bet,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
+	Author   *TUser             `json:"author,omitempty" gorm:"foreignKey:CkAuthor;references:CkId"`
 	Parent   *TBetComment       `json:"parent,omitempty" gorm:"foreignKey:CkParent;references:CkId"`
 	Children []TBetComment      `json:"children,omitempty" gorm:"foreignKey:CkParent;references:CkId"`
 	Likes    []TBetCommentLike  `json:"likes,omitempty" gorm:"foreignKey:CkComment;references:CkId"`
@@ -341,6 +346,24 @@ type TBetRating struct {
 
 func (TBetRating) TableName() string {
 	return "t_bet_rating"
+}
+
+// TUserBetHistory - История ставок пользователей
+type TUserBetHistory struct {
+	CkId   uuid.UUID `json:"ck_id" gorm:"column:ck_id;type:uuid;primaryKey;default:uuid_generate_v4()"`
+	CkUser uuid.UUID `json:"ck_user" gorm:"column:ck_user;type:uuid;not null"`
+	CkBet  uuid.UUID `json:"ck_bet" gorm:"column:ck_bet;type:uuid;not null"`
+	ClWin  bool      `json:"cl_win" gorm:"column:cl_win;type:boolean;not null"`
+
+	// Relations
+	User *TUser `json:"user,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	Bet  *TBet  `json:"bet,omitempty" gorm:"foreignKey:CkBet;references:CkId"`
+
+	BaseModel
+}
+
+func (TUserBetHistory) TableName() string {
+	return "t_user_bet_history"
 }
 
 // ================== ЧАТЫ ==================

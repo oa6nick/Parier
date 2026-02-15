@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type LocalizationService struct {
@@ -22,7 +23,7 @@ func (s *LocalizationService) GetWordOrDefault(wordID *string, lang *string) *st
 	return s.repo.GetWordOrDefault(wordID, lang)
 }
 
-func (s *LocalizationService) CreateWord(text string, userID string) (*models.TLWord, error) {
+func (s *LocalizationService) CreateWord(text string, userID string, tx *gorm.DB) (*models.TLWord, error) {
 	if strings.TrimSpace(text) == "" {
 		return nil, &ServiceError{
 			Code:    "VALIDATION_ERROR",
@@ -44,7 +45,7 @@ func (s *LocalizationService) CreateWord(text string, userID string) (*models.TL
 		},
 	}
 
-	err = s.repo.CreateWord(word)
+	err = s.repo.CreateWord(word, tx)
 	if err != nil {
 		return nil, &ServiceError{
 			Code:    "DATABASE_ERROR",
@@ -68,7 +69,7 @@ func (s *LocalizationService) GetWordByID(id uuid.UUID) (*models.TLWord, error) 
 	return word, nil
 }
 
-func (s *LocalizationService) GetOrCreateWord(text string, userID string) (*models.TLWord, error) {
+func (s *LocalizationService) GetOrCreateWord(text string, userID string, tx *gorm.DB) (*models.TLWord, error) {
 	if strings.TrimSpace(text) == "" {
 		return nil, &ServiceError{
 			Code:    "VALIDATION_ERROR",
@@ -76,7 +77,7 @@ func (s *LocalizationService) GetOrCreateWord(text string, userID string) (*mode
 		}
 	}
 
-	word, err := s.repo.GetOrCreateWord(text, userID)
+	word, err := s.repo.GetOrCreateWord(text, userID, tx)
 	if err != nil {
 		return nil, &ServiceError{
 			Code:    "DATABASE_ERROR",
@@ -126,13 +127,13 @@ func (s *LocalizationService) DeleteWord(id uuid.UUID, userID string) error {
 
 // === LANGUAGE MANAGEMENT ===
 
-func (s *LocalizationService) CreateLanguage(req *CreateLanguageRequest, userID string) (*models.TDLang, error) {
+func (s *LocalizationService) CreateLanguage(req *CreateLanguageRequest, userID string, tx *gorm.DB) (*models.TDLang, error) {
 	if err := s.validateLanguageRequest(req); err != nil {
 		return nil, err
 	}
 
 	// Create or get word for language name
-	nameWord, err := s.GetOrCreateWord(req.Name, userID)
+	nameWord, err := s.GetOrCreateWord(req.Name, userID, tx)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +151,7 @@ func (s *LocalizationService) CreateLanguage(req *CreateLanguageRequest, userID 
 		},
 	}
 
-	err = s.repo.CreateLanguage(lang)
+	err = s.repo.CreateLanguage(lang, tx)
 	if err != nil {
 		return nil, &ServiceError{
 			Code:    "DATABASE_ERROR",
@@ -209,7 +210,7 @@ func (s *LocalizationService) UpdateLanguage(id string, req *UpdateLanguageReque
 	}
 
 	if req.Name != nil {
-		nameWord, err := s.GetOrCreateWord(*req.Name, userID)
+		nameWord, err := s.GetOrCreateWord(*req.Name, userID, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -292,7 +293,7 @@ func (s *LocalizationService) CreateLocalization(wordID uuid.UUID, langID string
 		}
 	}
 
-	locWord, err := s.repo.GetOrCreateLocalization(wordID, langID, userID)
+	locWord, err := s.repo.GetOrCreateLocalization(wordID, langID, userID, nil)
 	if err != nil {
 		return nil, &ServiceError{
 			Code:    "DATABASE_ERROR",

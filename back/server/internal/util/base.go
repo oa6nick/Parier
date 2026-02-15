@@ -138,8 +138,11 @@ func ValidatePageAndPageSize(offsetref, limitref *int) (offset, limit int) {
 //
 // Возвращает:
 //   - order: Значение сортировки
-func ValidateSort(sortref, sorttyperef *string) (order string) {
+func ValidateSort(sortref, sorttyperef *string, defaultSort *string) (order string) {
 	order = "ct_create DESC"
+	if defaultSort != nil {
+		order = *defaultSort
+	}
 	if sortref != nil && sorttyperef != nil {
 		order = *sortref + " " + *sorttyperef
 	} else if sortref != nil {

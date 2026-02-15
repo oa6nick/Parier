@@ -45,6 +45,7 @@
                 "KEYCLOAK_CLIENT_SECRET": "ywBD4H15rnDn1OGoBAtiTADK2MsaJJqo",
                 "KEYCLOAK_JWT_ISSUER": "http://localhost:28080/realms/{realm}",
                 "KEYCLOAK_CERT_ENDPOINT": "http://localhost:28080/realms/{realm}/protocol/openid-connect/certs",
+                "WALLET_DEFAULT_BALANCE": "2000"
             }
         }
     ]

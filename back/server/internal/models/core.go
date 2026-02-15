@@ -55,9 +55,10 @@ type TDPropertiesType struct {
 	CkDescription *string       `json:"ck_description,omitempty" gorm:"column:ck_description;type:varchar(255)"`
 
 	// Relations
-	NameLocalization        *TLocalization     `json:"name_localization,omitempty" gorm:"foreignKey:CkName;references:CkId"`
-	DescriptionLocalization *TLocalization     `json:"description_localization,omitempty" gorm:"foreignKey:CkDescription;references:CkId"`
+	NameLocalization        *TLocalization      `json:"name_localization,omitempty" gorm:"foreignKey:CkName;references:CkId"`
+	DescriptionLocalization *TLocalization      `json:"description_localization,omitempty" gorm:"foreignKey:CkDescription;references:CkId"`
 	UserProperties          []TUserProperties  `json:"user_properties,omitempty" gorm:"foreignKey:CkType;references:CkId"`
+	BetProperties           []TBetProperties   `json:"bet_properties,omitempty" gorm:"foreignKey:CkPropertyType;references:CkId"`
 	PropertiesRoles         []TPropertiesRole  `json:"properties_roles,omitempty" gorm:"foreignKey:CkType;references:CkId"`
 	PropertiesEnums         []TDPropertiesEnum `json:"properties_enums,omitempty" gorm:"foreignKey:CkPropertyType;references:CkId"`
 

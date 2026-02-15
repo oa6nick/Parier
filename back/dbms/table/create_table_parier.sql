@@ -251,6 +251,7 @@ COMMENT ON COLUMN t_bet_media.ct_delete IS 'Дата логического уд
 CREATE TABLE IF NOT EXISTS t_bet_comment (
     ck_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     ck_bet uuid NOT NULL,
+    ck_author uuid NOT NULL,
     cv_content text NOT NULL,
     ck_parent uuid NULL,
     ck_create VARCHAR(255) NOT NULL,
@@ -259,12 +260,14 @@ CREATE TABLE IF NOT EXISTS t_bet_comment (
     ct_modify TIMESTAMP NOT NULL DEFAULT now(),
     ct_delete TIMESTAMP NULL,
     CONSTRAINT fk_t_bet_comment_ck_bet FOREIGN KEY (ck_bet) REFERENCES t_bet(ck_id),
-    CONSTRAINT fk_t_bet_comment_ck_parent FOREIGN KEY (ck_parent) REFERENCES t_bet_comment(ck_id)
+    CONSTRAINT fk_t_bet_comment_ck_parent FOREIGN KEY (ck_parent) REFERENCES t_bet_comment(ck_id),
+    CONSTRAINT fk_t_bet_comment_ck_author FOREIGN KEY (ck_author) REFERENCES t_user(ck_id)
 );
 
 COMMENT ON TABLE t_bet_comment IS 'Комментарии к ставкам';
 COMMENT ON COLUMN t_bet_comment.ck_id IS 'Идентификатор';
 COMMENT ON COLUMN t_bet_comment.ck_bet IS 'Идентификатор ставки';
+COMMENT ON COLUMN t_bet_comment.ck_author IS 'Идентификатор автора';
 COMMENT ON COLUMN t_bet_comment.cv_content IS 'Контент комментария';
 COMMENT ON COLUMN t_bet_comment.ck_parent IS 'Идентификатор родительского комментария';
 COMMENT ON COLUMN t_bet_comment.ck_create IS 'Идентификатор создателя';
@@ -399,7 +402,6 @@ CREATE TABLE IF NOT EXISTS t_bet_amount (
     ck_bet uuid NOT NULL,
     ck_user uuid NOT NULL,
     cn_amount DECIMAL NOT NULL,
-    cl_true BOOLEAN NOT NULL,
     ck_create VARCHAR(255) NOT NULL,
     ct_create TIMESTAMP NOT NULL DEFAULT now(),
     ck_modify VARCHAR(255) NOT NULL,
@@ -414,7 +416,6 @@ COMMENT ON COLUMN t_bet_amount.ck_id IS 'Идентификатор';
 COMMENT ON COLUMN t_bet_amount.ck_bet IS 'Идентификатор ставки';
 COMMENT ON COLUMN t_bet_amount.ck_user IS 'Идентификатор пользователя';
 COMMENT ON COLUMN t_bet_amount.cn_amount IS 'Сумма';
-COMMENT ON COLUMN t_bet_amount.cl_true IS 'Для выигрыша';
 COMMENT ON COLUMN t_bet_amount.ct_create IS 'Дата создания';
 COMMENT ON COLUMN t_bet_amount.ck_modify IS 'Идентификатор пользователя';
 COMMENT ON COLUMN t_bet_amount.ct_modify IS 'Дата модификации';
@@ -473,6 +474,38 @@ COMMENT ON COLUMN t_bet_rating.ct_modify IS 'Дата модификации';
 COMMENT ON COLUMN t_bet_rating.ct_delete IS 'Дата логического удаления';
 
 CREATE UNIQUE INDEX uk_t_bet_rating_ck_bet_and_ck_user ON t_bet_rating(ck_bet, ck_user);    
+
+-- =====================================================
+-- ИСТОРИЯ СТАВОК ПОЛЬЗОВАТЕЛЕЙ
+-- =====================================================
+
+-- Таблица: t_user_bet_history - История ставок пользователей
+CREATE TABLE t_user_bet_history (
+    ck_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ck_user UUID NOT NULL,
+    ck_bet UUID NOT NULL,
+    cl_win BOOLEAN NOT NULL,
+    ck_create VARCHAR(255) NOT NULL,
+    ct_create TIMESTAMP NOT NULL DEFAULT now(),
+    ck_modify VARCHAR(255) NOT NULL,
+    ct_modify TIMESTAMP NOT NULL DEFAULT now(),
+    ct_delete TIMESTAMP NULL,
+    CONSTRAINT fk_t_user_bet_history_ck_user FOREIGN KEY (ck_user) REFERENCES t_user(ck_id),
+    CONSTRAINT fk_t_user_bet_history_ck_bet FOREIGN KEY (ck_bet) REFERENCES t_bet(ck_id)
+);
+
+COMMENT ON TABLE t_user_bet_history IS 'История ставок пользователей';
+COMMENT ON COLUMN t_user_bet_history.ck_id IS 'Идентификатор';
+COMMENT ON COLUMN t_user_bet_history.ck_user IS 'Идентификатор пользователя';
+COMMENT ON COLUMN t_user_bet_history.ck_bet IS 'Идентификатор ставки';
+COMMENT ON COLUMN t_user_bet_history.cl_win IS 'Выигрыш';
+COMMENT ON COLUMN t_user_bet_history.ck_create IS 'Идентификатор создателя';
+COMMENT ON COLUMN t_user_bet_history.ct_create IS 'Дата создания';
+COMMENT ON COLUMN t_user_bet_history.ck_modify IS 'Идентификатор пользователя';
+COMMENT ON COLUMN t_user_bet_history.ct_modify IS 'Дата модификации';
+COMMENT ON COLUMN t_user_bet_history.ct_delete IS 'Дата логического удаления';
+
+CREATE UNIQUE INDEX uk_t_user_bet_history_ck_user_and_ck_bet ON t_user_bet_history(ck_user, ck_bet);
 
 --Таблица: t_chat - Чаты
 CREATE TABLE IF NOT EXISTS t_chat (

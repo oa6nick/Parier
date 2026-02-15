@@ -79,9 +79,9 @@ const (
 type PropertyPlace string
 
 const (
-	PropertyPlaceAgent PropertyPlace = "AGENT"
-	PropertyPlaceUnit  PropertyPlace = "UNIT"
-	PropertyPlaceUser  PropertyPlace = "USER"
+	PropertyPlaceBet    PropertyPlace = "BET"
+	PropertyPlaceSource PropertyPlace = "SOURCE"
+	PropertyPlaceUser   PropertyPlace = "USER"
 )
 
 // RolePlace представляет область применения роли
@@ -146,7 +146,7 @@ const (
 func IsValidPropertyType(propertyType PropertyType) bool {
 	switch propertyType {
 	case PropertyTypeDate, PropertyTypeDecimal, PropertyTypeInteger, PropertyTypeLocalization,
-		PropertyTypeBoolean, PropertyTypeText, PropertyTypeJSONObject, PropertyTypeJSONArray, PropertyTypeMedia:
+		PropertyTypeBoolean, PropertyTypeText, PropertyTypeJSONObject, PropertyTypeJSONArray, PropertyTypeMedia, PropertyTypeEnum:
 		return true
 	default:
 		return false
@@ -156,7 +156,7 @@ func IsValidPropertyType(propertyType PropertyType) bool {
 // IsValidPropertyPlace проверяет валидность области применения свойства
 func IsValidPropertyPlace(propertyPlace PropertyPlace) bool {
 	switch propertyPlace {
-	case PropertyPlaceAgent, PropertyPlaceUnit, PropertyPlaceUser:
+	case PropertyPlaceBet, PropertyPlaceSource, PropertyPlaceUser:
 		return true
 	default:
 		return false

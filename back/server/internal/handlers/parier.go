@@ -6,6 +6,7 @@ import (
 	"parier-server/internal/service"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type ParierHandler struct {
@@ -25,6 +26,11 @@ type BetCreateResponse struct {
 type DictionaryResponse struct {
 	models.SuccessResponse
 	Data []models.DictionaryItemString `json:"data"`
+}
+
+type BetCommentResponse struct {
+	models.PaginationResponse
+	Data []models.BetCommentResponse `json:"data"`
 }
 
 func NewParierHandler(service *service.ParierService) *ParierHandler {
@@ -243,6 +249,212 @@ func (h *ParierHandler) CreateBet(c *gin.Context) {
 	SendSuccess(c, "Bet created successfully", bet)
 }
 
+// LikeBet godoc
+// @Summary Like bet
+// @Description Like bet
+// @Tags parier
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Security OAuth2Keycloak
+// @Security BasicAuth
+// @Param bet_id path string true "Bet ID"
+// @Success 200 {object} models.SuccessResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /parier/bet/{bet_id}/like [post]
+func (h *ParierHandler) PostLikeBet(c *gin.Context) {
+	var req models.DefaultRequest
+	betID := GetUUID(c, "bet_id")
+	if betID == uuid.Nil {
+		SendError(c, http.StatusBadRequest, "Bet ID is required", "Bet ID is required")
+		return
+	}
+	req.Language = GetLanguage(c, req.Language)
+	req.User = GetUser(c)
+	liked, err := h.service.LikeBet(betID, req)
+	if err != nil {
+		SendError(c, http.StatusInternalServerError, "Internal server error", err.Error())
+		return
+	}
+	SendSuccess(c, "Bet liked successfully", liked)
+}
+
+// UnlikeBet godoc
+// @Summary Unlike bet
+// @Description Unlike bet
+// @Tags parier
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Security OAuth2Keycloak
+// @Security BasicAuth
+// @Param bet_id path string true "Bet ID"
+// @Success 200 {object} models.SuccessResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /parier/bet/{bet_id}/unlike [post]
+func (h *ParierHandler) PostUnlikeBet(c *gin.Context) {
+	var req models.DefaultRequest
+	betID := GetUUID(c, "bet_id")
+	if betID == uuid.Nil {
+		SendError(c, http.StatusBadRequest, "Bet ID is required", "Bet ID is required")
+		return
+	}
+	req.Language = GetLanguage(c, req.Language)
+	req.User = GetUser(c)
+	unliked, err := h.service.UnlikeBet(betID, req)
+	if err != nil {
+		SendError(c, http.StatusInternalServerError, "Internal server error", err.Error())
+		return
+	}
+	SendSuccess(c, "Bet unliked successfully", unliked)
+}
+
+// GetBetComments godoc
+// @Summary Get bet comments
+// @Description Get bet comments
+// @Tags parier
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Security OAuth2Keycloak
+// @Security BasicAuth
+// @Param bet_id path string true "Bet ID"
+// @Param request body models.BetCommentRequest true "Request"
+// @Success 200 {object} BetCommentResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /parier/bet/{bet_id}/comments [post]
+func (h *ParierHandler) PostBetComments(c *gin.Context) {
+	var req models.BetCommentRequest
+	betID := GetUUID(c, "bet_id")
+	if betID == uuid.Nil {
+		SendError(c, http.StatusBadRequest, "Bet ID is required", "Bet ID is required")
+		return
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		SendError(c, http.StatusBadRequest, "Invalid request body", err.Error())
+		return
+	}
+	req.Language = GetLanguage(c, req.Language)
+	req.User = GetUser(c)
+	comments, total, err := h.service.GetBetComments(betID, req)
+	if err != nil {
+		SendError(c, http.StatusInternalServerError, "Internal server error", err.Error())
+		return
+	}
+	SendPaginated(c, comments, len(comments), total)
+}
+
+// CreateBetComment godoc
+// @Summary Create bet comment
+// @Description Create bet comment
+// @Tags parier
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Security OAuth2Keycloak
+// @Security BasicAuth
+// @Param bet_id path string true "Bet ID"
+// @Param request body models.BetCommentCreateRequest true "Request"
+// @Success 200 {object} models.SuccessResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /parier/bet/{bet_id}/comment [put]
+func (h *ParierHandler) PutCreateBetComment(c *gin.Context) {
+	var req models.BetCommentCreateRequest
+	betID := GetUUID(c, "bet_id")
+	if betID == uuid.Nil {
+		SendError(c, http.StatusBadRequest, "Bet ID is required", "Bet ID is required")
+		return
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		SendError(c, http.StatusBadRequest, "Invalid request body", err.Error())
+		return
+	}
+	req.Language = GetLanguage(c, req.Language)
+	req.User = GetUser(c)
+	comment, err := h.service.CreateBetComment(betID, req)
+	if err != nil {
+		SendError(c, http.StatusInternalServerError, "Internal server error", err.Error())
+		return
+	}
+	SendSuccess(c, "Comment created successfully", comment)
+}
+
+// LikeBetComment godoc
+// @Summary Like bet comment
+// @Description Like bet comment
+// @Tags parier
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Security OAuth2Keycloak
+// @Security BasicAuth
+// @Param comment_id path string true "Comment ID"
+// @Success 200 {object} models.SuccessResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /parier/comment/{comment_id}/like [post]
+func (h *ParierHandler) PostLikeBetComment(c *gin.Context) {
+	var req models.DefaultRequest
+	commentID := GetUUID(c, "comment_id")
+	if commentID == uuid.Nil {
+		SendError(c, http.StatusBadRequest, "Comment ID is required", "Comment ID is required")
+		return
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		SendError(c, http.StatusBadRequest, "Invalid request body", err.Error())
+		return
+	}
+	req.Language = GetLanguage(c, req.Language)
+	req.User = GetUser(c)
+	liked, err := h.service.LikeBetComment(commentID, req)
+	if err != nil {
+		SendError(c, http.StatusInternalServerError, "Internal server error", err.Error())
+		return
+	}
+	SendSuccess(c, "Comment liked successfully", liked)
+}
+
+// UnlikeBetComment godoc
+// @Summary Unlike bet comment
+// @Description Unlike bet comment
+// @Tags parier
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Security OAuth2Keycloak
+// @Security BasicAuth
+// @Param comment_id path string true "Comment ID"
+// @Success 200 {object} models.SuccessResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /parier/comment/{comment_id}/unlike [post]
+func (h *ParierHandler) PostUnlikeBetComment(c *gin.Context) {
+	var req models.DefaultRequest
+	commentID := GetUUID(c, "comment_id")
+	if commentID == uuid.Nil {
+		SendError(c, http.StatusBadRequest, "Comment ID is required", "Comment ID is required")
+		return
+	}
+	req.Language = GetLanguage(c, req.Language)
+	req.User = GetUser(c)
+	unliked, err := h.service.UnlikeBetComment(commentID, req)
+	if err != nil {
+		SendError(c, http.StatusInternalServerError, "Internal server error", err.Error())
+		return
+	}
+	SendSuccess(c, "Comment unliked successfully", unliked)
+}
+
 // RegisterRoutes registers all parier routes
 func (h *ParierHandler) RegisterRoutes(router *gin.RouterGroup) {
 	parier := router.Group("/parier")
@@ -254,5 +466,11 @@ func (h *ParierHandler) RegisterRoutes(router *gin.RouterGroup) {
 		parier.POST("/like-types", h.GetLikeTypes)
 		parier.POST("/bet", h.GetBets)
 		parier.PUT("/bet", h.CreateBet)
+		parier.POST("/bet/:bet_id/like", h.PostLikeBet)
+		parier.POST("/bet/:bet_id/unlike", h.PostUnlikeBet)
+		parier.POST("/bet/:bet_id/comments", h.PostBetComments)
+		parier.PUT("/bet/:bet_id/comment", h.PutCreateBetComment)
+		parier.POST("/comment/:comment_id/like", h.PostLikeBetComment)
+		parier.POST("/comment/:comment_id/unlike", h.PostUnlikeBetComment)
 	}
 }

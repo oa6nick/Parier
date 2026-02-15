@@ -3,9 +3,9 @@
 
 ## Enum
 
-* `PropertyPlaceAgent` (value: `'AGENT'`)
+* `PropertyPlaceBet` (value: `'BET'`)
 
-* `PropertyPlaceUnit` (value: `'UNIT'`)
+* `PropertyPlaceSource` (value: `'SOURCE'`)
 
 * `PropertyPlaceUser` (value: `'USER'`)
 

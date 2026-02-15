@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **coefficient** | **string** |  | [optional] [default to undefined]
 **deadline** | **string** |  | [optional] [default to undefined]
 **description** | **string** |  | [optional] [default to undefined]
+**id** | **string** |  | [optional] [default to undefined]
 **language** | **string** |  | [optional] [default to undefined]
 **limit** | **number** |  | [optional] [default to undefined]
 **max_amount** | **string** |  | [optional] [default to undefined]
@@ -32,6 +33,7 @@ const instance: ParierServerInternalModelsBetRequest = {
     coefficient,
     deadline,
     description,
+    id,
     language,
     limit,
     max_amount,

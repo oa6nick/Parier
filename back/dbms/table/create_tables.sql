@@ -174,7 +174,7 @@ COMMENT ON COLUMN t_media.ct_delete IS 'Дата логического удал
 CREATE TABLE t_d_properties_type (
     ck_id VARCHAR(100) PRIMARY KEY,
     cr_type VARCHAR(20) NOT NULL CHECK (cr_type IN ('DATE','DECIMAL', 'INTEGER', 'LOCALIZATION', 'BOOLEAN', 'TEXT', 'JSONOBJECT', 'JSONARRAY', 'MEDIA', 'ENUM')),
-    cr_place VARCHAR(100) NOT NULL CHECK (cr_place IN ('AGENT','UNIT','USER')),
+    cr_place VARCHAR(100) NOT NULL CHECK (cr_place IN ('BET','SOURCE','USER')),
     ck_name VARCHAR(255) NOT NULL,
     ck_description VARCHAR(255) NULL,
     ck_create VARCHAR(255) NOT NULL,
@@ -604,4 +604,163 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+--changeset artemov_i:init_user_transaction dbms:postgresql splitStatements:false stripComments:false
+-- =====================================================
+-- ТИПЫ СТАТУСОВ ТРАНЗАКЦИЙ
+-- =====================================================
+
+-- Таблица: t_d_transaction_status - Статусы транзакций
+CREATE TABLE t_d_transaction_status (
+    ck_id VARCHAR(255) PRIMARY KEY,
+    ck_name VARCHAR(255) NOT NULL,
+    ck_description VARCHAR(255) NULL,
+    ck_create VARCHAR(255) NOT NULL,
+    ct_create TIMESTAMP NOT NULL DEFAULT now(),
+    ck_modify VARCHAR(255) NOT NULL,
+    ct_modify TIMESTAMP NOT NULL DEFAULT now(),
+    ct_delete TIMESTAMP NULL,
+    CONSTRAINT fk_t_d_transaction_status_ck_name FOREIGN KEY (ck_name) REFERENCES t_localization(ck_id),
+    CONSTRAINT fk_t_d_transaction_status_ck_description FOREIGN KEY (ck_description) REFERENCES t_localization(ck_id)
+);
+
+COMMENT ON TABLE t_d_transaction_status IS 'Статусы транзакций';
+COMMENT ON COLUMN t_d_transaction_status.ck_id IS 'Идентификатор';
+COMMENT ON COLUMN t_d_transaction_status.ck_name IS 'Наименование';
+COMMENT ON COLUMN t_d_transaction_status.ck_description IS 'Описание';
+COMMENT ON COLUMN t_d_transaction_status.ck_create IS 'Идентификатор создателя';
+COMMENT ON COLUMN t_d_transaction_status.ct_create IS 'Дата создания';
+COMMENT ON COLUMN t_d_transaction_status.ck_modify IS 'Идентификатор пользователя';
+COMMENT ON COLUMN t_d_transaction_status.ct_modify IS 'Дата модификации';
+COMMENT ON COLUMN t_d_transaction_status.ct_delete IS 'Дата логического удаления';
+
+CREATE UNIQUE INDEX uk_t_d_transaction_status_ck_id ON t_d_transaction_status(UPPER(ck_id));
+
+-- =====================================================
+-- ТИПЫ ТРАНЗАКЦИЙ
+-- =====================================================
+
+-- Таблица: t_d_transaction_type - Типы транзакций
+CREATE TABLE t_d_transaction_type (
+    ck_id VARCHAR(255) PRIMARY KEY,
+    ck_name VARCHAR(255) NOT NULL,
+    ck_description VARCHAR(255) NULL,
+    ck_create VARCHAR(255) NOT NULL,
+    ct_create TIMESTAMP NOT NULL DEFAULT now(),
+    ck_modify VARCHAR(255) NOT NULL,
+    ct_modify TIMESTAMP NOT NULL DEFAULT now(),
+    ct_delete TIMESTAMP NULL,
+    CONSTRAINT fk_t_d_transaction_type_ck_name FOREIGN KEY (ck_name) REFERENCES t_localization(ck_id),
+    CONSTRAINT fk_t_d_transaction_type_ck_description FOREIGN KEY (ck_description) REFERENCES t_localization(ck_id)
+);
+
+COMMENT ON TABLE t_d_transaction_type IS 'Типы транзакций';
+COMMENT ON COLUMN t_d_transaction_type.ck_id IS 'Идентификатор';
+COMMENT ON COLUMN t_d_transaction_type.ck_name IS 'Наименование';
+COMMENT ON COLUMN t_d_transaction_type.ck_description IS 'Описание';
+COMMENT ON COLUMN t_d_transaction_type.ck_create IS 'Идентификатор создателя';
+COMMENT ON COLUMN t_d_transaction_type.ct_create IS 'Дата создания';
+COMMENT ON COLUMN t_d_transaction_type.ck_modify IS 'Идентификатор пользователя';
+COMMENT ON COLUMN t_d_transaction_type.ct_modify IS 'Дата модификации';
+COMMENT ON COLUMN t_d_transaction_type.ct_delete IS 'Дата логического удаления';
+
+CREATE UNIQUE INDEX uk_t_d_transaction_type_ck_id ON t_d_transaction_type(UPPER(ck_id));
+
+-- =====================================================
+-- ТРАНЗАКЦИИ ПОЛЬЗОВАТЕЛЕЙ
+-- =====================================================
+
+-- Таблица: t_user_transaction - Транзакции пользователей
+CREATE TABLE t_user_transaction (
+    ck_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ck_user UUID NOT NULL,
+    ck_type VARCHAR(255) NOT NULL,
+    ck_status VARCHAR(255) NOT NULL,
+    cn_amount DECIMAL NOT NULL,
+    ck_create VARCHAR(255) NOT NULL,
+    ct_create TIMESTAMP NOT NULL DEFAULT now(),
+    ck_modify VARCHAR(255) NOT NULL,
+    ct_modify TIMESTAMP NOT NULL DEFAULT now(),
+    ct_delete TIMESTAMP NULL,
+    CONSTRAINT fk_t_user_transaction_ck_user FOREIGN KEY (ck_user) REFERENCES t_user(ck_id),
+    CONSTRAINT fk_t_user_transaction_ck_type FOREIGN KEY (ck_type) REFERENCES t_d_transaction_type(ck_id),
+    CONSTRAINT fk_t_user_transaction_ck_status FOREIGN KEY (ck_status) REFERENCES t_d_transaction_status(ck_id)
+);
+
+COMMENT ON TABLE t_user_transaction IS 'Транзакции пользователей';
+COMMENT ON COLUMN t_user_transaction.ck_id IS 'Идентификатор';
+COMMENT ON COLUMN t_user_transaction.ck_user IS 'Идентификатор пользователя';
+COMMENT ON COLUMN t_user_transaction.ck_type IS 'Идентификатор типа транзакции';
+COMMENT ON COLUMN t_user_transaction.cn_amount IS 'Сумма';
+COMMENT ON COLUMN t_user_transaction.ck_status IS 'Идентификатор статуса транзакции';
+COMMENT ON COLUMN t_user_transaction.ck_create IS 'Идентификатор создателя';
+COMMENT ON COLUMN t_user_transaction.ct_create IS 'Дата создания';
+COMMENT ON COLUMN t_user_transaction.ck_modify IS 'Идентификатор пользователя';
+COMMENT ON COLUMN t_user_transaction.ct_modify IS 'Дата модификации';
+COMMENT ON COLUMN t_user_transaction.ct_delete IS 'Дата логического удаления';
+
+CREATE INDEX idx_t_user_transaction_ck_user_and_ck_type ON t_user_transaction(ck_user, ck_type);
+
+--changeset artemov_i:init_user_rating dbms:postgresql splitStatements:false stripComments:false
+-- =====================================================
+-- РЕЙТИНГ ПОЛЬЗОВАТЕЛЕЙ
+-- =====================================================
+
+-- Таблица: t_user_rating - Рейтинг пользователей
+CREATE TABLE t_user_rating (
+    ck_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ck_user UUID NOT NULL,
+    ck_author UUID NOT NULL,
+    cn_rating INT NOT NULL,
+    ck_create VARCHAR(255) NOT NULL,
+    ct_create TIMESTAMP NOT NULL DEFAULT now(),
+    ck_modify VARCHAR(255) NOT NULL,
+    ct_modify TIMESTAMP NOT NULL DEFAULT now(),
+    ct_delete TIMESTAMP NULL,
+    CONSTRAINT fk_t_user_rating_ck_user FOREIGN KEY (ck_user) REFERENCES t_user(ck_id),
+    CONSTRAINT fk_t_user_rating_ck_author FOREIGN KEY (ck_author) REFERENCES t_user(ck_id)
+);
+
+COMMENT ON TABLE t_user_rating IS 'Рейтинг пользователей';
+COMMENT ON COLUMN t_user_rating.ck_id IS 'Идентификатор';
+COMMENT ON COLUMN t_user_rating.ck_user IS 'Идентификатор пользователя'; 
+COMMENT ON COLUMN t_user_rating.ck_author IS 'Идентификатор автора';
+COMMENT ON COLUMN t_user_rating.cn_rating IS 'Рейтинг';
+COMMENT ON COLUMN t_user_rating.ck_create IS 'Идентификатор создателя';
+COMMENT ON COLUMN t_user_rating.ct_create IS 'Дата создания';
+COMMENT ON COLUMN t_user_rating.ck_modify IS 'Идентификатор пользователя';
+COMMENT ON COLUMN t_user_rating.ct_modify IS 'Дата модификации';
+COMMENT ON COLUMN t_user_rating.ct_delete IS 'Дата логического удаления';
+
+CREATE UNIQUE INDEX uk_t_user_rating_ck_user_and_ck_author ON t_user_rating(ck_user, ck_author);
+
+--changeset artemov_i:init_user_like dbms:postgresql splitStatements:false stripComments:false
+-- =====================================================
+-- ЛАЙКИ ПОЛЬЗОВАТЕЛЕЙ
+-- =====================================================
+
+-- Таблица: t_user_like - Лайки пользователей
+CREATE TABLE t_user_like (
+    ck_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ck_user UUID NOT NULL,
+    ck_author UUID NOT NULL,
+    ck_create VARCHAR(255) NOT NULL,
+    ct_create TIMESTAMP NOT NULL DEFAULT now(),
+    ck_modify VARCHAR(255) NOT NULL,
+    ct_modify TIMESTAMP NOT NULL DEFAULT now(),
+    ct_delete TIMESTAMP NULL,
+    CONSTRAINT fk_t_user_like_ck_user FOREIGN KEY (ck_user) REFERENCES t_user(ck_id),
+    CONSTRAINT fk_t_user_like_ck_author FOREIGN KEY (ck_author) REFERENCES t_user(ck_id)
+);
+
+COMMENT ON TABLE t_user_like IS 'Лайки пользователей';
+COMMENT ON COLUMN t_user_like.ck_id IS 'Идентификатор';
+COMMENT ON COLUMN t_user_like.ck_user IS 'Идентификатор пользователя';
+COMMENT ON COLUMN t_user_like.ck_author IS 'Идентификатор автора';
+COMMENT ON COLUMN t_user_like.ck_create IS 'Идентификатор создателя';
+COMMENT ON COLUMN t_user_like.ct_create IS 'Дата создания';
+COMMENT ON COLUMN t_user_like.ck_modify IS 'Идентификатор пользователя';
+COMMENT ON COLUMN t_user_like.ct_modify IS 'Дата модификации';
+COMMENT ON COLUMN t_user_like.ct_delete IS 'Дата логического удаления';
+
+CREATE UNIQUE INDEX uk_t_user_like_ck_user_and_ck_author ON t_user_like(ck_user, ck_author);
 

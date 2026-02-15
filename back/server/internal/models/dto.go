@@ -169,22 +169,37 @@ type DictionaryItemUuid struct {
 }
 
 type BetRequest struct {
-	CategoryID           *string   `json:"category_id,omitempty" form:"category_id"`
-	VerificationSourceID *[]string `json:"verification_source_id,omitempty" form:"verification_source_id"`
-	StatusID             *string   `json:"status_id,omitempty" form:"status_id"`
-	TypeID               *string   `json:"type_id,omitempty" form:"type_id"`
-	Title                *string   `json:"title,omitempty" form:"title"`
-	Description          *string   `json:"description,omitempty" form:"description"`
-	MinAmount            *string   `json:"min_amount,omitempty" form:"min_amount"`
-	MaxAmount            *string   `json:"max_amount,omitempty" form:"max_amount"`
-	Coefficient          *string   `json:"coefficient,omitempty" form:"coefficient"`
-	Deadline             *string   `json:"deadline,omitempty" form:"deadline"`
+	ID                   *uuid.UUID `json:"id,omitempty" form:"id"`
+	CategoryID           *string    `json:"category_id,omitempty" form:"category_id"`
+	VerificationSourceID *[]string  `json:"verification_source_id,omitempty" form:"verification_source_id"`
+	StatusID             *string    `json:"status_id,omitempty" form:"status_id"`
+	TypeID               *string    `json:"type_id,omitempty" form:"type_id"`
+	Title                *string    `json:"title,omitempty" form:"title"`
+	Description          *string    `json:"description,omitempty" form:"description"`
+	MinAmount            *string    `json:"min_amount,omitempty" form:"min_amount"`
+	MaxAmount            *string    `json:"max_amount,omitempty" form:"max_amount"`
+	Coefficient          *string    `json:"coefficient,omitempty" form:"coefficient"`
+	Deadline             *string    `json:"deadline,omitempty" form:"deadline"`
 	PaginationRequest
 }
 
 type VerificationSourceResponse struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
+}
+
+type AuthorResponse struct {
+	ID         uuid.UUID  `json:"id"`
+	Username   *string    `json:"username"`
+	Avatar     *uuid.UUID `json:"avatar"`
+	Background *uuid.UUID `json:"background"`
+	Verified   bool       `json:"verified"`
+	Likes      int        `json:"likes"`
+	Rating     int        `json:"rating"`
+	WinRate    int        `json:"win_rate"`
+	CreatedAt  time.Time  `json:"created_at"`
+	UpdatedAt  time.Time  `json:"updated_at"`
+	DeletedAt  *time.Time `json:"deleted_at,omitempty"`
 }
 
 type BetResponse struct {
@@ -205,6 +220,12 @@ type BetResponse struct {
 	UpdatedAt           time.Time                    `json:"updated_at"`
 	DeletedAt           *time.Time                   `json:"deleted_at,omitempty"`
 	IsLikedByMe         bool                         `json:"is_liked_by_me"`
+	IsRatedByMe         bool                         `json:"is_rated_by_me"`
+	Rating              int                          `json:"rating"`
+	Comments            int                          `json:"comments"`
+	Likes               int                          `json:"likes"`
+	BetsCount           int                          `json:"bets_count"`
+	Author              AuthorResponse               `json:"author"`
 }
 
 type BetCreateRequest struct {
@@ -217,5 +238,28 @@ type BetCreateRequest struct {
 	Coefficient          string    `json:"coefficient" form:"coefficient"`
 	Amount               string    `json:"amount" form:"amount"`
 	Deadline             time.Time `json:"deadline" form:"deadline"`
+	DefaultRequest
+}
+
+type BetCommentResponse struct {
+	ID          uuid.UUID           `json:"id"`
+	Content     string              `json:"content"`
+	CreatedAt   time.Time           `json:"created_at"`
+	UpdatedAt   time.Time           `json:"updated_at"`
+	DeletedAt   *time.Time          `json:"deleted_at,omitempty"`
+	Author      AuthorResponse      `json:"author"`
+	Parent      *BetCommentResponse `json:"parent,omitempty"`
+	Likes       int                 `json:"likes"`
+	IsLikedByMe bool                `json:"is_liked_by_me"`
+}
+
+type BetCommentRequest struct {
+	PaginationRequest
+	Search *string `json:"search,omitempty" form:"search"`
+}
+
+type BetCommentCreateRequest struct {
+	Content  string     `json:"content" form:"content"`
+	ParentID *uuid.UUID `json:"parent_id,omitempty" form:"parent_id"`
 	DefaultRequest
 }

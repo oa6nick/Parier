@@ -34,10 +34,16 @@ type TUser struct {
 	CkExternal string    `json:"ck_external" gorm:"column:ck_external;type:varchar(255);not null"`
 
 	// Relations
-	UserRoles      []TUserRole       `json:"user_roles,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
-	UserProperties []TUserProperties `json:"user_properties,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
-	Wallet         *TUserWallet      `json:"wallet,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
-	Sessions       []TSession        `json:"sessions,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	UserRoles        []TUserRole         `json:"user_roles,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	UserProperties   []TUserProperties   `json:"user_properties,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	Wallet           *TUserWallet       `json:"wallet,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	UserTransactions []TUserTransaction  `json:"user_transactions,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	Sessions         []TSession          `json:"sessions,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	BetHistory       []TUserBetHistory   `json:"bet_history,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	RatingsReceived  []TUserRating       `json:"ratings_received,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	RatingsGiven     []TUserRating       `json:"ratings_given,omitempty" gorm:"foreignKey:CkAuthor;references:CkId"`
+	LikesReceived    []TUserLike         `json:"likes_received,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	LikesGiven       []TUserLike         `json:"likes_given,omitempty" gorm:"foreignKey:CkAuthor;references:CkId"`
 
 	BaseModel
 }
@@ -148,6 +154,97 @@ type TUserWallet struct {
 
 func (TUserWallet) TableName() string {
 	return "t_user_wallet"
+}
+
+// TDTransactionStatus - Статусы транзакций
+type TDTransactionStatus struct {
+	CkId          string  `json:"ck_id" gorm:"column:ck_id;type:varchar(255);primaryKey"`
+	CkName        string  `json:"ck_name" gorm:"column:ck_name;type:varchar(255);not null"`
+	CkDescription *string `json:"ck_description,omitempty" gorm:"column:ck_description;type:varchar(255)"`
+
+	// Relations
+	NameLocalization        *TLocalization    `json:"name_localization,omitempty" gorm:"foreignKey:CkName;references:CkId"`
+	DescriptionLocalization *TLocalization    `json:"description_localization,omitempty" gorm:"foreignKey:CkDescription;references:CkId"`
+	UserTransactions        []TUserTransaction `json:"user_transactions,omitempty" gorm:"foreignKey:CkStatus;references:CkId"`
+
+	BaseModel
+}
+
+func (TDTransactionStatus) TableName() string {
+	return "t_d_transaction_status"
+}
+
+// TDTransactionType - Типы транзакций
+type TDTransactionType struct {
+	CkId          string  `json:"ck_id" gorm:"column:ck_id;type:varchar(255);primaryKey"`
+	CkName        string  `json:"ck_name" gorm:"column:ck_name;type:varchar(255);not null"`
+	CkDescription *string `json:"ck_description,omitempty" gorm:"column:ck_description;type:varchar(255)"`
+
+	// Relations
+	NameLocalization        *TLocalization      `json:"name_localization,omitempty" gorm:"foreignKey:CkName;references:CkId"`
+	DescriptionLocalization *TLocalization     `json:"description_localization,omitempty" gorm:"foreignKey:CkDescription;references:CkId"`
+	UserTransactions        []TUserTransaction `json:"user_transactions,omitempty" gorm:"foreignKey:CkType;references:CkId"`
+
+	BaseModel
+}
+
+func (TDTransactionType) TableName() string {
+	return "t_d_transaction_type"
+}
+
+// TUserTransaction - Транзакции пользователей
+type TUserTransaction struct {
+	CkId     uuid.UUID `json:"ck_id" gorm:"column:ck_id;type:uuid;primaryKey;default:uuid_generate_v4()"`
+	CkUser   uuid.UUID `json:"ck_user" gorm:"column:ck_user;type:uuid;not null;index"`
+	CkType   string    `json:"ck_type" gorm:"column:ck_type;type:varchar(255);not null"`
+	CkStatus string    `json:"ck_status" gorm:"column:ck_status;type:varchar(255);not null"`
+	CnAmount float64   `json:"cn_amount" gorm:"column:cn_amount;type:decimal;not null"`
+
+	// Relations
+	User   *TUser                `json:"user,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	Type   *TDTransactionType    `json:"type,omitempty" gorm:"foreignKey:CkType;references:CkId"`
+	Status *TDTransactionStatus  `json:"status,omitempty" gorm:"foreignKey:CkStatus;references:CkId"`
+
+	BaseModel
+}
+
+func (TUserTransaction) TableName() string {
+	return "t_user_transaction"
+}
+
+// TUserRating - Рейтинг пользователей
+type TUserRating struct {
+	CkId     uuid.UUID `json:"ck_id" gorm:"column:ck_id;type:uuid;primaryKey;default:uuid_generate_v4()"`
+	CkUser   uuid.UUID `json:"ck_user" gorm:"column:ck_user;type:uuid;not null"`
+	CkAuthor uuid.UUID `json:"ck_author" gorm:"column:ck_author;type:uuid;not null"`
+	CnRating int       `json:"cn_rating" gorm:"column:cn_rating;type:int;not null"`
+
+	// Relations
+	User   *TUser `json:"user,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	Author *TUser `json:"author,omitempty" gorm:"foreignKey:CkAuthor;references:CkId"`
+
+	BaseModel
+}
+
+func (TUserRating) TableName() string {
+	return "t_user_rating"
+}
+
+// TUserLike - Лайки пользователей
+type TUserLike struct {
+	CkId     uuid.UUID `json:"ck_id" gorm:"column:ck_id;type:uuid;primaryKey;default:uuid_generate_v4()"`
+	CkUser   uuid.UUID `json:"ck_user" gorm:"column:ck_user;type:uuid;not null"`
+	CkAuthor uuid.UUID `json:"ck_author" gorm:"column:ck_author;type:uuid;not null"`
+
+	// Relations
+	User   *TUser `json:"user,omitempty" gorm:"foreignKey:CkUser;references:CkId"`
+	Author *TUser `json:"author,omitempty" gorm:"foreignKey:CkAuthor;references:CkId"`
+
+	BaseModel
+}
+
+func (TUserLike) TableName() string {
+	return "t_user_like"
 }
 
 type TSession struct {

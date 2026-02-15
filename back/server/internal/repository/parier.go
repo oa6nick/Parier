@@ -168,7 +168,10 @@ func (r *ParierRepository) DeleteLikeType(id string, userID string) error {
 
 // === T_BET ===
 
-func (r *ParierRepository) CreateBet(bet *models.TBet) error {
+func (r *ParierRepository) CreateBet(bet *models.TBet, tx *gorm.DB) error {
+	if tx != nil {
+		return tx.Create(bet).Error
+	}
 	return r.db.Create(bet).Error
 }
 
@@ -261,7 +264,10 @@ func (r *ParierRepository) DeleteBetMedia(id uuid.UUID, userID string) error {
 
 // === T_BET_COMMENT ===
 
-func (r *ParierRepository) CreateBetComment(betComment *models.TBetComment) error {
+func (r *ParierRepository) CreateBetComment(betComment *models.TBetComment, tx *gorm.DB) error {
+	if tx != nil {
+		return tx.Create(betComment).Error
+	}
 	return r.db.Create(betComment).Error
 }
 
@@ -269,6 +275,13 @@ func (r *ParierRepository) GetBetCommentByID(id uuid.UUID) (*models.TBetComment,
 	var betComment models.TBetComment
 	err := r.db.Where("ck_id = ? AND ct_delete IS NULL", id).First(&betComment).Error
 	return &betComment, err
+}
+
+func (r *ParierRepository) GetAllBetCommentsByBetID(betID uuid.UUID) ([]models.TBetComment, error) {
+	var betComments []models.TBetComment
+	err := r.db.Where("ck_bet = ? AND ct_delete IS NULL", betID).Order("ct_create ASC").
+		Preload("Parent").Preload("Likes").Preload("Media").Find(&betComments).Error
+	return betComments, err
 }
 
 func (r *ParierRepository) GetAllBetComments() ([]models.TBetComment, error) {
@@ -292,7 +305,10 @@ func (r *ParierRepository) DeleteBetComment(id uuid.UUID, userID string) error {
 
 // === T_BET_COMMENT_LIKE ===
 
-func (r *ParierRepository) CreateBetCommentLike(betCommentLike *models.TBetCommentLike) error {
+func (r *ParierRepository) CreateBetCommentLike(betCommentLike *models.TBetCommentLike, tx *gorm.DB) error {
+	if tx != nil {
+		return tx.Create(betCommentLike).Error
+	}
 	return r.db.Create(betCommentLike).Error
 }
 
@@ -312,7 +328,15 @@ func (r *ParierRepository) UpdateBetCommentLike(betCommentLike *models.TBetComme
 	return r.db.Save(betCommentLike).Error
 }
 
-func (r *ParierRepository) DeleteBetCommentLike(id uuid.UUID, userID string) error {
+func (r *ParierRepository) DeleteBetCommentLike(id uuid.UUID, userID string, tx *gorm.DB) error {
+	if tx != nil {
+		return tx.Model(&models.TBetCommentLike{}).
+			Update("ct_delete", gorm.Expr("NOW()")).
+			Update("ct_modify", gorm.Expr("NOW()")).
+			Update("ck_modify", userID).
+			Where("ck_id = ? AND ct_delete IS NULL", id).
+			Error
+	}
 	return r.db.Model(&models.TBetCommentLike{}).
 		Update("ct_delete", gorm.Expr("NOW()")).
 		Update("ct_modify", gorm.Expr("NOW()")).
@@ -354,7 +378,10 @@ func (r *ParierRepository) DeleteBetCommentMedia(id uuid.UUID, userID string) er
 
 // === T_BET_LIKE ===
 
-func (r *ParierRepository) CreateBetLike(betLike *models.TBetLike) error {
+func (r *ParierRepository) CreateBetLike(betLike *models.TBetLike, tx *gorm.DB) error {
+	if tx != nil {
+		return tx.Create(betLike).Error
+	}
 	return r.db.Create(betLike).Error
 }
 
@@ -374,7 +401,15 @@ func (r *ParierRepository) UpdateBetLike(betLike *models.TBetLike) error {
 	return r.db.Save(betLike).Error
 }
 
-func (r *ParierRepository) DeleteBetLike(id uuid.UUID, userID string) error {
+func (r *ParierRepository) DeleteBetLike(id uuid.UUID, userID string, tx *gorm.DB) error {
+	if tx != nil {
+		return tx.Model(&models.TBetLike{}).
+			Update("ct_delete", gorm.Expr("NOW()")).
+			Update("ct_modify", gorm.Expr("NOW()")).
+			Update("ck_modify", userID).
+			Where("ck_id = ? AND ct_delete IS NULL", id).
+			Error
+	}
 	return r.db.Model(&models.TBetLike{}).
 		Update("ct_delete", gorm.Expr("NOW()")).
 		Update("ct_modify", gorm.Expr("NOW()")).
@@ -523,7 +558,10 @@ func (r *ParierRepository) DeleteBetRating(id uuid.UUID, userID string) error {
 
 // === T_BET_VERIFICATION_SOURCE ===
 
-func (r *ParierRepository) CreateBetVerificationSource(betVerificationSource *models.TBetVerificationSource) error {
+func (r *ParierRepository) CreateBetVerificationSource(betVerificationSource *models.TBetVerificationSource, tx *gorm.DB) error {
+	if tx != nil {
+		return tx.Create(betVerificationSource).Error
+	}
 	return r.db.Create(betVerificationSource).Error
 }
 

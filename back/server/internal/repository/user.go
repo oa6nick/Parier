@@ -417,6 +417,145 @@ func (r *UserRepository) DeleteUserProperty(id uuid.UUID, userID string) error {
 		Update("ct_delete", gorm.Expr("NOW()")).
 		Update("ck_modify", userID).Error
 }
+
+// === T_USER_WALLET ===
+
+func (r *UserRepository) CreateUserWallet(wallet *models.TUserWallet) error {
+	return r.db.Create(wallet).Error
+}
+
+func (r *UserRepository) GetUserWalletByUserID(userID uuid.UUID) (*models.TUserWallet, error) {
+	var wallet models.TUserWallet
+	err := r.db.Where("ck_user = ? AND ct_delete IS NULL", userID).First(&wallet).Error
+	return &wallet, err
+}
+
+func (r *UserRepository) UpdateUserWallet(wallet *models.TUserWallet) error {
+	return r.db.Save(wallet).Error
+}
+
+func (r *UserRepository) DeleteUserWallet(id uuid.UUID, userID string) error {
+	return r.db.Model(&models.TUserWallet{}).
+		Where("ck_id = ? AND ct_delete IS NULL", id).
+		Update("ct_delete", gorm.Expr("NOW()")).
+		Update("ck_modify", userID).Error
+}
+
+// === T_USER_TRANSACTION ===
+
+func (r *UserRepository) CreateUserTransaction(transaction *models.TUserTransaction, tx *gorm.DB) error {
+	if tx != nil {
+		return tx.Create(transaction).Error
+	}
+	return r.db.Create(transaction).Error
+}
+
+func (r *UserRepository) GetUserTransactionByUserID(userID uuid.UUID) ([]models.TUserTransaction, error) {
+	var transactions []models.TUserTransaction
+	err := r.db.Where("ck_user = ? AND ct_delete IS NULL", userID).Find(&transactions).Error
+	return transactions, err
+}
+
+func (r *UserRepository) UpdateUserTransaction(transaction *models.TUserTransaction) error {
+	return r.db.Save(transaction).Error
+}
+
+func (r *UserRepository) DeleteUserTransaction(id uuid.UUID, userID string) error {
+	return r.db.Model(&models.TUserTransaction{}).
+		Where("ck_id = ? AND ct_delete IS NULL", id).
+		Update("ct_delete", gorm.Expr("NOW()")).
+		Update("ck_modify", userID).Error
+}
+
+func (r *UserRepository) GetUserLikeByUserID(userID uuid.UUID) ([]models.TUserLike, error) {
+	var likes []models.TUserLike
+	err := r.db.Where("ck_user = ? AND ct_delete IS NULL", userID).Find(&likes).Error
+	return likes, err
+}
+
+func (r *UserRepository) GetUserLikeByBetID(betID uuid.UUID) ([]models.TUserLike, error) {
+	var likes []models.TUserLike
+	err := r.db.Where("ck_bet = ? AND ct_delete IS NULL", betID).Find(&likes).Error
+	return likes, err
+}
+
+func (r *UserRepository) CreateUserLike(like *models.TUserLike) error {
+	return r.db.Create(like).Error
+}
+
+func (r *UserRepository) GetUserLikeByID(id uuid.UUID) (*models.TUserLike, error) {
+	var like models.TUserLike
+	err := r.db.Where("ck_id = ? AND ct_delete IS NULL", id).First(&like).Error
+	return &like, err
+}
+
+func (r *UserRepository) GetAllUserLikes() ([]models.TUserLike, error) {
+	var likes []models.TUserLike
+	err := r.db.Where("ct_delete IS NULL").Order("ck_id ASC").Find(&likes).Error
+	return likes, err
+}
+
+func (r *UserRepository) UpdateUserLike(like *models.TUserLike) error {
+	return r.db.Save(like).Error
+}
+
+func (r *UserRepository) DeleteUserLike(id uuid.UUID, userID string) error {
+	return r.db.Model(&models.TUserLike{}).
+		Where("ck_id = ? AND ct_delete IS NULL", id).
+		Update("ct_delete", gorm.Expr("NOW()")).
+		Update("ck_modify", userID).Error
+}
+
+func (r *UserRepository) GetUserLikeByUserIDAndBetID(userID uuid.UUID, betID uuid.UUID) (*models.TUserLike, error) {
+	var like models.TUserLike
+	err := r.db.Where("ck_user = ? AND ck_bet = ? AND ct_delete IS NULL", userID, betID).First(&like).Error
+	return &like, err
+}
+
+func (r *UserRepository) GetUserLikeByUserIDAndBetIDAndType(userID uuid.UUID, betID uuid.UUID, typeID string) (*models.TUserLike, error) {
+	var like models.TUserLike
+	err := r.db.Where("ck_user = ? AND ck_bet = ? AND ck_type = ? AND ct_delete IS NULL", userID, betID, typeID).First(&like).Error
+	return &like, err
+}
+
+func (r *UserRepository) CreateUserRating(rating *models.TUserRating) error {
+	return r.db.Create(rating).Error
+}
+
+func (r *UserRepository) GetUserRatingByUserIDAndBetID(userID uuid.UUID, betID uuid.UUID) (*models.TUserRating, error) {
+	var rating models.TUserRating
+	err := r.db.Where("ck_user = ? AND ck_bet = ? AND ct_delete IS NULL", userID, betID).First(&rating).Error
+	return &rating, err
+}
+func (r *UserRepository) GetAllUserRatings() ([]models.TUserRating, error) {
+	var ratings []models.TUserRating
+	err := r.db.Where("ct_delete IS NULL").Order("ck_id ASC").Find(&ratings).Error
+	return ratings, err
+}
+
+func (r *UserRepository) GetUserRatingByID(id uuid.UUID) (*models.TUserRating, error) {
+	var rating models.TUserRating
+	err := r.db.Where("ck_id = ? AND ct_delete IS NULL", id).First(&rating).Error
+	return &rating, err
+}
+
+func (r *UserRepository) UpdateUserRating(rating *models.TUserRating) error {
+	return r.db.Save(rating).Error
+}
+
+func (r *UserRepository) DeleteUserRating(id uuid.UUID, userID string) error {
+	return r.db.Model(&models.TUserRating{}).
+		Where("ck_id = ? AND ct_delete IS NULL", id).
+		Update("ct_delete", gorm.Expr("NOW()")).
+		Update("ck_modify", userID).Error
+}
+
+func (r *UserRepository) GetUserRatingByUserIDAndAuthorID(userID uuid.UUID, authorID uuid.UUID) (*models.TUserRating, error) {
+	var rating models.TUserRating
+	err := r.db.Where("ck_user = ? AND ck_author = ? AND ct_delete IS NULL", userID, authorID).First(&rating).Error
+	return &rating, err
+}
+
 // === PERMISSION CHECKS ===
 
 func (r *UserRepository) HasTablePermission(userID uuid.UUID, tableName string, action models.ActionType) (bool, error) {

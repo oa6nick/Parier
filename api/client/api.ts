@@ -23,6 +23,12 @@ import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
+export interface InternalHandlersBetCommentResponse {
+    'count'?: number;
+    'data'?: Array<ParierServerInternalModelsBetCommentResponse>;
+    'success'?: boolean;
+    'total'?: number;
+}
 export interface InternalHandlersBetCreateResponse {
     'data'?: ParierServerInternalModelsBetResponse;
     'message'?: string;
@@ -96,6 +102,45 @@ export interface InternalHandlersPropertiesTypesResponse {
     'data'?: Array<InternalHandlersPropertiesTypeResponse>;
     'total'?: number;
 }
+export interface ParierServerInternalModelsAuthorResponse {
+    'avatar'?: string;
+    'background'?: string;
+    'created_at'?: string;
+    'deleted_at'?: string;
+    'id'?: string;
+    'likes'?: number;
+    'rating'?: number;
+    'updated_at'?: string;
+    'username'?: string;
+    'verified'?: boolean;
+    'win_rate'?: number;
+}
+export interface ParierServerInternalModelsBetCommentCreateRequest {
+    'content'?: string;
+    'language'?: string;
+    'parent_id'?: string;
+    'user'?: ParierServerInternalModelsUser;
+}
+export interface ParierServerInternalModelsBetCommentRequest {
+    'language'?: string;
+    'limit'?: number;
+    'offset'?: number;
+    'search'?: string;
+    'sort_by'?: string;
+    'sort_dir'?: string;
+    'user'?: ParierServerInternalModelsUser;
+}
+export interface ParierServerInternalModelsBetCommentResponse {
+    'author'?: ParierServerInternalModelsAuthorResponse;
+    'content'?: string;
+    'created_at'?: string;
+    'deleted_at'?: string;
+    'id'?: string;
+    'is_liked_by_me'?: boolean;
+    'likes'?: number;
+    'parent'?: ParierServerInternalModelsBetCommentResponse;
+    'updated_at'?: string;
+}
 export interface ParierServerInternalModelsBetCreateRequest {
     'amount'?: string;
     'category_id'?: string;
@@ -114,6 +159,7 @@ export interface ParierServerInternalModelsBetRequest {
     'coefficient'?: string;
     'deadline'?: string;
     'description'?: string;
+    'id'?: string;
     'language'?: string;
     'limit'?: number;
     'max_amount'?: string;
@@ -129,15 +175,21 @@ export interface ParierServerInternalModelsBetRequest {
 }
 export interface ParierServerInternalModelsBetResponse {
     'amount'?: number;
+    'author'?: ParierServerInternalModelsAuthorResponse;
+    'bets_count'?: number;
     'category_id'?: string;
     'category_name'?: string;
     'coefficient'?: number;
+    'comments'?: number;
     'created_at'?: string;
     'deadline'?: string;
     'deleted_at'?: string;
     'description'?: string;
     'id'?: string;
     'is_liked_by_me'?: boolean;
+    'is_rated_by_me'?: boolean;
+    'likes'?: number;
+    'rating'?: number;
     'status_id'?: string;
     'status_name'?: string;
     'title'?: string;
@@ -167,8 +219,8 @@ export interface ParierServerInternalModelsErrorResponse {
 }
 
 export const ParierServerInternalModelsPropertyPlace = {
-    PropertyPlaceAgent: 'AGENT',
-    PropertyPlaceUnit: 'UNIT',
+    PropertyPlaceBet: 'BET',
+    PropertyPlaceSource: 'SOURCE',
     PropertyPlaceUser: 'USER'
 } as const;
 
@@ -1155,6 +1207,198 @@ export class MediaApi extends BaseAPI {
 export const ParierApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
+         * Create bet comment
+         * @summary Create bet comment
+         * @param {string} betId Bet ID
+         * @param {ParierServerInternalModelsBetCommentCreateRequest} request Request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        parierBetBetIdCommentPut: async (betId: string, request: ParierServerInternalModelsBetCommentCreateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'betId' is not null or undefined
+            assertParamExists('parierBetBetIdCommentPut', 'betId', betId)
+            // verify required parameter 'request' is not null or undefined
+            assertParamExists('parierBetBetIdCommentPut', 'request', request)
+            const localVarPath = `/parier/bet/{bet_id}/comment`
+                .replace(`{${"bet_id"}}`, encodeURIComponent(String(betId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BasicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get bet comments
+         * @summary Get bet comments
+         * @param {string} betId Bet ID
+         * @param {ParierServerInternalModelsBetCommentRequest} request Request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        parierBetBetIdCommentsPost: async (betId: string, request: ParierServerInternalModelsBetCommentRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'betId' is not null or undefined
+            assertParamExists('parierBetBetIdCommentsPost', 'betId', betId)
+            // verify required parameter 'request' is not null or undefined
+            assertParamExists('parierBetBetIdCommentsPost', 'request', request)
+            const localVarPath = `/parier/bet/{bet_id}/comments`
+                .replace(`{${"bet_id"}}`, encodeURIComponent(String(betId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BasicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Like bet
+         * @summary Like bet
+         * @param {string} betId Bet ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        parierBetBetIdLikePost: async (betId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'betId' is not null or undefined
+            assertParamExists('parierBetBetIdLikePost', 'betId', betId)
+            const localVarPath = `/parier/bet/{bet_id}/like`
+                .replace(`{${"bet_id"}}`, encodeURIComponent(String(betId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BasicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Unlike bet
+         * @summary Unlike bet
+         * @param {string} betId Bet ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        parierBetBetIdUnlikePost: async (betId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'betId' is not null or undefined
+            assertParamExists('parierBetBetIdUnlikePost', 'betId', betId)
+            const localVarPath = `/parier/bet/{bet_id}/unlike`
+                .replace(`{${"bet_id"}}`, encodeURIComponent(String(betId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BasicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Get bets
          * @summary Get bets
          * @param {ParierServerInternalModelsBetRequest} request Request
@@ -1390,6 +1634,96 @@ export const ParierApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
+         * Like bet comment
+         * @summary Like bet comment
+         * @param {string} commentId Comment ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        parierCommentCommentIdLikePost: async (commentId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'commentId' is not null or undefined
+            assertParamExists('parierCommentCommentIdLikePost', 'commentId', commentId)
+            const localVarPath = `/parier/comment/{comment_id}/like`
+                .replace(`{${"comment_id"}}`, encodeURIComponent(String(commentId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BasicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Unlike bet comment
+         * @summary Unlike bet comment
+         * @param {string} commentId Comment ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        parierCommentCommentIdUnlikePost: async (commentId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'commentId' is not null or undefined
+            assertParamExists('parierCommentCommentIdUnlikePost', 'commentId', commentId)
+            const localVarPath = `/parier/comment/{comment_id}/unlike`
+                .replace(`{${"comment_id"}}`, encodeURIComponent(String(commentId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BasicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Get like types
          * @summary Get like types
          * @param {ParierServerInternalModelsDictionaryRequest} request Request
@@ -1493,6 +1827,60 @@ export const ParierApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = ParierApiAxiosParamCreator(configuration)
     return {
         /**
+         * Create bet comment
+         * @summary Create bet comment
+         * @param {string} betId Bet ID
+         * @param {ParierServerInternalModelsBetCommentCreateRequest} request Request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async parierBetBetIdCommentPut(betId: string, request: ParierServerInternalModelsBetCommentCreateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ParierServerInternalModelsSuccessResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.parierBetBetIdCommentPut(betId, request, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ParierApi.parierBetBetIdCommentPut']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Get bet comments
+         * @summary Get bet comments
+         * @param {string} betId Bet ID
+         * @param {ParierServerInternalModelsBetCommentRequest} request Request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async parierBetBetIdCommentsPost(betId: string, request: ParierServerInternalModelsBetCommentRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InternalHandlersBetCommentResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.parierBetBetIdCommentsPost(betId, request, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ParierApi.parierBetBetIdCommentsPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Like bet
+         * @summary Like bet
+         * @param {string} betId Bet ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async parierBetBetIdLikePost(betId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ParierServerInternalModelsSuccessResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.parierBetBetIdLikePost(betId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ParierApi.parierBetBetIdLikePost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Unlike bet
+         * @summary Unlike bet
+         * @param {string} betId Bet ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async parierBetBetIdUnlikePost(betId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ParierServerInternalModelsSuccessResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.parierBetBetIdUnlikePost(betId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ParierApi.parierBetBetIdUnlikePost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Get bets
          * @summary Get bets
          * @param {ParierServerInternalModelsBetRequest} request Request
@@ -1558,6 +1946,32 @@ export const ParierApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * Like bet comment
+         * @summary Like bet comment
+         * @param {string} commentId Comment ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async parierCommentCommentIdLikePost(commentId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ParierServerInternalModelsSuccessResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.parierCommentCommentIdLikePost(commentId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ParierApi.parierCommentCommentIdLikePost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Unlike bet comment
+         * @summary Unlike bet comment
+         * @param {string} commentId Comment ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async parierCommentCommentIdUnlikePost(commentId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ParierServerInternalModelsSuccessResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.parierCommentCommentIdUnlikePost(commentId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ParierApi.parierCommentCommentIdUnlikePost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Get like types
          * @summary Get like types
          * @param {ParierServerInternalModelsDictionaryRequest} request Request
@@ -1592,6 +2006,48 @@ export const ParierApiFp = function(configuration?: Configuration) {
 export const ParierApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = ParierApiFp(configuration)
     return {
+        /**
+         * Create bet comment
+         * @summary Create bet comment
+         * @param {string} betId Bet ID
+         * @param {ParierServerInternalModelsBetCommentCreateRequest} request Request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        parierBetBetIdCommentPut(betId: string, request: ParierServerInternalModelsBetCommentCreateRequest, options?: RawAxiosRequestConfig): AxiosPromise<ParierServerInternalModelsSuccessResponse> {
+            return localVarFp.parierBetBetIdCommentPut(betId, request, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get bet comments
+         * @summary Get bet comments
+         * @param {string} betId Bet ID
+         * @param {ParierServerInternalModelsBetCommentRequest} request Request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        parierBetBetIdCommentsPost(betId: string, request: ParierServerInternalModelsBetCommentRequest, options?: RawAxiosRequestConfig): AxiosPromise<InternalHandlersBetCommentResponse> {
+            return localVarFp.parierBetBetIdCommentsPost(betId, request, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Like bet
+         * @summary Like bet
+         * @param {string} betId Bet ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        parierBetBetIdLikePost(betId: string, options?: RawAxiosRequestConfig): AxiosPromise<ParierServerInternalModelsSuccessResponse> {
+            return localVarFp.parierBetBetIdLikePost(betId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Unlike bet
+         * @summary Unlike bet
+         * @param {string} betId Bet ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        parierBetBetIdUnlikePost(betId: string, options?: RawAxiosRequestConfig): AxiosPromise<ParierServerInternalModelsSuccessResponse> {
+            return localVarFp.parierBetBetIdUnlikePost(betId, options).then((request) => request(axios, basePath));
+        },
         /**
          * Get bets
          * @summary Get bets
@@ -1643,6 +2099,26 @@ export const ParierApiFactory = function (configuration?: Configuration, basePat
             return localVarFp.parierCategoriesPost(request, options).then((request) => request(axios, basePath));
         },
         /**
+         * Like bet comment
+         * @summary Like bet comment
+         * @param {string} commentId Comment ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        parierCommentCommentIdLikePost(commentId: string, options?: RawAxiosRequestConfig): AxiosPromise<ParierServerInternalModelsSuccessResponse> {
+            return localVarFp.parierCommentCommentIdLikePost(commentId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Unlike bet comment
+         * @summary Unlike bet comment
+         * @param {string} commentId Comment ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        parierCommentCommentIdUnlikePost(commentId: string, options?: RawAxiosRequestConfig): AxiosPromise<ParierServerInternalModelsSuccessResponse> {
+            return localVarFp.parierCommentCommentIdUnlikePost(commentId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Get like types
          * @summary Get like types
          * @param {ParierServerInternalModelsDictionaryRequest} request Request
@@ -1669,6 +2145,52 @@ export const ParierApiFactory = function (configuration?: Configuration, basePat
  * ParierApi - object-oriented interface
  */
 export class ParierApi extends BaseAPI {
+    /**
+     * Create bet comment
+     * @summary Create bet comment
+     * @param {string} betId Bet ID
+     * @param {ParierServerInternalModelsBetCommentCreateRequest} request Request
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public parierBetBetIdCommentPut(betId: string, request: ParierServerInternalModelsBetCommentCreateRequest, options?: RawAxiosRequestConfig) {
+        return ParierApiFp(this.configuration).parierBetBetIdCommentPut(betId, request, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get bet comments
+     * @summary Get bet comments
+     * @param {string} betId Bet ID
+     * @param {ParierServerInternalModelsBetCommentRequest} request Request
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public parierBetBetIdCommentsPost(betId: string, request: ParierServerInternalModelsBetCommentRequest, options?: RawAxiosRequestConfig) {
+        return ParierApiFp(this.configuration).parierBetBetIdCommentsPost(betId, request, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Like bet
+     * @summary Like bet
+     * @param {string} betId Bet ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public parierBetBetIdLikePost(betId: string, options?: RawAxiosRequestConfig) {
+        return ParierApiFp(this.configuration).parierBetBetIdLikePost(betId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Unlike bet
+     * @summary Unlike bet
+     * @param {string} betId Bet ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public parierBetBetIdUnlikePost(betId: string, options?: RawAxiosRequestConfig) {
+        return ParierApiFp(this.configuration).parierBetBetIdUnlikePost(betId, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * Get bets
      * @summary Get bets
@@ -1722,6 +2244,28 @@ export class ParierApi extends BaseAPI {
      */
     public parierCategoriesPost(request: ParierServerInternalModelsDictionaryRequest, options?: RawAxiosRequestConfig) {
         return ParierApiFp(this.configuration).parierCategoriesPost(request, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Like bet comment
+     * @summary Like bet comment
+     * @param {string} commentId Comment ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public parierCommentCommentIdLikePost(commentId: string, options?: RawAxiosRequestConfig) {
+        return ParierApiFp(this.configuration).parierCommentCommentIdLikePost(commentId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Unlike bet comment
+     * @summary Unlike bet comment
+     * @param {string} commentId Comment ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public parierCommentCommentIdUnlikePost(commentId: string, options?: RawAxiosRequestConfig) {
+        return ParierApiFp(this.configuration).parierCommentCommentIdUnlikePost(commentId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

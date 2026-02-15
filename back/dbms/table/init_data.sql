@@ -81,7 +81,25 @@ INSERT INTO t_localization (ck_id, cr_type, ck_create, ck_modify) VALUES
     ('bet-type.multiple', 'STATIC', 'system', 'system'),
     ('bet-type.system', 'STATIC', 'system', 'system'),
     ('like-type.like', 'STATIC', 'system', 'system'),
-    ('like-type.dislike', 'STATIC', 'system', 'system')
+    ('like-type.dislike', 'STATIC', 'system', 'system'),
+    ('transaction-status.pending', 'STATIC', 'system', 'system'),
+    ('transaction-status.confirmed', 'STATIC', 'system', 'system'),
+    ('transaction-status.rejected', 'STATIC', 'system', 'system'),
+    ('transaction-type.deposit', 'STATIC', 'system', 'system'),
+    ('transaction-type.withdrawal', 'STATIC', 'system', 'system'),
+    ('transaction-type.bet', 'STATIC', 'system', 'system'),
+    ('transaction-type.win', 'STATIC', 'system', 'system'),
+    ('transaction-type.loss', 'STATIC', 'system', 'system'),
+    ('transaction-type.fee', 'STATIC', 'system', 'system'),
+    ('transaction-type.refund', 'STATIC', 'system', 'system'),
+    ('transaction-type.bonus', 'STATIC', 'system', 'system'),
+    ('transaction-type.promo', 'STATIC', 'system', 'system'),
+    ('user.avatar', 'STATIC', 'system', 'system'),
+    ('user.background', 'STATIC', 'system', 'system'),
+    ('user.verified', 'STATIC', 'system', 'system'),
+    ('user.username', 'STATIC', 'system', 'system'),    
+    ('user.email', 'STATIC', 'system', 'system'),
+    ('user.phone', 'STATIC', 'system', 'system')
     ON CONFLICT (ck_id) DO NOTHING;
 
 INSERT INTO t_localization_word (ck_localization, ck_lang, ck_text, ck_create, ck_modify) VALUES 
@@ -150,7 +168,43 @@ INSERT INTO t_localization_word (ck_localization, ck_lang, ck_text, ck_create, c
     ('like-type.like', 'EN', f_create_or_select_word('Like'), 'system', 'system'),
     ('like-type.like', 'RU', f_create_or_select_word('Нравится'), 'system', 'system'),
     ('like-type.dislike', 'EN', f_create_or_select_word('Dislike'), 'system', 'system'),
-    ('like-type.dislike', 'RU', f_create_or_select_word('Не нравится'), 'system', 'system')
+    ('like-type.dislike', 'RU', f_create_or_select_word('Не нравится'), 'system', 'system'),
+    ('transaction-status.pending', 'EN', f_create_or_select_word('Pending'), 'system', 'system'),
+    ('transaction-status.pending', 'RU', f_create_or_select_word('Ожидается'), 'system', 'system'),
+    ('transaction-status.confirmed', 'EN', f_create_or_select_word('Confirmed'), 'system', 'system'),
+    ('transaction-status.confirmed', 'RU', f_create_or_select_word('Подтверждено'), 'system', 'system'),
+    ('transaction-status.rejected', 'EN', f_create_or_select_word('Rejected'), 'system', 'system'),
+    ('transaction-status.rejected', 'RU', f_create_or_select_word('Отклонено'), 'system', 'system'),
+    ('transaction-type.deposit', 'EN', f_create_or_select_word('Deposit'), 'system', 'system'),
+    ('transaction-type.deposit', 'RU', f_create_or_select_word('Пополнение'), 'system', 'system'),
+    ('transaction-type.withdrawal', 'EN', f_create_or_select_word('Withdrawal'), 'system', 'system'),
+    ('transaction-type.withdrawal', 'RU', f_create_or_select_word('Вывод'), 'system', 'system'),
+    ('transaction-type.bet', 'EN', f_create_or_select_word('Bet'), 'system', 'system'),
+    ('transaction-type.bet', 'RU', f_create_or_select_word('Ставка'), 'system', 'system'),
+    ('transaction-type.win', 'EN', f_create_or_select_word('Win'), 'system', 'system'),
+    ('transaction-type.win', 'RU', f_create_or_select_word('Выигрыш'), 'system', 'system'),
+    ('transaction-type.loss', 'EN', f_create_or_select_word('Loss'), 'system', 'system'),
+    ('transaction-type.loss', 'RU', f_create_or_select_word('Проигрыш'), 'system', 'system'),
+    ('transaction-type.fee', 'EN', f_create_or_select_word('Fee'), 'system', 'system'),
+    ('transaction-type.fee', 'RU', f_create_or_select_word('Комиссия'), 'system', 'system'),
+    ('transaction-type.refund', 'EN', f_create_or_select_word('Refund'), 'system', 'system'),
+    ('transaction-type.refund', 'RU', f_create_or_select_word('Возврат'), 'system', 'system'),
+    ('transaction-type.bonus', 'EN', f_create_or_select_word('Bonus'), 'system', 'system'),
+    ('transaction-type.bonus', 'RU', f_create_or_select_word('Бонус'), 'system', 'system'),
+    ('transaction-type.promo', 'EN', f_create_or_select_word('Promo'), 'system', 'system'),
+    ('transaction-type.promo', 'RU', f_create_or_select_word('Промо'), 'system', 'system'),
+    ('user.avatar', 'EN', f_create_or_select_word('Avatar'), 'system', 'system'),
+    ('user.avatar', 'RU', f_create_or_select_word('Аватар'), 'system', 'system'),
+    ('user.background', 'EN', f_create_or_select_word('Background'), 'system', 'system'),
+    ('user.background', 'RU', f_create_or_select_word('Фон'), 'system', 'system'),
+    ('user.verified', 'EN', f_create_or_select_word('Verified'), 'system', 'system'),
+    ('user.verified', 'RU', f_create_or_select_word('Подтвержден'), 'system', 'system'),
+    ('user.username', 'EN', f_create_or_select_word('Username'), 'system', 'system'),
+    ('user.username', 'RU', f_create_or_select_word('Имя пользователя'), 'system', 'system'),
+    ('user.email', 'EN', f_create_or_select_word('Email'), 'system', 'system'),
+    ('user.email', 'RU', f_create_or_select_word('Email'), 'system', 'system'),
+    ('user.phone', 'EN', f_create_or_select_word('Phone'), 'system', 'system'),
+    ('user.phone', 'RU', f_create_or_select_word('Телефон'), 'system', 'system')
     ON CONFLICT (ck_localization, ck_lang) DO NOTHING;
 
 --changeset artemov_i:init_categories_data runOnChange:true dbms:postgresql splitStatements:false stripComments:false
@@ -239,3 +293,54 @@ INSERT INTO t_d_like_type (ck_id, ck_name, ck_description, ck_create, ck_modify)
     ON CONFLICT (ck_id) DO NOTHING;
 
 --rollback DROP TABLE t_d_like_type;
+
+--changeset artemov_i:init_transaction_statuses_data runOnChange:true dbms:postgresql splitStatements:false stripComments:false
+
+-- =====================================================
+-- 9. СТАТУСЫ ТРАНЗАКЦИЙ
+-- =====================================================
+select 'Создание статусов транзакций';
+INSERT INTO t_d_transaction_status (ck_id, ck_name, ck_description, ck_create, ck_modify) VALUES 
+    ('PENDING', 'transaction-status.pending', null, 'system', 'system'),
+    ('CONFIRMED', 'transaction-status.confirmed', null, 'system', 'system'),
+    ('REJECTED', 'transaction-status.rejected', null, 'system', 'system')
+    ON CONFLICT (ck_id) DO NOTHING;
+
+--rollback DROP TABLE t_d_transaction_status;
+
+--changeset artemov_i:init_transaction_types_data runOnChange:true dbms:postgresql splitStatements:false stripComments:false
+
+-- =====================================================
+-- 10. ТИПЫ ТРАНЗАКЦИЙ
+-- =====================================================
+select 'Создание типов транзакций';
+INSERT INTO t_d_transaction_type (ck_id, ck_name, ck_description, ck_create, ck_modify) VALUES  
+    ('DEPOSIT', 'transaction-type.deposit', null, 'system', 'system'),
+    ('BET', 'transaction-type.bet', null, 'system', 'system'),
+    ('WIN', 'transaction-type.win', null, 'system', 'system'),
+    ('LOSS', 'transaction-type.loss', null, 'system', 'system'),
+    ('FEE', 'transaction-type.fee', null, 'system', 'system'),
+    ('REFUND', 'transaction-type.refund', null, 'system', 'system'),
+    ('BONUS', 'transaction-type.bonus', null, 'system', 'system'),
+    ('PROMO', 'transaction-type.promo', null, 'system', 'system'),
+    ('WITHDRAWAL', 'transaction-type.withdrawal', null, 'system', 'system')
+    ON CONFLICT (ck_id) DO NOTHING;
+
+--rollback DROP TABLE t_d_transaction_type;
+
+--changeset artemov_i:init_properties_types_data runOnChange:true dbms:postgresql splitStatements:false stripComments:false
+
+-- =====================================================
+-- 11. ТИПЫ СВОЙСТВ
+-- =====================================================
+select 'Создание типов свойств';
+INSERT INTO t_d_properties_type (ck_id, cr_type, cr_place, ck_name, ck_description, ck_create, ck_modify) VALUES 
+    ('USER_AVATAR', 'MEDIA', 'USER', 'user.avatar', null, 'system', 'system'),
+    ('USER_BACKGROUND', 'MEDIA', 'USER', 'user.background', null, 'system', 'system'),
+    ('USER_VERIFIED', 'BOOLEAN', 'USER', 'user.verified', null, 'system', 'system'),
+    ('USER_USERNAME', 'TEXT', 'USER', 'user.username', null, 'system', 'system'),
+    ('USER_EMAIL', 'TEXT', 'USER', 'user.email', null, 'system', 'system'),
+    ('USER_PHONE', 'TEXT', 'USER', 'user.phone', null, 'system', 'system')
+    ON CONFLICT (ck_id) DO NOTHING;
+
+--rollback DROP TABLE t_d_properties_type;

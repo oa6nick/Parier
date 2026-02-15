@@ -1,5 +1,18 @@
 basePath: /api/v1
 definitions:
+  internal_handlers.BetCommentResponse:
+    properties:
+      count:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/parier-server_internal_models.BetCommentResponse'
+        type: array
+      success:
+        type: boolean
+      total:
+        type: integer
+    type: object
   internal_handlers.BetCreateResponse:
     properties:
       data:
@@ -140,6 +153,80 @@ definitions:
       total:
         type: integer
     type: object
+  parier-server_internal_models.AuthorResponse:
+    properties:
+      avatar:
+        type: string
+      background:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      likes:
+        type: integer
+      rating:
+        type: integer
+      updated_at:
+        type: string
+      username:
+        type: string
+      verified:
+        type: boolean
+      win_rate:
+        type: integer
+    type: object
+  parier-server_internal_models.BetCommentCreateRequest:
+    properties:
+      content:
+        type: string
+      language:
+        type: string
+      parent_id:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+    type: object
+  parier-server_internal_models.BetCommentRequest:
+    properties:
+      language:
+        type: string
+      limit:
+        type: integer
+      offset:
+        type: integer
+      search:
+        type: string
+      sort_by:
+        type: string
+      sort_dir:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+    type: object
+  parier-server_internal_models.BetCommentResponse:
+    properties:
+      author:
+        $ref: '#/definitions/parier-server_internal_models.AuthorResponse'
+      content:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      is_liked_by_me:
+        type: boolean
+      likes:
+        type: integer
+      parent:
+        $ref: '#/definitions/parier-server_internal_models.BetCommentResponse'
+      updated_at:
+        type: string
+    type: object
   parier-server_internal_models.BetCreateRequest:
     properties:
       amount:
@@ -177,6 +264,8 @@ definitions:
         type: string
       description:
         type: string
+      id:
+        type: string
       language:
         type: string
       limit:
@@ -208,12 +297,18 @@ definitions:
     properties:
       amount:
         type: number
+      author:
+        $ref: '#/definitions/parier-server_internal_models.AuthorResponse'
+      bets_count:
+        type: integer
       category_id:
         type: string
       category_name:
         type: string
       coefficient:
         type: number
+      comments:
+        type: integer
       created_at:
         type: string
       deadline:
@@ -226,6 +321,12 @@ definitions:
         type: string
       is_liked_by_me:
         type: boolean
+      is_rated_by_me:
+        type: boolean
+      likes:
+        type: integer
+      rating:
+        type: integer
       status_id:
         type: string
       status_name:
@@ -279,13 +380,13 @@ definitions:
     type: object
   parier-server_internal_models.PropertyPlace:
     enum:
-    - AGENT
-    - UNIT
+    - BET
+    - SOURCE
     - USER
     type: string
     x-enum-varnames:
-    - PropertyPlaceAgent
-    - PropertyPlaceUnit
+    - PropertyPlaceBet
+    - PropertyPlaceSource
     - PropertyPlaceUser
   parier-server_internal_models.PropertyType:
     enum:
@@ -953,6 +1054,166 @@ paths:
       summary: Get bet types
       tags:
       - parier
+  /parier/bet/{bet_id}/comment:
+    put:
+      consumes:
+      - application/json
+      description: Create bet comment
+      parameters:
+      - description: Bet ID
+        in: path
+        name: bet_id
+        required: true
+        type: string
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.BetCommentCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Create bet comment
+      tags:
+      - parier
+  /parier/bet/{bet_id}/comments:
+    post:
+      consumes:
+      - application/json
+      description: Get bet comments
+      parameters:
+      - description: Bet ID
+        in: path
+        name: bet_id
+        required: true
+        type: string
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.BetCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.BetCommentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get bet comments
+      tags:
+      - parier
+  /parier/bet/{bet_id}/like:
+    post:
+      consumes:
+      - application/json
+      description: Like bet
+      parameters:
+      - description: Bet ID
+        in: path
+        name: bet_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Like bet
+      tags:
+      - parier
+  /parier/bet/{bet_id}/unlike:
+    post:
+      consumes:
+      - application/json
+      description: Unlike bet
+      parameters:
+      - description: Bet ID
+        in: path
+        name: bet_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Unlike bet
+      tags:
+      - parier
   /parier/categories:
     post:
       consumes:
@@ -989,6 +1250,80 @@ paths:
       - OAuth2Keycloak: []
       - BasicAuth: []
       summary: Get categories
+      tags:
+      - parier
+  /parier/comment/{comment_id}/like:
+    post:
+      consumes:
+      - application/json
+      description: Like bet comment
+      parameters:
+      - description: Comment ID
+        in: path
+        name: comment_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Like bet comment
+      tags:
+      - parier
+  /parier/comment/{comment_id}/unlike:
+    post:
+      consumes:
+      - application/json
+      description: Unlike bet comment
+      parameters:
+      - description: Comment ID
+        in: path
+        name: comment_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Unlike bet comment
       tags:
       - parier
   /parier/like-types:
