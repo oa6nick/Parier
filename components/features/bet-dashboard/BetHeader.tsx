@@ -147,7 +147,7 @@ export const BetHeader: React.FC<BetHeaderProps> = ({ bet }) => {
              <span className="text-xs font-medium uppercase tracking-wide">Pool</span>
            </div>
            <div className="text-lg font-bold text-secondary-dark">
-             {fmt.number(bet.betAmount)} <span className="text-sm font-normal">PRR</span>
+             {fmt.number(bet.betAmount)} <span className="text-sm font-normal">PAR</span>
            </div>
         </div>
 

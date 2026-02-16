@@ -33,6 +33,11 @@ export default function AdminPage() {
   const [balanceOverrides, setBalanceOverrides] = useState<Record<string, number>>({});
   const [previewCount, setPreviewCount] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchPreview = useCallback(async () => {
     const params = new URLSearchParams();
@@ -123,6 +128,27 @@ export default function AdminPage() {
       setIsSubmitting(false);
     }
   };
+
+  // Defer full render until mounted to avoid hydration mismatch from useFormatter/next-intl
+  if (!mounted) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Shield className="w-6 h-6 text-primary" />
+          </div>
+          <div className="flex-1 space-y-2">
+            <div className="h-8 bg-gray-200 rounded w-1/3 animate-pulse" />
+            <div className="h-4 bg-gray-100 rounded w-1/2 animate-pulse" />
+          </div>
+        </div>
+        <div className="grid gap-8 lg:grid-cols-2">
+          <div className="bg-white rounded-3xl p-6 shadow-soft border border-gray-100 animate-pulse h-96" />
+          <div className="bg-white rounded-3xl p-6 shadow-soft border border-gray-100 animate-pulse h-96" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -284,7 +310,7 @@ export default function AdminPage() {
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-primary">
-                      {format.number(balance.balance)} PRR
+                      {format.number(balance.balance)} PAR
                     </p>
                   </div>
                 </div>

@@ -44,7 +44,7 @@ export const BetParticipants: React.FC<BetParticipantsProps> = ({ bet }) => {
               </div>
             </div>
             <div className="text-right">
-              <div className="font-bold text-gray-900">{p.amount} PRR</div>
+              <div className="font-bold text-gray-900">{p.amount} PAR</div>
               <div className={`text-xs font-medium ${p.side === 'For' ? 'text-green-600' : 'text-red-500'}`}>
                 {p.side}
               </div>

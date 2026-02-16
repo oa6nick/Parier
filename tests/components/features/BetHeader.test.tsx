@@ -72,10 +72,10 @@ describe('BetHeader', () => {
     expect(screen.getByText('2.5x')).toBeInTheDocument() // Odds
   })
 
-  it('displays PRR currency symbol', () => {
+  it('displays PAR currency symbol', () => {
     renderWithProviders(<BetHeader bet={mockBet} />)
     
-    expect(screen.getByText('PRR')).toBeInTheDocument()
+    expect(screen.getByText('PAR')).toBeInTheDocument()
   })
 
   it('displays bet status', () => {

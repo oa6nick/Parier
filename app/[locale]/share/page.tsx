@@ -17,7 +17,7 @@ export default function SharePage() {
   
   // In a real app, this would be the actual profile URL
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/profile/${currentUser.id}` : '';
-  const shareText = "Join me on Parier and bet on the future! Use my code: " + referralCode;
+  const shareText = "Join me on Pariall and bet on the future! Use my code: " + referralCode;
 
   const handleShare = (platform: 'telegram' | 'twitter' | 'facebook') => {
     let url = '';

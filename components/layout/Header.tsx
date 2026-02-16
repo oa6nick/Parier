@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useTranslations, useLocale, useFormatter } from "next-intl";
 import { getTokenBalance } from "@/lib/mockData/wallet";
 import { useAuth } from "@/context/AuthContext";
+import { Logo } from "@/components/Logo";
 
 const HeaderContent: React.FC = () => {
   const pathname = usePathname();
@@ -57,12 +58,7 @@ const HeaderContent: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Left: Logo */}
-          <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-            <div className="relative w-10 h-10 flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl shadow-lg shadow-gray-900/10 group-hover:shadow-gray-900/20 transition-all duration-300">
-              <span className="text-white font-bold text-xl">P</span>
-            </div>
-            <span className="text-xl font-bold text-gray-900 tracking-tight hidden sm:block">Parier</span>
-          </Link>
+          <Logo size="md" className="group-hover:opacity-90 transition-opacity" />
 
           {/* Center: Navigation (Desktop) */}
           <nav className="hidden md:flex items-center gap-1 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -224,7 +220,7 @@ const HeaderContent: React.FC = () => {
                     className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium text-gray-700 hover:bg-gray-50 transition-colors min-h-[48px]"
                   >
                     <Wallet className="w-5 h-5 text-primary" />
-                    <span>{format.number(balance.balance)} PRR</span>
+                    <span>{format.number(balance.balance)} PAR</span>
                   </Link>
                   <Link
                     href="/create"

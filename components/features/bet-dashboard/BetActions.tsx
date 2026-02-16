@@ -54,7 +54,7 @@ export const BetActions: React.FC<BetActionsProps> = ({ bet }) => {
       <div className="space-y-4 mb-6">
         <div>
           <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 mb-2">
-            Amount (PRR)
+            Amount (PAR)
           </label>
           <input
             id={inputId}
@@ -87,7 +87,7 @@ export const BetActions: React.FC<BetActionsProps> = ({ bet }) => {
             <TrendingUp className="w-4 h-4 text-secondary" />
           </div>
           <div className="text-2xl font-bold text-secondary-dark">
-            {format.number(potentialWin)} PRR
+            {format.number(potentialWin)} PAR
           </div>
         </div>
       )}

@@ -54,7 +54,7 @@ export const MobileBetActions: React.FC<MobileBetActionsProps> = ({ bet }) => {
              <div className="flex-1">
                 <div className="text-xs text-gray-500 font-medium">Potential Win up to</div>
                 <div className="text-xl font-bold text-secondary-dark flex items-center gap-1">
-                  {format.number(bet.betAmount * bet.coefficient)} <span className="text-sm font-normal text-gray-400">PRR</span>
+                  {format.number(bet.betAmount * bet.coefficient)} <span className="text-sm font-normal text-gray-400">PAR</span>
                 </div>
              </div>
             <Button 
@@ -84,7 +84,7 @@ export const MobileBetActions: React.FC<MobileBetActionsProps> = ({ bet }) => {
 
             <div>
               <label htmlFor={inputId} className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
-                Amount (PRR)
+                Amount (PAR)
               </label>
               <div className="relative">
                 <input
@@ -119,7 +119,7 @@ export const MobileBetActions: React.FC<MobileBetActionsProps> = ({ bet }) => {
                   <TrendingUp className="w-3 h-3 text-secondary" />
                 </div>
                 <div className="text-xl font-bold text-secondary-dark">
-                  {format.number(potentialWin)} PRR
+                  {format.number(potentialWin)} PAR
                 </div>
               </div>
             )}
@@ -130,7 +130,7 @@ export const MobileBetActions: React.FC<MobileBetActionsProps> = ({ bet }) => {
               onClick={handleBet}
               disabled={!amount || Number(amount) <= 0 || isSubmitting}
             >
-              {isSubmitting ? 'Processing...' : `Place Bet • ${Number(amount) > 0 ? format.number(Number(amount)) : 0} PRR`}
+              {isSubmitting ? 'Processing...' : `Place Bet • ${Number(amount) > 0 ? format.number(Number(amount)) : 0} PAR`}
             </Button>
              <p className="text-[10px] text-center text-gray-400">
                Funds are locked until event verification.

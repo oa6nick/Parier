@@ -18,12 +18,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!bet) {
     return {
-      title: 'Bet Not Found - Parier',
+      title: 'Bet Not Found - Pariall',
     };
   }
 
   return {
-    title: `${bet.title} - Parier`,
+    title: `${bet.title} - Pariall`,
     description: bet.shortDescription,
     openGraph: {
       title: bet.title,

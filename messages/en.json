@@ -12,7 +12,7 @@
     },
     "ruleParams": {
       "days": "Joined in last (days)",
-      "maxBalance": "Balance below (PRR)",
+      "maxBalance": "Balance below (PAR)",
       "minBets": "Minimum bets placed"
     },
     "preview": "{count} users will receive tokens",
@@ -78,11 +78,11 @@
     "closed": "Closed",
     "betNow": "Bet Now",
     "winRate": "WIN",
-    "tokens": "Parier",
-    "tokenSymbol": "PRR",
+    "tokens": "Pariall",
+    "tokenSymbol": "PAR",
     "share": "Share",
     "copied": "Copied!",
-    "shareText": "{title} - {outcome}\nOdds: {coefficient}x\nCheck it out on Parier!",
+    "shareText": "{title} - {outcome}\nOdds: {coefficient}x\nCheck it out on Pariall!",
     "details": "Details"
   },
   "BetModal": {
@@ -292,8 +292,8 @@
     "title": "Wallet",
     "subtitle": "Manage your tokens and transactions",
     "balance": "Balance",
-    "tokens": "Parier",
-    "tokenSymbol": "PRR",
+    "tokens": "Pariall",
+    "tokenSymbol": "PAR",
     "totalDeposited": "Total Deposited",
     "totalWithdrawn": "Total Withdrawn",
     "totalWon": "Total Won",
@@ -303,7 +303,7 @@
     "minDeposit": "Minimum deposit",
     "quickAmounts": "Quick Amounts",
     "youWillReceive": "You will receive",
-    "depositNote": "PRR will be added to your balance immediately",
+    "depositNote": "PAR will be added to your balance immediately",
     "paymentMethod": "Payment Method",
     "cardPayment": "Card Payment",
     "cancel": "Cancel",
@@ -326,7 +326,7 @@
   },
   "Referral": {
     "title": "Referral Program",
-    "subtitle": "Invite friends and earn PRR",
+    "subtitle": "Invite friends and earn PAR",
     "yourCode": "Your Referral Code",
     "copy": "Copy",
     "copied": "Copied!",
@@ -334,7 +334,7 @@
     "totalReferrals": "Total Referrals",
     "totalEarnings": "Total Earnings",
     "howItWorks": "How It Works",
-    "howItWorksDesc": "Share your referral code with friends. When they sign up and place bets, you earn PRR!"
+    "howItWorksDesc": "Share your referral code with friends. When they sign up and place bets, you earn PAR!"
   },
   "Home": {
     "title_part1": "Challenge the",
@@ -437,7 +437,7 @@
     "rightsReserved": "All rights reserved."
   },
   "About": {
-    "title": "About Parier",
+    "title": "About Pariall",
     "mission": {
       "title": "Our Mission",
       "description": "To democratize truth through efficient prediction markets."
@@ -479,7 +479,7 @@
     "lastUpdated": "Last Updated",
     "acceptance": {
       "title": "Acceptance of Terms",
-      "content": "By accessing Parier, you agree to be bound by these Terms."
+      "content": "By accessing Pariall, you agree to be bound by these Terms."
     },
     "eligibility": {
       "title": "Eligibility",

@@ -17,7 +17,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Parier - Prediction Platform",
+  title: "Pariall - Prediction Platform",
   description: "P2P prediction platform for real events",
 };
 

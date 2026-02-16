@@ -12,7 +12,7 @@
     },
     "ruleParams": {
       "days": "Зарегистрированы за последние (дней)",
-      "maxBalance": "Баланс ниже (PRR)",
+      "maxBalance": "Баланс ниже (PAR)",
       "minBets": "Минимум ставок"
     },
     "preview": "{count} пользователей получат токены",
@@ -78,11 +78,11 @@
     "closed": "Закрыт",
     "betNow": "Сделать ставку",
     "winRate": "WIN",
-    "tokens": "Parier",
-    "tokenSymbol": "PRR",
+    "tokens": "Pariall",
+    "tokenSymbol": "PAR",
     "share": "Поделиться",
     "copied": "Скопировано!",
-    "shareText": "{title} - {outcome}\nКэф: {coefficient}x\nСмотри прогноз на Parier!",
+    "shareText": "{title} - {outcome}\nКэф: {coefficient}x\nСмотри прогноз на Pariall!",
     "details": "Подробнее"
   },
   "BetModal": {
@@ -292,8 +292,8 @@
     "title": "Кошелек",
     "subtitle": "Управляйте токенами и транзакциями",
     "balance": "Баланс",
-    "tokens": "Parier",
-    "tokenSymbol": "PRR",
+    "tokens": "Pariall",
+    "tokenSymbol": "PAR",
     "totalDeposited": "Всего пополнено",
     "totalWithdrawn": "Всего выведено",
     "totalWon": "Всего выиграно",
@@ -303,7 +303,7 @@
     "minDeposit": "Минимальное пополнение",
     "quickAmounts": "Быстрые суммы",
     "youWillReceive": "Вы получите",
-    "depositNote": "PRR будут добавлены на ваш баланс сразу",
+    "depositNote": "PAR будут добавлены на ваш баланс сразу",
     "paymentMethod": "Способ оплаты",
     "cardPayment": "Оплата картой",
     "cancel": "Отмена",
@@ -326,7 +326,7 @@
   },
   "Referral": {
     "title": "Реферальная программа",
-    "subtitle": "Приглашайте друзей и зарабатывайте PRR",
+    "subtitle": "Приглашайте друзей и зарабатывайте PAR",
     "yourCode": "Ваш реферальный код",
     "copy": "Копировать",
     "copied": "Скопировано!",
@@ -334,7 +334,7 @@
     "totalReferrals": "Всего приглашено",
     "totalEarnings": "Всего заработано",
     "howItWorks": "Как это работает",
-    "howItWorksDesc": "Поделитесь своим реферальным кодом с друзьями. Когда они зарегистрируются и сделают ставки, вы получите PRR!"
+    "howItWorksDesc": "Поделитесь своим реферальным кодом с друзьями. Когда они зарегистрируются и сделают ставки, вы получите PAR!"
   },
   "Home": {
     "title_part1": "Брось вызов",
@@ -437,7 +437,7 @@
     "rightsReserved": "Все права защищены."
   },
   "About": {
-    "title": "О Parier",
+    "title": "О Pariall",
     "mission": {
       "title": "Наша миссия",
       "description": "Демократизировать истину через эффективные рынки прогнозов."
@@ -479,7 +479,7 @@
     "lastUpdated": "Последнее обновление",
     "acceptance": {
       "title": "Принятие условий",
-      "content": "Используя Parier, вы соглашаетесь с этими Условиями."
+      "content": "Используя Pariall, вы соглашаетесь с этими Условиями."
     },
     "eligibility": {
       "title": "Право на участие",

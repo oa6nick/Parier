@@ -42,7 +42,7 @@ export default function RegisterPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-300">Top Predictor</p>
-                <p className="font-bold text-white">Alex just won 500 PRR</p>
+                <p className="font-bold text-white">Alex just won 500 PAR</p>
               </div>
             </div>
             <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
