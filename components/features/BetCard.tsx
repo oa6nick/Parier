@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { ru, enUS } from 'date-fns/locale';
 import {
-    Clock,
     Users,
     Share2,
     Lightbulb,
@@ -16,7 +15,6 @@ import {
     Heart,
     MessageCircle,
 } from 'lucide-react';
-import { Bet } from '@/types';
 import { Avatar } from '@/components/ui/Avatar';
 import { RatingStars } from '@/components/ui/RatingStars';
 import { Tag } from '@/components/ui/Tag';
@@ -26,11 +24,8 @@ import { useRouter } from '@/navigation';
 import { cn, GetMediaUrl } from '@/lib/utils';
 import { CommentsModal } from '@/components/features/CommentsModal';
 import { users } from '@/lib/mockData/users';
-import { getComments } from '@/lib/mockData/comments';
 import { ParierServerInternalModelsBetResponse } from '@/api/client';
 import moment from 'moment';
-import { getSessionIsAuthenticated } from '@/lib/store/Session/model/selectors';
-import { useSelector } from 'react-redux';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useApi } from '@/api/context';
 
@@ -46,7 +41,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet, onReload }) => {
     const locale = useLocale();
     const router = useRouter();
     const api = useApi();
-    const { isAuthenticated, login } = useAuth();
+    const { session, isAuthenticated, login } = useAuth();
     const [isFlipped, setIsFlipped] = useState(false);
     const [betAmount, setBetAmount] = useState<string>('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,7 +66,11 @@ export const BetCard: React.FC<BetCardProps> = ({ bet, onReload }) => {
             return;
         }
 
-        if (bet.status_id !== 'open') {
+        if (session?.user_id === bet.author?.id) {
+            return;
+        }
+
+        if (bet.status_id !== 'OPEN') {
             return;
         }
 
@@ -208,7 +207,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet, onReload }) => {
 
                             <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
                                 <Tag
-                                    label={bet.status_id === 'open' ? t('active') : t('closed')}
+                                    label={bet.status_id === 'OPEN' ? t('active') : t('closed')}
                                     variant="status"
                                     status={bet.status_id as any}
                                 />
@@ -309,7 +308,13 @@ export const BetCard: React.FC<BetCardProps> = ({ bet, onReload }) => {
                                     size="sm"
                                     className="rounded-lg whitespace-nowrap px-4 py-2"
                                     onClick={handleBetClick}
-                                    disabled={bet.status_id !== 'open' ? true : false}
+                                    disabled={
+                                        bet.status_id !== 'OPEN' ||
+                                        !isAuthenticated ||
+                                        session?.user_id === bet.author?.id
+                                            ? true
+                                            : false
+                                    }
                                 >
                                     {t('betNow')} <ArrowUpRight className="w-4 h-4 ml-1 inline-block" />
                                 </Button>
