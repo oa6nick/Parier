@@ -136,7 +136,7 @@ func (h *KeycloakAuthHandler) LoginCode(c *gin.Context) {
 	sessionCookie := util.SignSession(session.CkId, h.config.Store.Secret)
 	c.SetCookie(h.config.Store.CookieName, sessionCookie, int(h.config.Store.SessionDuration.Seconds()), h.config.Store.CookiePath, h.config.Store.CookieDomain, h.config.Store.CookieSecure, h.config.Store.CookieHttpOnly)
 
-	SendSuccess(c, "Successfully authenticated", profileResponse)
+	c.JSON(http.StatusOK, profileResponse)
 }
 
 // GetProfile godoc

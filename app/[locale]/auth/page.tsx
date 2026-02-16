@@ -16,5 +16,5 @@ export default function AuthPage() {
             redirect('/');
         }
     }, [code]);
-    return <div>Loading...</div>;
+    return null;
 }

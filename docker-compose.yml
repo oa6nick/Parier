@@ -6,6 +6,8 @@ services:
     container_name: parier-frontend
     ports:
       - "23000:3000"
+    networks:
+      - parier-network
     build:
       context: .
       dockerfile: Dockerfile
@@ -160,6 +162,8 @@ services:
       AI_TYPE: n8n
       AI_URL: http://n8n:5678/webhook/64b27331-82ef-4250-b06a-5e55a2cc0341
 
+      WALLET_DEFAULT_BALANCE: ${WALLET_DEFAULT_BALANCE:-0}
+
       # Frontend configuration
       FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-http://localhost:23000}
       
@@ -168,8 +172,8 @@ services:
       KEYCLOAK_DEFAULT_REALM: ${KEYCLOAK_DEFAULT_REALM:-parier}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-parier-api}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-JQrRgJOK6xMHrHzvgzCZhqalJg5Hr8LW}
-      KEYCLOAK_JWT_ISSUER: ${KEYCLOAK_SERVER_URL:-http://localhost:28080}/realms/{realm}
-      KEYCLOAK_CERT_ENDPOINT: ${KEYCLOAK_SERVER_URL:-http://localhost:28080}/realms/{realm}/protocol/openid-connect/certs
+      KEYCLOAK_JWT_ISSUER: ${KEYCLOAK_JWT_ISSUER}
+      KEYCLOAK_CERT_ENDPOINT: ${KEYCLOAK_CERT_ENDPOINT}
     ports:
       - "28090:8080"
     depends_on:
