@@ -1,0 +1,147 @@
+{
+    "realm": "parier",
+    "enabled": true,
+    "displayName": "Parier",
+    "displayNameHtml": "<div class=\"kc-logo-text\"><span>parier</span></div>",
+    "registrationAllowed": true,
+    "registrationEmailAsUsername": true,
+    "rememberMe": true,
+    "verifyEmail": false,
+    "loginWithEmailAllowed": true,
+    "duplicateEmailsAllowed": false,
+    "resetPasswordAllowed": true,
+    "editUsernameAllowed": false,
+    "bruteForceProtected": true,
+    "permanentLockout": false,
+    "maxFailureWaitSeconds": 900,
+    "minimumQuickLoginWaitSeconds": 60,
+    "waitIncrementSeconds": 60,
+    "quickLoginCheckMilliSeconds": 1000,
+    "maxDeltaTimeSeconds": 43200,
+    "failureFactor": 30,
+    "defaultRoles": [
+        "default-roles-parier"
+    ],
+    "clients": [
+        {
+            "clientId": "parier-api",
+            "name": "Parier API Client",
+            "description": "Client for Parier API server",
+            "enabled": true,
+            "publicClient": false,
+            "serviceAccountsEnabled": true,
+            "standardFlowEnabled": true,
+            "implicitFlowEnabled": false,
+            "directAccessGrantsEnabled": true,
+            "protocol": "openid-connect",
+            "clientAuthenticatorType": "client-secret",
+            "secret": "ywBD4H15rnDn1OGoBAtiTADK2MsaJJqo",
+            "attributes": {
+                "access.token.lifespan": "1800",
+                "client.secret.creation.time": "1609459200"
+            },
+            "redirectUris": [
+                "http://localhost:8080/*",
+                "http://localhost:8085/*",
+                "http://localhost:18081/*",
+                "http://localhost:3000/*"
+            ],
+            "webOrigins": [
+                "http://localhost:8080",
+                "http://localhost:8085",
+                "http://localhost:18081",
+                "http://localhost:3000"
+            ],
+            "defaultClientScopes": [
+                "web-origins",
+                "roles",
+                "basic",
+                "profile",
+                "email"
+            ],
+            "optionalClientScopes": [
+                "address",
+                "phone",
+                "basic",
+                "offline_access",
+                "microprofile-jwt"
+            ]
+        }
+    ],
+    "roles": {
+        "realm": [
+            {
+                "name": "admin",
+                "description": "Administrator role with full access",
+                "composite": false
+            },
+            {
+                "name": "user",
+                "description": "Regular user role",
+                "composite": false
+            },
+            {
+                "name": "default-roles-parier",
+                "description": "Default roles for parier realm",
+                "composite": true,
+                "composites": {
+                    "realm": [
+                        "user"
+                    ]
+                }
+            }
+        ]
+    },
+    "users": [
+        {
+            "username": "admin",
+            "email": "admin@parier.com",
+            "firstName": "Admin",
+            "lastName": "User",
+            "enabled": true,
+            "emailVerified": true,
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "admin123",
+                    "temporary": false
+                }
+            ],
+            "realmRoles": [
+                "admin"
+            ]
+        }
+    ],
+    "scopeMappings": [
+        {
+            "client": "parier-api",
+            "roles": [
+                "admin",
+                "agent",
+                "user"
+            ]
+        }
+    ],
+    "clientScopeMappings": {
+        "parier-api": [
+            {
+                "client": "parier-api",
+                "roles": [
+                    "admin",
+                    "agent",
+                    "user"
+                ]
+            }
+        ]
+    },
+    "internationalizationEnabled": true,
+    "supportedLocales": [
+        "en",
+        "ru"
+    ],
+    "defaultLocale": "en",
+    "loginTheme": "keycloak",
+    "adminTheme": "keycloak",
+    "accountTheme": "keycloak",
+    "emailTheme": "keycloak"
+}

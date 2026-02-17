@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  <property name="user.update" value="s_parier"/>
+  <property name="user.table" value="s_pariert"/>
+  <property name="user.connect" value="s_parier"/>
+
+  <include file="table/table.xml" relativeToChangelogFile="true" />
+</databaseChangeLog>
