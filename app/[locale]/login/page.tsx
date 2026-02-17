@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useRouter } from "@/navigation";
+import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { useAuth } from "@/context/AuthContext";
+import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Mail, Lock, ArrowRight, TrendingUp } from "lucide-react";
 
@@ -14,19 +15,23 @@ export default function LoginPage() {
   const t = useTranslations('Login');
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { data: session, status } = useSession();
 
+  useEffect(() => {
+    if (status === "authenticated" && session) {
+      router.replace(searchParams.get("redirect") || "/");
+    }
+  }, [session, status, router, searchParams]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await login(email);
+    const redirect = searchParams.get("redirect") || "/profile";
+    await signIn("keycloak", { callbackUrl: redirect });
     setLoading(false);
-    const redirect = searchParams.get('redirect');
-    router.push(redirect || "/profile");
   };
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   return (
     <AuthLayout

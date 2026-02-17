@@ -313,6 +313,50 @@ func (h *ParierHandler) PostUnlikeBet(c *gin.Context) {
 	SendSuccess(c, "Bet unliked successfully", unliked)
 }
 
+// PostJoinBet godoc
+// @Summary Join bet
+// @Description Join a bet by placing an amount
+// @Tags parier
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Security OAuth2Keycloak
+// @Security BasicAuth
+// @Param bet_id path string true "Bet ID"
+// @Param request body service.JoinBetRequest true "Request"
+// @Success 200 {object} models.SuccessResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /parier/bet/{bet_id}/join [post]
+func (h *ParierHandler) PostJoinBet(c *gin.Context) {
+	betID := GetUUID(c, "bet_id")
+	if betID == uuid.Nil {
+		SendError(c, http.StatusBadRequest, "Bet ID is required", "Bet ID is required")
+		return
+	}
+	user := GetUser(c)
+	if user == nil {
+		SendError(c, http.StatusUnauthorized, "Unauthorized", "Authentication required")
+		return
+	}
+	var req service.JoinBetRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		SendError(c, http.StatusBadRequest, "Invalid request body", err.Error())
+		return
+	}
+	err := h.service.JoinBet(betID, user.ID, req.Amount)
+	if err != nil {
+		if svcErr := service.GetServiceError(err); svcErr != nil {
+			SendError(c, http.StatusBadRequest, svcErr.Code, svcErr.Message)
+			return
+		}
+		SendError(c, http.StatusInternalServerError, "Internal server error", err.Error())
+		return
+	}
+	SendSuccess(c, "Bet joined successfully", nil)
+}
+
 // GetBetComments godoc
 // @Summary Get bet comments
 // @Description Get bet comments
@@ -468,6 +512,7 @@ func (h *ParierHandler) RegisterRoutes(router *gin.RouterGroup) {
 		parier.PUT("/bet", h.CreateBet)
 		parier.POST("/bet/:bet_id/like", h.PostLikeBet)
 		parier.POST("/bet/:bet_id/unlike", h.PostUnlikeBet)
+		parier.POST("/bet/:bet_id/join", h.PostJoinBet)
 		parier.POST("/bet/:bet_id/comments", h.PostBetComments)
 		parier.PUT("/bet/:bet_id/comment", h.PutCreateBetComment)
 		parier.POST("/comment/:comment_id/like", h.PostLikeBetComment)

@@ -88,7 +88,7 @@ function replaceFn {
 replaceFn "$DIR/db.sql"
 replaceFn "$DIR/db.changelog.init.xml"
 
-commadLiquibase="./gradlew update -PrunList=init -Pliquibase.username=$sPw -Pliquibase.password=$sUser -Pliquibase.url=$connectionPreBd -Pliquibase.driver=org.postgresql.Driver"
+commadLiquibase="./gradlew update -PrunList=init -Pliquibase.username=$sUser -Pliquibase.password=$sPw -Pliquibase.url=$connectionPreBd -Pliquibase.driver=org.postgresql.Driver"
 cd $DIR/..
 $commadLiquibase
 if [ $? != 0 ]; then
@@ -103,4 +103,4 @@ replaceFn "$DIR/../liquibase.schema.properties"
 echo "driver: org.postgresql.Driver" > $DIR/liquibase.init.properties
 echo "url: $connectionPreBd" >> $DIR/liquibase.init.properties
 echo "username: $sUser" >> $DIR/liquibase.init.properties
-echo "password: $sUser" >> $DIR/liquibase.init.properties
+echo "password: $sPw" >> $DIR/liquibase.init.properties

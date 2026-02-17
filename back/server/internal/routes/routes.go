@@ -25,7 +25,7 @@ func SetupRoutes(cfg *config.Config, db *gorm.DB) *gin.Engine {
 	router.Use(middleware.LoggerMiddleware())
 	router.Use(middleware.RequestIDMiddleware())
 	router.Use(middleware.RecoveryMiddleware())
-	router.Use(middleware.CORSMiddleware())
+	router.Use(middleware.CORSMiddleware(cfg))
 	router.Use(middleware.DatabaseMiddleware(db))
 	router.Use(middleware.ConfigMiddleware(cfg))
 
@@ -53,6 +53,9 @@ func SetupRoutes(cfg *config.Config, db *gorm.DB) *gin.Engine {
 	mediaHandler := handlers.NewMediaHandler(services.Media, cfg)
 	coreHandler := handlers.NewCoreHandler(services.Core, cfg)
 	parierHandler := handlers.NewParierHandler(services.Parier)
+	adminHandler := handlers.NewAdminHandler(services.Admin)
+	walletHandler := handlers.NewWalletHandler(services.Wallet)
+	referralHandler := handlers.NewReferralHandler(services.Referral)
 	// Authentication routes (public)
 	public := v1.Group("")
 	public.Use(middleware.KeycloakAuthMiddleware(cfg, services.Keycloak, false))
@@ -63,6 +66,7 @@ func SetupRoutes(cfg *config.Config, db *gorm.DB) *gin.Engine {
 
 	// Authentication routes (protected)
 	protected := v1.Group("")
+	protected.Use(middleware.RateLimitMiddleware(cfg))
 	protected.Use(middleware.KeycloakAuthMiddleware(cfg, services.Keycloak, true))
 	{
 		// Auth endpoints
@@ -77,6 +81,23 @@ func SetupRoutes(cfg *config.Config, db *gorm.DB) *gin.Engine {
 
 		// Parier endpoints
 		parierHandler.RegisterRoutes(protected)
+
+		// Admin endpoints
+		admin := protected.Group("/admin")
+		admin.GET("/credit-tokens", adminHandler.GetAdminCreditPreview)
+		admin.POST("/credit-tokens", adminHandler.PostAdminCreditTokens)
+
+		// Wallet endpoints
+		wallet := protected.Group("/wallet")
+		wallet.GET("/balance", walletHandler.GetBalance)
+		wallet.POST("/deposit", walletHandler.Deposit)
+		wallet.POST("/withdraw", walletHandler.Withdraw)
+		wallet.GET("/transactions", walletHandler.GetTransactions)
+
+		// Referral endpoints
+		referral := protected.Group("/referral")
+		referral.GET("/code", referralHandler.GetReferralCode)
+		referral.GET("/stats", referralHandler.GetReferralStats)
 
 		// MCP endpoints
 		if cfg.MCP.Enabled {

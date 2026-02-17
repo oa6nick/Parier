@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 import { Calendar, MapPin, Trophy, Target, Award, DollarSign, TrendingUp, Check, Settings, Share2, MessageCircle, Wallet } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { RatingStars } from "@/components/ui/RatingStars";
@@ -13,20 +14,58 @@ import { getBetsSync } from "@/lib/mockData/bets";
 import { getCategories } from "@/lib/mockData/categories";
 import { getTokenBalance } from "@/lib/mockData/wallet";
 import { getReferralStats, generateReferralCode } from "@/lib/mockData/referrals";
+import { getReferralCode, getReferralStats as getReferralStatsApi } from "@/lib/api/referral";
+import { getBalance } from "@/lib/api/wallet";
+import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { useTranslations, useFormatter, useLocale } from "next-intl";
 import { Link } from "@/navigation";
 
-export default function ProfilePage() {
+function ProfilePageContent() {
   const t = useTranslations('Profile');
   const format = useFormatter();
   const locale = useLocale();
+  const { user } = useAuth();
   const categories = getCategories(locale);
   const bets = getBetsSync(locale);
-  const currentUser = users[0]; // "You"
+  const currentUser = user || users[0];
   const userBets = bets.filter((bet) => bet.author.id === currentUser.id);
   const [activeTab, setActiveTab] = useState<"all" | "active" | "completed">("all");
+  const [referralCode, setReferralCode] = useState("");
+  const [referralStats, setReferralStats] = useState({ totalReferrals: 0, totalEarnings: 0 });
+  const [tokenBalance, setTokenBalance] = useState(getTokenBalance(currentUser.id));
+
+  const fetchReferralData = useCallback(async () => {
+    const uid = user?.id ?? currentUser.id;
+    if (!uid) return;
+    try {
+      const [code, stats] = await Promise.all([getReferralCode(), getReferralStatsApi()]);
+      setReferralCode(code);
+      setReferralStats({ totalReferrals: stats.total_referrals, totalEarnings: stats.total_earnings });
+    } catch {
+      setReferralCode(currentUser.referralCode || generateReferralCode(uid));
+      setReferralStats(getReferralStats(uid));
+    }
+  }, [user?.id, currentUser.id, currentUser.referralCode]);
+
+  const fetchWallet = useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      const bal = await getBalance();
+      setTokenBalance(bal);
+    } catch {
+      setTokenBalance(getTokenBalance(user.id));
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    fetchReferralData();
+  }, [fetchReferralData]);
+
+  useEffect(() => {
+    fetchWallet();
+  }, [fetchWallet]);
 
   const filteredBets = userBets.filter((bet) => {
     if (activeTab === "active") return bet.status === "open";
@@ -45,9 +84,7 @@ export default function ProfilePage() {
     currentUser.interests?.includes(cat.id)
   );
 
-  const tokenBalance = getTokenBalance(currentUser.id);
-  const referralCode = currentUser.referralCode || generateReferralCode(currentUser.id);
-  const referralStats = getReferralStats(currentUser.id);
+  const displayReferralCode = referralCode || currentUser.referralCode || generateReferralCode(currentUser.id);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -149,7 +186,7 @@ export default function ProfilePage() {
         <div>
           <h2 className="text-xl font-bold text-gray-900 mb-4">{t('referralProgram')}</h2>
           <ReferralCard
-            referralCode={referralCode}
+            referralCode={displayReferralCode}
             totalReferrals={referralStats.totalReferrals}
             totalEarnings={referralStats.totalEarnings}
           />
@@ -218,5 +255,13 @@ export default function ProfilePage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <RequireAuth>
+      <ProfilePageContent />
+    </RequireAuth>
   );
 }

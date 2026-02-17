@@ -9,10 +9,15 @@ import (
 	"gorm.io/gorm"
 )
 
-// CORSMiddleware returns CORS middleware with configuration
-func CORSMiddleware() gin.HandlerFunc {
+// CORSMiddleware returns CORS middleware with configuration from cfg.
+// Uses CORSAllowOrigins from Frontend config; in production set CORS_ALLOW_ORIGINS or FRONTEND_BASE_URL.
+func CORSMiddleware(cfg *config.Config) gin.HandlerFunc {
+	origins := cfg.Frontend.CORSAllowOrigins
+	if len(origins) == 0 {
+		origins = []string{cfg.Frontend.BaseURL}
+	}
 	return cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, // Configure according to your needs
+		AllowOrigins:     origins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "Accept", "Cache-Control", "X-Requested-With"},
 		ExposeHeaders:    []string{"Content-Length"},

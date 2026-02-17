@@ -4,8 +4,7 @@ import React, { useState, useMemo, Suspense } from "react";
 import { TrendingUp, Plus, ArrowRight, Search } from "lucide-react";
 import { BetCard } from "@/components/features/BetCard";
 import { FilterPanel, FilterState } from "@/components/features/FilterPanel";
-import { getBetsSync } from "@/lib/mockData/bets";
-import { getCategories } from "@/lib/mockData/categories";
+import { useBets } from "@/lib/hooks/useBets";
 import { useTranslations, useLocale } from "next-intl";
 import { Bet, BetStatus } from "@/types";
 import { isToday, isThisWeek, isThisMonth } from "date-fns";
@@ -19,15 +18,14 @@ import { cn } from "@/lib/utils";
 function HomePageContent() {
   const t = useTranslations('Home');
   const locale = useLocale();
-  const categories = getCategories(locale);
-  const allBets = getBetsSync(locale);
+  const searchParams = useSearchParams();
+  const selectedCategory = searchParams.get('category');
+  const { bets: allBets, loading: betsLoading, categories } = useBets(locale, { category: selectedCategory ?? undefined });
   const { isAuthenticated } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   
   const searchQuery = searchParams.get('q') || "";
-  const selectedCategory = searchParams.get('category');
   
   // Quick Bet State
   const [quickBetForm, setQuickBetForm] = useState({
@@ -363,7 +361,13 @@ function HomePageContent() {
 
         {/* Bets Grid */}
         <div className="min-h-[400px]">
-          {filteredBets.length > 0 ? (
+          {betsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="h-96 bg-gray-200 rounded-3xl animate-pulse" />
+              ))}
+            </div>
+          ) : filteredBets.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredBets.map((bet) => (
                 <BetCard key={bet.id} bet={bet} />

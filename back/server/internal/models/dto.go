@@ -229,15 +229,16 @@ type BetResponse struct {
 }
 
 type BetCreateRequest struct {
-	CategoryID           string    `json:"category_id" form:"category_id"`
-	VerificationSourceID []string  `json:"verification_source_id" form:"verification_source_id"`
-	StatusID             string    `json:"status_id" form:"status_id"`
-	TypeID               string    `json:"type_id" form:"type_id"`
-	Title                string    `json:"title" form:"title"`
-	Description          *string   `json:"description" form:"description"`
-	Coefficient          string    `json:"coefficient" form:"coefficient"`
-	Amount               string    `json:"amount" form:"amount"`
-	Deadline             time.Time `json:"deadline" form:"deadline"`
+	CategoryID           string      `json:"category_id" form:"category_id"`
+	VerificationSourceID []string    `json:"verification_source_id" form:"verification_source_id"`
+	StatusID             string      `json:"status_id" form:"status_id"`
+	TypeID               string      `json:"type_id" form:"type_id"`
+	Title                string      `json:"title" form:"title"`
+	Description          *string     `json:"description" form:"description"`
+	Coefficient          string      `json:"coefficient" form:"coefficient"`
+	Amount               string      `json:"amount" form:"amount"`
+	Deadline             time.Time   `json:"deadline" form:"deadline"`
+	MediaIDs             []uuid.UUID `json:"media_ids,omitempty" form:"media_ids"`
 	DefaultRequest
 }
 

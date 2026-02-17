@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useRouter } from "@/navigation";
+import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { Input } from "@/components/ui/Input";
@@ -15,6 +16,13 @@ export default function RegisterPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { register } = useAuth();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated" && session) {
+      router.replace(searchParams.get("redirect") || "/onboarding");
+    }
+  }, [session, status, router, searchParams]);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,10 +31,8 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await register(username, email);
+    await register(username, email); // Redirects to Keycloak for registration
     setLoading(false);
-    const redirect = searchParams.get('redirect');
-    router.push(redirect || "/onboarding");
   };
 
   return (

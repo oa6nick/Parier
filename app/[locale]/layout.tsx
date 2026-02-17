@@ -7,6 +7,7 @@ import { BottomNavigation } from "@/components/layout/BottomNavigation";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { AuthProvider } from "@/context/AuthContext";
+import { SessionProvider } from "@/components/providers/SessionProvider";
 
 const inter = Inter({ 
   subsets: ["latin", "cyrillic"], 
@@ -35,6 +36,7 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased bg-gray-50 text-gray-900`}>
         <NextIntlClientProvider messages={messages}>
+          <SessionProvider>
           <AuthProvider>
             <Header />
             <main className="min-h-screen pt-20 flex flex-col bg-gray-50">
@@ -45,6 +47,7 @@ export default async function RootLayout({
             </main>
             <BottomNavigation />
           </AuthProvider>
+          </SessionProvider>
         </NextIntlClientProvider>
       </body>
     </html>

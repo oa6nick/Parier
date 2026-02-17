@@ -233,7 +233,10 @@ func (r *ParierRepository) DeleteBetTag(id uuid.UUID, userID string) error {
 
 // === T_BET_MEDIA ===
 
-func (r *ParierRepository) CreateBetMedia(betMedia *models.TBetMedia) error {
+func (r *ParierRepository) CreateBetMedia(betMedia *models.TBetMedia, tx *gorm.DB) error {
+	if tx != nil {
+		return tx.Create(betMedia).Error
+	}
 	return r.db.Create(betMedia).Error
 }
 
@@ -465,7 +468,10 @@ func (r *ParierRepository) DeleteBetProperties(id uuid.UUID, userID string) erro
 
 // === T_BET_AMOUNT ===
 
-func (r *ParierRepository) CreateBetAmount(betAmount *models.TBetAmount) error {
+func (r *ParierRepository) CreateBetAmount(betAmount *models.TBetAmount, tx *gorm.DB) error {
+	if tx != nil {
+		return tx.Create(betAmount).Error
+	}
 	return r.db.Create(betAmount).Error
 }
 

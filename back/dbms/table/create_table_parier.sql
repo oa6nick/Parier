@@ -1,5 +1,6 @@
 --liquibase formatted sql
 --changeset artemov_i:init_parier_2_db_schema dbms:postgresql splitStatements:false stripComments:false
+--validCheckSum: 9:507f751e95314c4a3087d3f08cd483a3
 
 -- Таблица: t_d_category - Категория ставок
 CREATE TABLE IF NOT EXISTS t_d_category (
@@ -303,7 +304,7 @@ COMMENT ON COLUMN t_bet_comment_like.ck_modify IS 'Идентификатор п
 COMMENT ON COLUMN t_bet_comment_like.ct_modify IS 'Дата модификации';
 COMMENT ON COLUMN t_bet_comment_like.ct_delete IS 'Дата логического удаления';
 
-CREATE UNIQUE INDEX uk_t_bet_comment_like_ck_comment_and_ck_author_and_ck_type ON t_bet_comment_like(ck_comment, ck_author);
+CREATE UNIQUE INDEX uk_t_bet_comment_like_ck_comment_and_ck_author_and_ck_type ON t_bet_comment_like(ck_comment, ck_author, ck_type);
 
 --Таблица: t_bet_comment_media - Вложения к комментариям
 CREATE TABLE IF NOT EXISTS t_bet_comment_media (
@@ -357,7 +358,7 @@ COMMENT ON COLUMN t_bet_like.ck_modify IS 'Идентификатор польз
 COMMENT ON COLUMN t_bet_like.ct_modify IS 'Дата модификации';
 COMMENT ON COLUMN t_bet_like.ct_delete IS 'Дата логического удаления';
 
-CREATE UNIQUE INDEX uk_t_bet_like_ck_bet_and_ck_author_and_ck_type ON t_bet_like(ck_bet, ck_author);
+CREATE UNIQUE INDEX uk_t_bet_like_ck_bet_and_ck_author_and_ck_type ON t_bet_like(ck_bet, ck_author, ck_type);
 
 --Таблица: t_bet_properties - Ставки в ставках
 CREATE TABLE IF NOT EXISTS t_bet_properties (

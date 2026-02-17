@@ -182,6 +182,10 @@ func migrateDatabase(db *gorm.DB) error {
 		&models.TDMedia{},
 		&models.TMedia{},
 
+		// Referral models
+		&models.TReferralCode{},
+		&models.TReferral{},
+		&models.TReferralEarning{},
 	}
 
 	for _, model := range models {

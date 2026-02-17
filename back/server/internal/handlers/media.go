@@ -253,11 +253,58 @@ func getStatusCodeFromServiceError(err *service.ServiceError) int {
 	}
 }
 
+// UploadFile handles multipart file upload
+func (h *MediaHandler) UploadFile(c *gin.Context) {
+	userID := c.GetString("user_id")
+	if userID == "" {
+		SendError(c, http.StatusUnauthorized, "Unauthorized", "Authentication required")
+		return
+	}
+
+	file, header, err := c.Request.FormFile("file")
+	if err != nil {
+		SendError(c, http.StatusBadRequest, "Invalid request", "file is required")
+		return
+	}
+	defer file.Close()
+
+	contentType := header.Header.Get("Content-Type")
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+
+	req := &models.UploadRequest{
+		File:        file,
+		Filename:    header.Filename,
+		ContentType: contentType,
+		UserID:      userID,
+	}
+
+	response, err := h.mediaService.UploadFile(c.Request.Context(), req)
+	if err != nil {
+		if serviceErr := service.GetServiceError(err); serviceErr != nil {
+			SendError(c, getStatusCodeFromServiceError(serviceErr), serviceErr.Code, serviceErr.Message)
+			return
+		}
+		SendError(c, http.StatusInternalServerError, "Internal server error", "Failed to upload file")
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":  true,
+		"media_id": response.MediaID,
+		"url":      response.URL,
+		"name":     response.Name,
+		"size":     response.Size,
+	})
+}
+
 // RegisterRoutes registers all media routes
 func (h *MediaHandler) RegisterRoutes(router *gin.RouterGroup) {
 	mediaGroup := router.Group("/media")
 	{
 		// File operations
+		mediaGroup.POST("/upload", h.UploadFile)
 		mediaGroup.GET("/:id/download", h.DownloadFile)
 		mediaGroup.GET("/:id/raw", h.RawFile)
 

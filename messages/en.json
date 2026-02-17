@@ -100,7 +100,8 @@
     "placing": "Placing...",
     "errors": {
       "minBet": "Minimum bet is ${min}",
-      "maxBet": "Maximum bet is ${max}"
+      "maxBet": "Maximum bet is ${max}",
+      "generic": "Something went wrong. Please try again."
     }
   },
   "Create": {
@@ -239,7 +240,9 @@
     "placeholder": "Add a comment...",
     "send": "Send",
     "noComments": "No comments yet. Be the first!",
-    "reply": "Reply"
+    "reply": "Reply",
+    "loading": "Loading comments...",
+    "sending": "Sending..."
   },
   "Chat": {
     "title": "Messages",

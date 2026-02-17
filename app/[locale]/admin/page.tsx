@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { users } from "@/lib/mockData/users";
 import { getTokenBalance } from "@/lib/mockData/wallet";
 import { CreditRuleType } from "@/types";
+import { apiGet, apiPost } from "@/lib/api/client";
 
 const RULES: { id: CreditRuleType; icon: React.ElementType }[] = [
   { id: "all", icon: Users },
@@ -47,10 +48,8 @@ export default function AdminPage() {
     if (rule === "active") params.set("minBets", ruleParams.minBets || "5");
 
     try {
-      const res = await fetch(`/api/admin/credit-tokens?${params}`);
-      const data = await res.json();
-      if (res.ok) setPreviewCount(data.count);
-      else setPreviewCount(0);
+      const data = await apiGet<{ count: number }>(`/api/v1/admin/credit-tokens?${params}`);
+      setPreviewCount(data?.count ?? 0);
     } catch {
       setPreviewCount(0);
     }
@@ -97,25 +96,19 @@ export default function AdminPage() {
       if (rule === "low_balance") params.maxBalance = parseInt(ruleParams.maxBalance || "5000", 10);
       if (rule === "active") params.minBets = parseInt(ruleParams.minBets || "5", 10);
 
-      const res = await fetch("/api/admin/credit-tokens", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: numAmount,
-          description: description.trim() || undefined,
-          rule,
-          ruleParams: params,
-        }),
+      const data = await apiPost<{
+        success?: boolean;
+        creditedCount?: number;
+        newBalances?: Record<string, number>;
+        error?: string;
+      }>("/api/v1/admin/credit-tokens", {
+        amount: numAmount,
+        description: description.trim() || undefined,
+        rule,
+        ruleParams: params,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setErrorMessage(data.error || t("errors.failed"));
-        return;
-      }
-
-      setSuccessMessage(t("successAll", { amount: numAmount, count: data.creditedCount }));
+      setSuccessMessage(t("successAll", { amount: numAmount, count: data.creditedCount ?? 0 }));
       setAmount("");
       setDescription("");
       if (data.newBalances) {

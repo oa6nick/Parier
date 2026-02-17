@@ -3,21 +3,24 @@
 import React, { useState, useEffect, useId } from "react";
 import { Mic, Type, ArrowLeft, Wand2, CopyPlus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { getCategories } from "@/lib/mockData/categories";
+import { useDictionaries } from "@/lib/hooks/useDictionaries";
 import { getBetByIdSync } from "@/lib/mockData/bets";
+import { createBet } from "@/lib/api/bets";
+import { uploadMedia } from "@/lib/api/media";
 import { Input } from "@/components/ui/Input";
 import { DateInput } from "@/components/ui/DateInput";
 import { Link, useRouter } from "@/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 
 export default function CreatePage() {
   const t = useTranslations('Create');
   const locale = useLocale();
   const router = useRouter();
   const { user } = useAuth();
-  const categories = getCategories(locale);
+  const { categories, verificationSources, betStatuses, betTypes, loading } = useDictionaries(locale);
   const searchParams = useSearchParams();
   const [inputMethod, setInputMethod] = useState<"text" | "voice">("text");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,6 +37,8 @@ export default function CreatePage() {
     eventDate: "",
     verificationSource: "",
   });
+  const [mediaIds, setMediaIds] = useState<string[]>([]);
+  const [uploadingFiles, setUploadingFiles] = useState(false);
 
   // Pre-fill form from query parameters or from bet ID
   useEffect(() => {
@@ -52,7 +57,7 @@ export default function CreatePage() {
           coefficient: String(bet.coefficient),
           deadline: bet.deadline.toISOString().split('T')[0],
           eventDate: bet.eventDate ? bet.eventDate.toISOString().split('T')[0] : '',
-          verificationSource: bet.verificationSource || '',
+          verificationSource: bet.verificationSource || "",
         }));
       }
       return;
@@ -124,32 +129,28 @@ export default function CreatePage() {
     e.preventDefault();
     if (!validateForm() || isSubmitting) return;
 
+    const statusId = betStatuses.find((s) => s.id.toLowerCase().includes("open"))?.id ?? betStatuses[0]?.id ?? "open";
+    const typeId = betTypes.find((t) => t.id.toLowerCase().includes("standard"))?.id ?? betTypes[0]?.id ?? "standard";
+
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/bets", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: formData.title.trim(),
-          shortDescription: formData.shortDescription.trim(),
-          fullDescription: formData.fullDescription.trim(),
-          outcome: formData.outcome.trim(),
-          categoryId: formData.category,
-          betAmount: Number(formData.betAmount),
-          coefficient: Number(formData.coefficient),
-          deadline: formData.deadline + "T12:00:00",
-          eventDate: formData.eventDate ? formData.eventDate + "T12:00:00" : undefined,
-          verificationSource: formData.verificationSource.trim(),
-          authorId: user?.id || "1",
-        }),
+      const description = [formData.shortDescription, formData.fullDescription, formData.outcome]
+        .filter(Boolean)
+        .join("\n\n");
+
+      const { id } = await createBet({
+        category_id: formData.category,
+        verification_source_id: formData.verificationSource ? [formData.verificationSource] : [],
+        status_id: statusId,
+        type_id: typeId,
+        title: formData.title.trim(),
+        description: description || undefined,
+        coefficient: formData.coefficient,
+        amount: formData.betAmount,
+        deadline: formData.deadline + "T12:00:00Z",
+        media_ids: mediaIds.length > 0 ? mediaIds : undefined,
       });
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || "Failed to create bet");
-      }
-
-      const { id } = await res.json();
       router.push(`/bet/${id}`);
     } catch (err) {
       console.error(err);
@@ -169,6 +170,7 @@ export default function CreatePage() {
   };
 
   return (
+    <RequireAuth>
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
       <Link href="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-8 transition-colors group">
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -280,11 +282,12 @@ export default function CreatePage() {
               value={formData.category}
               onChange={handleChange}
               required
+              disabled={loading}
               className={`w-full appearance-none rounded-xl border-2 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 ${
                 errors.category ? "border-red-500 focus:ring-red-500" : "border-gray-200"
               }`}
             >
-              <option value="">{t('form.selectCategory')}</option>
+              <option value="">{loading ? "..." : t('form.selectCategory')}</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>{cat.name}</option>
               ))}
@@ -332,26 +335,74 @@ export default function CreatePage() {
             error={errors.deadline}
             min={new Date().toISOString().split('T')[0]}
           />
-          <Input
-            label={t('form.verificationSource')}
-            name="verificationSource"
-            value={formData.verificationSource}
-            onChange={handleChange}
-            required
-            placeholder={t('form.verificationPlaceholder')}
-            error={errors.verificationSource}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">{t('form.verificationSource')}</label>
+            <div className="relative">
+              <select
+                name="verificationSource"
+                value={formData.verificationSource}
+                onChange={handleChange}
+                required
+                disabled={loading}
+                className={`w-full appearance-none rounded-xl border-2 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 ${
+                  errors.verificationSource ? "border-red-500 focus:ring-red-500" : "border-gray-200"
+                }`}
+              >
+                <option value="">{t('form.verificationPlaceholder')}</option>
+                {verificationSources.map((vs) => (
+                  <option key={vs.id} value={vs.id}>{vs.name}</option>
+                ))}
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">▼</div>
+            </div>
+            {errors.verificationSource && (
+              <p className="text-sm text-red-500 mt-1.5 ml-1">{errors.verificationSource}</p>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">Attachments (optional)</label>
+          <input
+            type="file"
+            multiple
+            accept="image/*,.pdf"
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+            onChange={async (e) => {
+              const files = e.target.files;
+              if (!files?.length) return;
+              setUploadingFiles(true);
+              try {
+                const ids: string[] = [];
+                for (let i = 0; i < files.length; i++) {
+                  const id = await uploadMedia(files[i]);
+                  ids.push(id);
+                }
+                setMediaIds((prev) => [...prev, ...ids]);
+              } catch (err) {
+                alert(err instanceof Error ? err.message : "Upload failed");
+              } finally {
+                setUploadingFiles(false);
+                e.target.value = "";
+              }
+            }}
+            disabled={uploadingFiles}
           />
+          {mediaIds.length > 0 && (
+            <p className="text-sm text-gray-500 mt-1.5 ml-1">{mediaIds.length} file(s) attached</p>
+          )}
         </div>
 
         <div className="pt-4 flex items-center justify-end gap-4">
           <Link href="/">
             <Button variant="ghost">{t('form.cancel')}</Button>
           </Link>
-          <Button type="submit" size="lg" className="px-8 shadow-glow" disabled={isSubmitting}>
-            {isSubmitting ? t('form.publishing') : t('form.publish')}
+          <Button type="submit" size="lg" className="px-8 shadow-glow" disabled={isSubmitting || uploadingFiles}>
+            {isSubmitting ? t('form.publishing') : uploadingFiles ? "Uploading..." : t('form.publish')}
           </Button>
         </div>
       </form>
     </div>
+    </RequireAuth>
   );
 }

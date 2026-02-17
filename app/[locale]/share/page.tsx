@@ -1,23 +1,41 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ReferralCard } from "@/components/features/ReferralCard";
-import { users } from "@/lib/mockData/users";
-import { getReferralStats, generateReferralCode } from "@/lib/mockData/referrals";
-import { Send, Twitter, Facebook, Link2, Share2 } from "lucide-react";
+import { RequireAuth } from "@/components/auth/RequireAuth";
+import { getReferralCode, getReferralStats } from "@/lib/api/referral";
+import { getReferralStats as getReferralStatsMock, generateReferralCode } from "@/lib/mockData/referrals";
+import { Send, Twitter, Facebook, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Link } from "@/navigation";
+import { useAuth } from "@/context/AuthContext";
 
-export default function SharePage() {
+function SharePageContent() {
   const t = useTranslations('Share');
-  const currentUser = users[0];
-  const referralCode = currentUser.referralCode || generateReferralCode(currentUser.id);
-  const referralStats = getReferralStats(currentUser.id);
-  
-  // In a real app, this would be the actual profile URL
-  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/profile/${currentUser.id}` : '';
-  const shareText = "Join me on Pariall and bet on the future! Use my code: " + referralCode;
+  const { user } = useAuth();
+  const [referralCode, setReferralCode] = useState("");
+  const [referralStats, setReferralStats] = useState({ totalReferrals: 0, totalEarnings: 0 });
+
+  const fetchReferralData = useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      const [code, stats] = await Promise.all([getReferralCode(), getReferralStats()]);
+      setReferralCode(code);
+      setReferralStats({ totalReferrals: stats.total_referrals, totalEarnings: stats.total_earnings });
+    } catch {
+      setReferralCode(generateReferralCode(user.id));
+      setReferralStats(getReferralStatsMock(user.id));
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    fetchReferralData();
+  }, [fetchReferralData]);
+
+  const displayReferralCode = referralCode || (user?.id ? generateReferralCode(user.id) : "");
+  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/profile/${user?.id ?? ''}` : '';
+  const shareText = "Join me on Pariall and bet on the future! Use my code: " + displayReferralCode;
 
   const handleShare = (platform: 'telegram' | 'twitter' | 'facebook') => {
     let url = '';
@@ -60,7 +78,7 @@ export default function SharePage() {
         </Link>
 
         <ReferralCard
-          referralCode={referralCode}
+          referralCode={displayReferralCode}
           totalReferrals={referralStats.totalReferrals}
           totalEarnings={referralStats.totalEarnings}
           className="shadow-soft"
@@ -99,5 +117,13 @@ export default function SharePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SharePage() {
+  return (
+    <RequireAuth>
+      <SharePageContent />
+    </RequireAuth>
   );
 }

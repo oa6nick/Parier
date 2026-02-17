@@ -34,13 +34,34 @@ vi.mock('@/lib/mockData/comments', () => ({
   getComments: () => []
 }))
 
+// Mock bets API
+vi.mock('@/lib/api/bets', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/api/bets')>()
+  return {
+    ...actual,
+    joinBet: vi.fn().mockResolvedValue(undefined),
+    likeBet: vi.fn().mockResolvedValue(undefined),
+    unlikeBet: vi.fn().mockResolvedValue(undefined),
+    getBetComments: vi.fn().mockResolvedValue({ comments: [], total: 0 }),
+    createBetComment: vi.fn().mockResolvedValue(undefined),
+    mapCommentResponseToComment: vi.fn((r: { id: string; content: string; created_at: string; author: { id: string; username?: string }; likes: number; is_liked_by_me: boolean }) => ({
+      id: r.id,
+      content: r.content,
+      createdAt: new Date(r.created_at),
+      author: { id: r.author.id, username: r.author.username ?? 'User', avatar: undefined, rating: 0, winRate: 0, verified: false, joinedDate: new Date(), totalBets: 0 },
+      likesCount: r.likes,
+      likedByMe: r.is_liked_by_me
+    }))
+  }
+})
+
 const mockBet: Bet = {
   id: '1',
   title: 'Test Bet Title',
   shortDescription: 'Short description',
   fullDescription: 'Full description',
   outcome: 'Yes',
-  category: { id: 'tech', name: 'Technology', icon: 'tech' },
+  category: { id: 'tech', name: 'Technology', icon: 'tech', color: '#3b82f6' },
   betAmount: 1000,
   coefficient: 2.5,
   potentialWinnings: 2500,
@@ -60,8 +81,9 @@ const mockBet: Bet = {
     avatar: 'avatar.png',
     rating: 4.8,
     winRate: 80,
-    isPro: true,
-    verified: true
+    verified: true,
+    joinedDate: new Date(),
+    totalBets: 50
   }
 }
 
@@ -106,5 +128,19 @@ describe('BetCard', () => {
     
     fireEvent.click(likeButton!)
     expect(screen.getByText('21')).toBeInTheDocument()
+  })
+
+  it('calls joinBet when placing bet', async () => {
+    const { joinBet } = await import('@/lib/api/bets')
+    renderWithProviders(<BetCard bet={mockBet} />)
+    
+    fireEvent.click(screen.getByText('Bet Now'))
+    const amountInput = screen.getByPlaceholderText('0')
+    fireEvent.change(amountInput, { target: { value: '100' } })
+    fireEvent.click(screen.getByText(/Place Bet.*100/))
+    
+    await waitFor(() => {
+      expect(joinBet).toHaveBeenCalledWith('1', 100)
+    })
   })
 })

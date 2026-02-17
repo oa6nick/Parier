@@ -17,12 +17,21 @@ import { AuthPromptModal } from "@/components/features/AuthPromptModal";
 import { useAuth } from "@/context/AuthContext";
 import { users } from "@/lib/mockData/users";
 import { getComments } from "@/lib/mockData/comments";
+import {
+  joinBet,
+  likeBet,
+  unlikeBet,
+  getBetComments,
+  createBetComment,
+  mapCommentResponseToComment,
+} from "@/lib/api/bets";
 
 interface BetCardProps {
   bet: Bet;
+  onBetJoined?: () => void;
 }
 
-export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
+export const BetCard: React.FC<BetCardProps> = ({ bet, onBetJoined }) => {
   const t = useTranslations('BetCard');
   const tModal = useTranslations('BetModal');
   const format = useFormatter();
@@ -40,9 +49,12 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
   const [liked, setLiked] = useState(bet.likedByMe);
   const [likesCount, setLikesCount] = useState(bet.likesCount);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
-  const [comments, setComments] = useState(getComments(bet.id));
+  const [comments, setComments] = useState<import("@/types").Comment[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentsCount, setCommentsCount] = useState(bet.commentsCount);
   const [isCopied, setIsCopied] = useState(false);
+  const [betsCount, setBetsCount] = useState(bet.betsCount);
+  const [displayBetAmount, setDisplayBetAmount] = useState(bet.betAmount);
 
   const currentUser = user || users[0]; // Use authenticated user or fallback to mock
 
@@ -105,12 +117,12 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
     setError("");
   };
 
-  const handleBetSubmit = (e: React.MouseEvent) => {
+  const handleBetSubmit = async (e: React.MouseEvent) => {
     e.stopPropagation();
     setError("");
     const amount = parseFloat(betAmount) || 0;
     const minBet = 10;
-    const maxBet = bet.betAmount;
+    const maxBet = displayBetAmount;
 
     if (amount < minBet) {
       setError(tModal('errors.minBet', { min: minBet }));
@@ -128,42 +140,74 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      console.log(`Placing bet: $${amount} on bet ${bet.id}`);
+    try {
+      await joinBet(bet.id, amount);
+      setBetsCount((prev) => prev + 1);
+      setDisplayBetAmount((prev) => prev + amount);
       setIsFlipped(false);
       setBetAmount("");
-    }, 1500);
-  };
-
-  const handleLike = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (liked) {
-      setLiked(false);
-      setLikesCount(prev => prev - 1);
-    } else {
-      setLiked(true);
-      setLikesCount(prev => prev + 1);
+      onBetJoined?.();
+    } catch (err) {
+      setError((err as Error).message || tModal('errors.generic'));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleCommentsClick = (e: React.MouseEvent) => {
+  const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsCommentsOpen(true);
+    if (!isAuthenticated) {
+      setIsAuthPromptOpen(true);
+      return;
+    }
+    const prevLiked = liked;
+    const prevCount = likesCount;
+    setLiked(!liked);
+    setLikesCount((c) => (liked ? c - 1 : c + 1));
+    try {
+      if (liked) {
+        await unlikeBet(bet.id);
+      } else {
+        await likeBet(bet.id);
+      }
+    } catch {
+      setLiked(prevLiked);
+      setLikesCount(prevCount);
+    }
   };
 
-  const handleAddComment = (content: string) => {
-    const newComment = {
-      id: Math.random().toString(),
-      author: currentUser,
-      content,
-      createdAt: new Date(),
-      likesCount: 0,
-      likedByMe: false,
-    };
-    
-    setComments([...comments, newComment]);
-    setCommentsCount(prev => prev + 1);
+  const handleCommentsClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsCommentsOpen(true);
+    if (isAuthenticated) {
+      setCommentsLoading(true);
+      try {
+        const { comments: apiComments, total } = await getBetComments(bet.id, 0, 50, locale);
+        setComments(apiComments.map(mapCommentResponseToComment));
+        setCommentsCount(total);
+      } catch {
+        setComments(getComments(bet.id));
+      } finally {
+        setCommentsLoading(false);
+      }
+    } else {
+      setComments(getComments(bet.id));
+    }
+  };
+
+  const handleAddComment = async (content: string) => {
+    if (!isAuthenticated) {
+      setIsAuthPromptOpen(true);
+      return;
+    }
+    try {
+      await createBetComment(bet.id, content);
+      const { comments: apiComments, total } = await getBetComments(bet.id, 0, 50, locale);
+      setComments(apiComments.map(mapCommentResponseToComment));
+      setCommentsCount(total);
+    } catch {
+      // Error handled by modal or silently
+    }
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -278,7 +322,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
         <div className="bg-gray-50 rounded-xl p-3 border border-gray-100/50 flex flex-col min-w-0">
           <div className="text-xs text-gray-400 mb-2 font-medium leading-tight">{t('pool')}</div>
           <div className="text-lg font-bold text-gray-900 leading-tight break-all">
-            {format.number(bet.betAmount)}
+            {format.number(displayBetAmount)}
           </div>
           <div className="text-[10px] text-gray-400 mt-0.5">{t('tokens')}</div>
         </div>
@@ -289,7 +333,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
         <div className="bg-secondary/5 rounded-xl p-3 border border-secondary/10 flex flex-col min-w-0">
           <div className="text-xs text-secondary-dark/70 mb-2 font-medium leading-tight">{t('potential')}</div>
           <div className="text-lg font-bold text-secondary-dark leading-tight break-all">
-            {format.number(bet.potentialWinnings)}
+            {format.number(displayBetAmount * bet.coefficient)}
           </div>
           <div className="text-[10px] text-secondary-dark/60 mt-0.5">{t('tokens')}</div>
         </div>
@@ -322,7 +366,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
                 {/* Bets Count */}
                 <div className="flex items-center gap-1.5 whitespace-nowrap">
                   <Users className="w-4 h-4 flex-shrink-0" />
-                  <span>{bet.betsCount}</span>
+                  <span>{betsCount}</span>
                 </div>
               </div>
               
@@ -402,7 +446,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
             <div className="grid grid-cols-2 gap-3 text-sm pt-3 border-t border-gray-200">
               <div>
                 <span className="text-gray-500">{tModal('currentPool')}</span>
-                <p className="font-bold text-gray-900">{format.number(bet.betAmount)} {t('tokens')}</p>
+                <p className="font-bold text-gray-900">{format.number(displayBetAmount)} {t('tokens')}</p>
               </div>
               <div>
                 <span className="text-gray-500">{tModal('odds')}</span>
@@ -528,6 +572,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet }) => {
         isOpen={isCommentsOpen}
         onClose={() => setIsCommentsOpen(false)}
         onAddComment={handleAddComment}
+        loading={commentsLoading}
       />
 
       <AuthPromptModal

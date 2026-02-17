@@ -23,8 +23,9 @@ type Config struct {
 	Cache    CacheConfig
 	AI       AICofig
 	MCP      MCPConfig
-	Frontend FrontendConfig
-	Wallet   WalletConfig
+	Frontend  FrontendConfig
+	Wallet    WalletConfig
+	RateLimit RateLimitConfig
 }
 
 type AIType string
@@ -73,7 +74,8 @@ type MCPConfig struct {
 }
 
 type FrontendConfig struct {
-	BaseURL string
+	BaseURL        string
+	CORSAllowOrigins []string
 }
 
 // DatabaseConfig holds database connection configuration
@@ -153,6 +155,12 @@ type MediaConfig struct {
 
 type WalletConfig struct {
 	DefaultBalance float64
+}
+
+// RateLimitConfig holds rate limiting configuration
+type RateLimitConfig struct {
+	RPS   float64 // requests per second
+	Burst int     // burst size
 }
 
 // LoadConfig loads configuration from environment variables
@@ -242,10 +250,15 @@ func LoadConfig() *Config {
 			Port:    getEnvAsInt("MCP_PORT", 8081),
 		},
 		Frontend: FrontendConfig{
-			BaseURL: getEnv("FRONTEND_BASE_URL", "http://localhost:3000"),
+			BaseURL:        getEnv("FRONTEND_BASE_URL", "http://localhost:3000"),
+			CORSAllowOrigins: getCORSOrigins(),
 		},
 		Wallet: WalletConfig{
 			DefaultBalance: getEnvAsFloat("WALLET_DEFAULT_BALANCE", 0),
+		},
+		RateLimit: RateLimitConfig{
+			RPS:   getEnvAsFloat("RATE_LIMIT_RPS", 10),
+			Burst: getEnvAsInt("RATE_LIMIT_BURST", 20),
 		},
 	}
 }
@@ -279,6 +292,37 @@ func getEnvTenantsIss(key string, defaultVal string) []TenantConfig {
 		return []TenantConfig{}
 	}
 	return tenants
+}
+
+// getCORSOrigins returns allowed CORS origins. If CORS_ALLOW_ORIGINS is set, splits by comma.
+// Otherwise uses FRONTEND_BASE_URL. In debug mode adds localhost variants for dev.
+func getCORSOrigins() []string {
+	corsEnv := getEnv("CORS_ALLOW_ORIGINS", "")
+	if corsEnv != "" {
+		parts := strings.Split(corsEnv, ",")
+		origins := make([]string, 0, len(parts))
+		for _, p := range parts {
+			if trimmed := strings.TrimSpace(p); trimmed != "" {
+				origins = append(origins, trimmed)
+			}
+		}
+		if len(origins) > 0 {
+			return origins
+		}
+	}
+	baseURL := getEnv("FRONTEND_BASE_URL", "http://localhost:3000")
+	origins := []string{baseURL}
+	if getEnv("GIN_MODE", "debug") == "debug" {
+		devOrigins := []string{"http://localhost:3000", "http://localhost:23000", "http://127.0.0.1:3000"}
+		seen := map[string]bool{baseURL: true}
+		for _, o := range devOrigins {
+			if !seen[o] {
+				origins = append(origins, o)
+				seen[o] = true
+			}
+		}
+	}
+	return origins
 }
 
 // getEnv gets an environment variable or returns a default value

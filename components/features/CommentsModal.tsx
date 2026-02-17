@@ -14,6 +14,7 @@ interface CommentsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddComment: (content: string) => void;
+  loading?: boolean;
 }
 
 export const CommentsModal: React.FC<CommentsModalProps> = ({ 
@@ -22,7 +23,8 @@ export const CommentsModal: React.FC<CommentsModalProps> = ({
   currentUser, 
   isOpen, 
   onClose,
-  onAddComment
+  onAddComment,
+  loading = false,
 }) => {
   const t = useTranslations('BetComments');
   const [isAnimating, setIsAnimating] = useState(false);
@@ -84,11 +86,15 @@ export const CommentsModal: React.FC<CommentsModalProps> = ({
 
         {/* Content */}
         <div className="flex-1 overflow-hidden p-4">
-          <BetComments 
-            comments={initialComments} 
-            currentUser={currentUser}
-            onAddComment={onAddComment}
-          />
+          {loading ? (
+            <div className="flex items-center justify-center h-32 text-gray-500">{t('loading')}</div>
+          ) : (
+            <BetComments 
+              comments={initialComments} 
+              currentUser={currentUser}
+              onAddComment={onAddComment}
+            />
+          )}
         </div>
       </div>
     </div>

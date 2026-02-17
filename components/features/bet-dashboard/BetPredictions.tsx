@@ -1,18 +1,62 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bet, Comment } from '@/types';
 import { getComments } from '@/lib/mockData/comments';
+import { getBetComments, createBetComment, mapCommentResponseToComment } from '@/lib/api/bets';
 import { Avatar } from '@/components/ui/Avatar';
 import { formatDistanceToNow } from 'date-fns';
 import { MessageCircle, ThumbsUp } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
+import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/Button';
 
 interface BetPredictionsProps {
   bet: Bet;
 }
 
 export const BetPredictions: React.FC<BetPredictionsProps> = ({ bet }) => {
-  const [comments] = useState<Comment[]>(getComments(bet.id));
+  const locale = useLocale();
+  const t = useTranslations('BetComments');
+  const { isAuthenticated } = useAuth();
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [newComment, setNewComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (isAuthenticated) {
+      setLoading(true);
+      getBetComments(bet.id, 0, 50, locale)
+        .then(({ comments: apiComments }) => {
+          if (!cancelled) setComments(apiComments.map(mapCommentResponseToComment));
+        })
+        .catch(() => {
+          if (!cancelled) setComments(getComments(bet.id));
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+    } else {
+      setComments(getComments(bet.id));
+      setLoading(false);
+    }
+    return () => { cancelled = true; };
+  }, [bet.id, locale, isAuthenticated]);
+
+  const handleAddComment = async () => {
+    if (!newComment.trim() || !isAuthenticated || submitting) return;
+    setSubmitting(true);
+    try {
+      await createBetComment(bet.id, newComment.trim());
+      setNewComment('');
+      const { comments: apiComments } = await getBetComments(bet.id, 0, 50, locale);
+      setComments(apiComments.map(mapCommentResponseToComment));
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
@@ -25,7 +69,9 @@ export const BetPredictions: React.FC<BetPredictionsProps> = ({ bet }) => {
       </div>
 
       <div className="space-y-6">
-        {comments.length > 0 ? (
+        {loading ? (
+          <div className="text-center py-8 text-gray-400">{t('loading')}</div>
+        ) : comments.length > 0 ? (
           comments.map((comment) => (
             <div key={comment.id} className="flex gap-3">
               <Avatar src={comment.author.avatar} alt={comment.author.username} size="sm" />
@@ -52,6 +98,26 @@ export const BetPredictions: React.FC<BetPredictionsProps> = ({ bet }) => {
         ) : (
           <div className="text-center py-8 text-gray-400">
             No predictions yet. Be the first to share your thoughts!
+          </div>
+        )}
+
+        {isAuthenticated && (
+          <div className="pt-4 border-t border-gray-100">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder={t('placeholder')}
+              rows={2}
+              className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary resize-none mb-2"
+            />
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleAddComment}
+              disabled={!newComment.trim() || submitting}
+            >
+              {submitting ? t('sending') : t('send')}
+            </Button>
           </div>
         )}
       </div>

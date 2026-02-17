@@ -1,72 +1,61 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { User } from "@/types";
-import { users } from "@/lib/mockData/users";
+import React, { createContext, useContext } from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "@/navigation";
+import { User } from "@/types";
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string) => Promise<void>;
+  login: (email?: string) => Promise<void>;
   register: (username: string, email: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
+  accessToken: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function sessionToUser(session: { user?: { id?: string; sub?: string; name?: string | null; email?: string | null; image?: string | null } }): User | null {
+  if (!session?.user) return null;
+  const u = session.user;
+  const id = u.id ?? u.sub ?? "";
+  return {
+    id,
+    username: u.name ?? u.email ?? "User",
+    avatar: u.image ?? undefined,
+    rating: 0,
+    winRate: 0,
+    verified: false,
+    joinedDate: new Date(),
+    totalBets: 0,
+  };
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: session, status } = useSession();
   const router = useRouter();
 
-  useEffect(() => {
-    // Check local storage on mount
-    const storedUserId = localStorage.getItem("parier_user_id");
-    if (storedUserId) {
-      const foundUser = users.find(u => u.id === storedUserId);
-      if (foundUser) {
-        setUser(foundUser);
-      }
-    }
-    setIsLoading(false);
-  }, []);
+  const user = session ? sessionToUser(session) : null;
+  const isLoading = status === "loading";
+  const accessToken = (session as { accessToken?: string })?.accessToken ?? null;
 
-  const login = async (email: string) => {
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // For demo purposes, we'll just log in as the first user if email matches "demo" or whatever
-    // Or just always log in as the first user for simplicity in this mock
-    const mockUser = users[0]; // Always login as main mock user
-    
-    setUser(mockUser);
-    localStorage.setItem("parier_user_id", mockUser.id);
-    setIsLoading(false);
+  const login = async () => {
+    await signIn("keycloak", { callbackUrl: "/" });
   };
 
-  const register = async (username: string, email: string) => {
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    const mockUser = users[0]; // For now, just map to existing user
-    
-    setUser(mockUser);
-    localStorage.setItem("parier_user_id", mockUser.id);
-    setIsLoading(false);
+  const register = async () => {
+    await signIn("keycloak", { callbackUrl: "/onboarding" });
   };
 
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem("parier_user_id");
+    signOut({ callbackUrl: "/" });
     router.push("/");
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, register, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, register, logout, isLoading, accessToken }}>
       {children}
     </AuthContext.Provider>
   );

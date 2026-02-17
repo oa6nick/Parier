@@ -291,8 +291,102 @@ func (s *ParierService) CreateBet(request models.BetCreateRequest) (*models.BetR
 			Name: *s.repoLocalization.GetWordOrDefault(&verificationSource.CkName, request.Language),
 		})
 	}
+	for _, mediaID := range request.MediaIDs {
+		err = s.repo.CreateBetMedia(&models.TBetMedia{
+			CkId:    uuid.New(),
+			CkBet:   bet.CkId,
+			CkMedia: mediaID,
+		}, tx)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	return &res, nil
+}
+
+type JoinBetRequest struct {
+	Amount float64 `json:"amount" binding:"required,gt=0"`
+}
+
+func (s *ParierService) JoinBet(betID uuid.UUID, userID uuid.UUID, amount float64) error {
+	db := s.repo.GetDB()
+	bet, err := s.repo.GetBetByID(betID)
+	if err != nil || bet == nil {
+		return &ServiceError{Code: "NOT_FOUND", Message: "Bet not found"}
+	}
+	if bet.CkStatus != "OPEN" {
+		return &ServiceError{Code: "VALIDATION_ERROR", Message: "Bet is not open for joining"}
+	}
+	if bet.CkAuthor == userID {
+		return &ServiceError{Code: "VALIDATION_ERROR", Message: "Cannot join your own bet"}
+	}
+
+	wallet, err := s.repoUser.GetUserWalletByUserID(userID)
+	if err != nil || wallet == nil {
+		return &ServiceError{Code: "VALIDATION_ERROR", Message: "Wallet not found"}
+	}
+	if wallet.CnValue < amount {
+		return &ServiceError{Code: "VALIDATION_ERROR", Message: "Insufficient balance"}
+	}
+
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	betAmount := &models.TBetAmount{
+		CkId:     uuid.New(),
+		CkBet:    betID,
+		CkUser:   userID,
+		CnAmount: amount,
+		ClTrue:   true,
+		BaseModel: models.BaseModel{
+			CkCreate: userID.String(),
+			CkModify: userID.String(),
+		},
+	}
+	if err := s.repo.CreateBetAmount(betAmount, tx); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	bet.CnAmount += amount
+	bet.CkModify = userID.String()
+	if err := tx.Save(bet).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	wallet.CnValue -= amount
+	wallet.CkModify = userID.String()
+	if err := tx.Save(wallet).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tr := &models.TUserTransaction{
+		CkId:     uuid.New(),
+		CkUser:   userID,
+		CkType:   "BET",
+		CkStatus: "COMPLETED",
+		CnAmount: amount,
+		BaseModel: models.BaseModel{
+			CkCreate: userID.String(),
+			CkModify: userID.String(),
+		},
+	}
+	if err := s.repoUser.CreateUserTransaction(tr, tx); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *ParierService) GetBets(request models.BetRequest) ([]*models.BetResponse, int64, error) {
