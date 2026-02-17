@@ -17,11 +17,16 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     if (status === "authenticated" && session) {
       router.replace(searchParams.get("redirect") || "/");
     }
   }, [session, status, router, searchParams]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -29,9 +34,6 @@ export default function LoginPage() {
     await signIn("keycloak", { callbackUrl: redirect });
     setLoading(false);
   };
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   return (
     <AuthLayout
