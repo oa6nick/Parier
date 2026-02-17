@@ -29,7 +29,7 @@ const mockBet: Bet = {
   shortDescription: 'Short description',
   fullDescription: 'Full description',
   outcome: 'Yes',
-  category: { id: 'tech', name: 'Technology', icon: 'tech' },
+  category: { id: 'tech', name: 'Technology', icon: 'tech', color: '#3b82f6' },
   betAmount: 1000,
   coefficient: 2.5,
   potentialWinnings: 2500,
@@ -49,8 +49,9 @@ const mockBet: Bet = {
     avatar: 'avatar.png',
     rating: 4.8,
     winRate: 80,
-    isPro: true,
-    verified: true
+    verified: true,
+    joinedDate: new Date(),
+    totalBets: 50
   }
 }
 

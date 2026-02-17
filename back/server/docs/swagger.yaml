@@ -1,0 +1,1820 @@
+basePath: /api/v1
+definitions:
+  internal_handlers.AdminCreditPreviewResponse:
+    properties:
+      count:
+        type: integer
+    type: object
+  internal_handlers.AdminCreditRequest:
+    properties:
+      amount:
+        minimum: 1
+        type: integer
+      description:
+        type: string
+      rule:
+        enum:
+        - all
+        - new_users
+        - low_balance
+        - active
+        type: string
+      ruleParams:
+        additionalProperties: true
+        type: object
+    required:
+    - amount
+    - rule
+    type: object
+  internal_handlers.AdminCreditResponse:
+    properties:
+      amount:
+        type: integer
+      creditedCount:
+        type: integer
+      newBalances:
+        additionalProperties:
+          type: number
+        type: object
+      success:
+        type: boolean
+    type: object
+  internal_handlers.BalanceResponse:
+    properties:
+      data:
+        $ref: '#/definitions/parier-server_internal_service.BalanceResponse'
+      success:
+        type: boolean
+    type: object
+  internal_handlers.BetCommentResponse:
+    properties:
+      count:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/parier-server_internal_models.BetCommentResponse'
+        type: array
+      success:
+        type: boolean
+      total:
+        type: integer
+    type: object
+  internal_handlers.BetCreateResponse:
+    properties:
+      data:
+        $ref: '#/definitions/parier-server_internal_models.BetResponse'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  internal_handlers.BetResponse:
+    properties:
+      count:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/parier-server_internal_models.BetResponse'
+        type: array
+      success:
+        type: boolean
+      total:
+        type: integer
+    type: object
+  internal_handlers.DepositRequest:
+    properties:
+      amount:
+        type: number
+      description:
+        type: string
+    required:
+    - amount
+    type: object
+  internal_handlers.DictionaryResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/parier-server_internal_models.DictionaryItemString'
+        type: array
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  internal_handlers.KeycloakLogoutRequest:
+    properties:
+      realm:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  internal_handlers.LoginCodeRequest:
+    properties:
+      code:
+        type: string
+      iss:
+        type: string
+      redirect_uri:
+        type: string
+    required:
+    - code
+    - iss
+    - redirect_uri
+    type: object
+  internal_handlers.MediaResponse:
+    properties:
+      content_type:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      type_id:
+        type: string
+      type_name:
+        type: string
+      url:
+        type: string
+    type: object
+  internal_handlers.ProfileResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+      realm:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      username:
+        type: string
+    type: object
+  internal_handlers.PropertiesEnumResponse:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      property:
+        type: string
+      property_type:
+        $ref: '#/definitions/parier-server_internal_models.PropertyType'
+      value: {}
+      value_id:
+        type: string
+    type: object
+  internal_handlers.PropertiesEnumsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/internal_handlers.PropertiesEnumResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  internal_handlers.PropertiesTypeResponse:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      place:
+        $ref: '#/definitions/parier-server_internal_models.PropertyPlace'
+      type:
+        $ref: '#/definitions/parier-server_internal_models.PropertyType'
+    type: object
+  internal_handlers.PropertiesTypesResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/internal_handlers.PropertiesTypeResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  internal_handlers.ReferralCodeResponse:
+    properties:
+      code:
+        type: string
+    type: object
+  internal_handlers.TransactionsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/parier-server_internal_service.TransactionResponse'
+        type: array
+      success:
+        type: boolean
+      total:
+        type: integer
+    type: object
+  internal_handlers.WithdrawRequest:
+    properties:
+      amount:
+        type: number
+      description:
+        type: string
+    required:
+    - amount
+    type: object
+  parier-server_internal_models.AuthorResponse:
+    properties:
+      avatar:
+        type: string
+      background:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      likes:
+        type: integer
+      rating:
+        type: integer
+      updated_at:
+        type: string
+      username:
+        type: string
+      verified:
+        type: boolean
+      win_rate:
+        type: integer
+    type: object
+  parier-server_internal_models.BetCommentCreateRequest:
+    properties:
+      content:
+        type: string
+      language:
+        type: string
+      parent_id:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+    type: object
+  parier-server_internal_models.BetCommentRequest:
+    properties:
+      language:
+        type: string
+      limit:
+        type: integer
+      offset:
+        type: integer
+      search:
+        type: string
+      sort_by:
+        type: string
+      sort_dir:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+    type: object
+  parier-server_internal_models.BetCommentResponse:
+    properties:
+      author:
+        $ref: '#/definitions/parier-server_internal_models.AuthorResponse'
+      content:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      is_liked_by_me:
+        type: boolean
+      likes:
+        type: integer
+      parent:
+        $ref: '#/definitions/parier-server_internal_models.BetCommentResponse'
+      updated_at:
+        type: string
+    type: object
+  parier-server_internal_models.BetCreateRequest:
+    properties:
+      amount:
+        type: string
+      category_id:
+        type: string
+      coefficient:
+        type: string
+      deadline:
+        type: string
+      description:
+        type: string
+      language:
+        type: string
+      status_id:
+        type: string
+      title:
+        type: string
+      type_id:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+      verification_source_id:
+        items:
+          type: string
+        type: array
+    type: object
+  parier-server_internal_models.BetRequest:
+    properties:
+      category_id:
+        type: string
+      coefficient:
+        type: string
+      deadline:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      language:
+        type: string
+      limit:
+        type: integer
+      max_amount:
+        type: string
+      min_amount:
+        type: string
+      offset:
+        type: integer
+      sort_by:
+        type: string
+      sort_dir:
+        type: string
+      status_id:
+        type: string
+      title:
+        type: string
+      type_id:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+      verification_source_id:
+        items:
+          type: string
+        type: array
+    type: object
+  parier-server_internal_models.BetResponse:
+    properties:
+      amount:
+        type: number
+      author:
+        $ref: '#/definitions/parier-server_internal_models.AuthorResponse'
+      bets_count:
+        type: integer
+      category_id:
+        type: string
+      category_name:
+        type: string
+      coefficient:
+        type: number
+      comments:
+        type: integer
+      created_at:
+        type: string
+      deadline:
+        type: string
+      deleted_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      is_liked_by_me:
+        type: boolean
+      is_rated_by_me:
+        type: boolean
+      likes:
+        type: integer
+      rating:
+        type: integer
+      status_id:
+        type: string
+      status_name:
+        type: string
+      title:
+        type: string
+      type_id:
+        type: string
+      type_name:
+        type: string
+      updated_at:
+        type: string
+      verification_sources:
+        items:
+          $ref: '#/definitions/parier-server_internal_models.VerificationSourceResponse'
+        type: array
+    type: object
+  parier-server_internal_models.DefaultRequest:
+    properties:
+      language:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+    type: object
+  parier-server_internal_models.DictionaryItemString:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  parier-server_internal_models.DictionaryRequest:
+    properties:
+      language:
+        type: string
+      search:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+    type: object
+  parier-server_internal_models.ErrorResponse:
+    properties:
+      details:
+        type: string
+      error:
+        type: string
+      success:
+        type: boolean
+    type: object
+  parier-server_internal_models.PropertyPlace:
+    enum:
+    - BET
+    - SOURCE
+    - USER
+    type: string
+    x-enum-varnames:
+    - PropertyPlaceBet
+    - PropertyPlaceSource
+    - PropertyPlaceUser
+  parier-server_internal_models.PropertyType:
+    enum:
+    - DATE
+    - DECIMAL
+    - INTEGER
+    - LOCALIZATION
+    - BOOLEAN
+    - TEXT
+    - JSONOBJECT
+    - JSONARRAY
+    - MEDIA
+    - ENUM
+    type: string
+    x-enum-varnames:
+    - PropertyTypeDate
+    - PropertyTypeDecimal
+    - PropertyTypeInteger
+    - PropertyTypeLocalization
+    - PropertyTypeBoolean
+    - PropertyTypeText
+    - PropertyTypeJSONObject
+    - PropertyTypeJSONArray
+    - PropertyTypeMedia
+    - PropertyTypeEnum
+  parier-server_internal_models.SuccessResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  parier-server_internal_models.User:
+    properties:
+      data:
+        additionalProperties: true
+        type: object
+      email:
+        type: string
+      external_id:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+      realm:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+      session_id:
+        type: string
+      username:
+        type: string
+    type: object
+  parier-server_internal_models.VerificationSourceResponse:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  parier-server_internal_repository.PropertiesEnumFilter:
+    properties:
+      language:
+        type: string
+      limit:
+        type: integer
+      offset:
+        type: integer
+      property_type:
+        type: string
+      search:
+        type: string
+      sort_by:
+        type: string
+      sort_dir:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+    type: object
+  parier-server_internal_repository.PropertiesTypeFilter:
+    properties:
+      group:
+        type: string
+      language:
+        type: string
+      limit:
+        type: integer
+      offset:
+        type: integer
+      place:
+        $ref: '#/definitions/parier-server_internal_models.PropertyPlace'
+      search:
+        type: string
+      sort_by:
+        type: string
+      sort_dir:
+        type: string
+      user:
+        $ref: '#/definitions/parier-server_internal_models.User'
+    type: object
+  parier-server_internal_service.BalanceResponse:
+    properties:
+      balance:
+        type: number
+      totalDeposited:
+        type: number
+      totalSpent:
+        type: number
+      totalWithdrawn:
+        type: number
+      totalWon:
+        type: number
+      userId:
+        type: string
+    type: object
+  parier-server_internal_service.ReferralItemResponse:
+    properties:
+      created_at:
+        type: string
+      earnings:
+        type: number
+      id:
+        type: string
+      referred_id:
+        type: string
+      referred_name:
+        type: string
+    type: object
+  parier-server_internal_service.ReferralStatsResponse:
+    properties:
+      referrals:
+        items:
+          $ref: '#/definitions/parier-server_internal_service.ReferralItemResponse'
+        type: array
+      total_earnings:
+        type: number
+      total_referrals:
+        type: integer
+    type: object
+  parier-server_internal_service.TransactionResponse:
+    properties:
+      amount:
+        type: number
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      relatedBetId:
+        type: string
+      relatedUserId:
+        type: string
+      type:
+        type: string
+      userId:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is the Oasix property management system API server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Oasix API
+  version: "1.0"
+paths:
+  /admin/credit-preview:
+    get:
+      description: Get count of users matching the rule
+      parameters:
+      - description: Rule
+        in: query
+        name: rule
+        required: true
+        type: string
+      - description: Days
+        in: query
+        name: days
+        type: string
+      - description: Max balance
+        in: query
+        name: maxBalance
+        type: string
+      - description: Min bets
+        in: query
+        name: minBets
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.AdminCreditPreviewResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Get admin credit preview
+      tags:
+      - admin
+  /admin/credit-tokens:
+    post:
+      consumes:
+      - application/json
+      description: Credit tokens to users by rule
+      parameters:
+      - description: Admin credit request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.AdminCreditRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.AdminCreditResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Credit tokens to users by rule
+      tags:
+      - admin
+  /auth/login-code:
+    put:
+      consumes:
+      - application/json
+      description: Authenticate user through Keycloak and return tokens
+      parameters:
+      - description: Login credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.LoginCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.ProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      summary: Login via Keycloak
+      tags:
+      - auth
+  /auth/logout:
+    put:
+      consumes:
+      - application/json
+      description: Logout user from Keycloak
+      parameters:
+      - description: Logout parameters
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.KeycloakLogoutRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Logout user
+      tags:
+      - auth
+  /auth/profile:
+    post:
+      consumes:
+      - application/json
+      description: Get current user profile information from Keycloak
+      parameters:
+      - description: Profile parameters
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.DefaultRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.ProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get current user profile
+      tags:
+      - auth
+  /core/locales/{lang}/{ns}:
+    get:
+      consumes:
+      - application/json
+      description: Get locales
+      parameters:
+      - description: Language
+        in: path
+        name: lang
+        required: true
+        type: string
+      - description: Namespace
+        in: path
+        name: ns
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get locales
+      tags:
+      - core
+  /core/properties-enums:
+    post:
+      consumes:
+      - application/json
+      description: Get properties enums
+      parameters:
+      - description: Filter parameters
+        in: body
+        name: filter
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_repository.PropertiesEnumFilter'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.PropertiesEnumsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get properties enums
+      tags:
+      - core
+  /core/properties-types:
+    post:
+      consumes:
+      - application/json
+      description: Get paginated list of properties types with filtering
+      parameters:
+      - description: Filter parameters
+        in: body
+        name: filter
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_repository.PropertiesTypeFilter'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.PropertiesTypesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get paginated list of properties types
+      tags:
+      - core
+  /core/properties-types/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Get properties type by id
+      parameters:
+      - description: Properties type id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Filter parameters
+        in: body
+        name: filter
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.DefaultRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.PropertiesTypeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get properties type by id
+      tags:
+      - core
+  /media/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Get media file information
+      parameters:
+      - description: Media ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Get media parameters
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.DefaultRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.MediaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get media info
+      tags:
+      - media
+  /media/{id}/download:
+    get:
+      description: Download a file from S3 storage
+      parameters:
+      - description: Media ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Download file
+      tags:
+      - media
+  /media/{id}/raw:
+    get:
+      description: Raw a file from S3 storage
+      parameters:
+      - description: Media ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Raw file
+      tags:
+      - media
+  /parier/bet:
+    post:
+      consumes:
+      - application/json
+      description: Get bets
+      parameters:
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.BetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.BetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get bets
+      tags:
+      - parier
+    put:
+      consumes:
+      - application/json
+      description: Create bet
+      parameters:
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.BetCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.BetCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Create bet
+      tags:
+      - parier
+  /parier/bet-statuses:
+    post:
+      consumes:
+      - application/json
+      description: Get bet statuses
+      parameters:
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.DictionaryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.DictionaryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get bet statuses
+      tags:
+      - parier
+  /parier/bet-types:
+    post:
+      consumes:
+      - application/json
+      description: Get bet types
+      parameters:
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.DictionaryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.DictionaryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get bet types
+      tags:
+      - parier
+  /parier/bet/{bet_id}/comment:
+    put:
+      consumes:
+      - application/json
+      description: Create bet comment
+      parameters:
+      - description: Bet ID
+        in: path
+        name: bet_id
+        required: true
+        type: string
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.BetCommentCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Create bet comment
+      tags:
+      - parier
+  /parier/bet/{bet_id}/comments:
+    post:
+      consumes:
+      - application/json
+      description: Get bet comments
+      parameters:
+      - description: Bet ID
+        in: path
+        name: bet_id
+        required: true
+        type: string
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.BetCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.BetCommentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get bet comments
+      tags:
+      - parier
+  /parier/bet/{bet_id}/like:
+    post:
+      consumes:
+      - application/json
+      description: Like bet
+      parameters:
+      - description: Bet ID
+        in: path
+        name: bet_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Like bet
+      tags:
+      - parier
+  /parier/bet/{bet_id}/unlike:
+    post:
+      consumes:
+      - application/json
+      description: Unlike bet
+      parameters:
+      - description: Bet ID
+        in: path
+        name: bet_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Unlike bet
+      tags:
+      - parier
+  /parier/categories:
+    post:
+      consumes:
+      - application/json
+      description: Get categories
+      parameters:
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.DictionaryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.DictionaryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get categories
+      tags:
+      - parier
+  /parier/comment/{comment_id}/like:
+    post:
+      consumes:
+      - application/json
+      description: Like bet comment
+      parameters:
+      - description: Comment ID
+        in: path
+        name: comment_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Like bet comment
+      tags:
+      - parier
+  /parier/comment/{comment_id}/unlike:
+    post:
+      consumes:
+      - application/json
+      description: Unlike bet comment
+      parameters:
+      - description: Comment ID
+        in: path
+        name: comment_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Unlike bet comment
+      tags:
+      - parier
+  /parier/like-types:
+    post:
+      consumes:
+      - application/json
+      description: Get like types
+      parameters:
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.DictionaryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.DictionaryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get like types
+      tags:
+      - parier
+  /parier/verification-sources:
+    post:
+      consumes:
+      - application/json
+      description: Get verification sources
+      parameters:
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/parier-server_internal_models.DictionaryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.DictionaryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get verification sources
+      tags:
+      - parier
+  /referral/code:
+    get:
+      description: Get or generate user's referral code
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.ReferralCodeResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Get referral code
+      tags:
+      - referral
+  /referral/stats:
+    get:
+      description: Get referral statistics (total referrals, earnings, list)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_service.ReferralStatsResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Get referral stats
+      tags:
+      - referral
+  /wallet/balance:
+    get:
+      description: Get wallet balance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.BalanceResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Get wallet balance
+      tags:
+      - wallet
+  /wallet/deposit:
+    post:
+      consumes:
+      - application/json
+      description: Deposit to wallet
+      parameters:
+      - description: Deposit request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.DepositRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.BalanceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Deposit to wallet
+      tags:
+      - wallet
+  /wallet/transactions:
+    get:
+      description: Get wallet transactions
+      parameters:
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.TransactionsResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Get wallet transactions
+      tags:
+      - wallet
+  /wallet/withdraw:
+    post:
+      consumes:
+      - application/json
+      description: Withdraw from wallet
+      parameters:
+      - description: Withdraw request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.WithdrawRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.BalanceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Withdraw from wallet
+      tags:
+      - wallet
+securityDefinitions:
+  BasicAuth:
+    type: basic
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+  OAuth2Keycloak:
+    authorizationUrl: http://localhost:18080/realms/parier/protocol/openid-connect/auth
+    flow: implicit
+    scopes:
+      read_access: Grants read access
+      write_access: Grants write access
+    type: oauth2
+swagger: "2.0"

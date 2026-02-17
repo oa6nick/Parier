@@ -1,0 +1,41 @@
+# Git
+.git
+.gitignore
+
+# Environment files
+.env
+.env.local
+.env.example
+
+# Logs
+*.log
+
+# Documentation
+README.md
+docs/
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Go build artifacts
+main
+parier-server
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test files
+*_test.go
+coverage.out
+
+# Temporary files
+tmp/
+temp/ 
+
+postgres_data/
+minio_data/

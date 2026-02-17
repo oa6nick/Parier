@@ -47,6 +47,8 @@
     "create": "Create",
     "trends": "Trends",
     "messages": "Messages",
+    "login": "Login",
+    "logout": "Logout",
     "support": "Support"
   },
   "Support": {
@@ -100,7 +102,8 @@
     "placing": "Placing...",
     "errors": {
       "minBet": "Minimum bet is ${min}",
-      "maxBet": "Maximum bet is ${max}"
+      "maxBet": "Maximum bet is ${max}",
+      "generic": "Something went wrong. Please try again."
     }
   },
   "Create": {
@@ -239,7 +242,11 @@
     "placeholder": "Add a comment...",
     "send": "Send",
     "noComments": "No comments yet. Be the first!",
-    "reply": "Reply"
+    "reply": "Reply",
+    "loading": "Loading comments...",
+    "sending": "Sending...",
+    "failedToLoad": "Failed to load comments",
+    "loginToComment": "Log in to comment"
   },
   "Chat": {
     "title": "Messages",
@@ -343,8 +350,20 @@
     "globalMarket": "Global Market",
     "activePredictions": "{count} Active Predictions",
     "all": "All",
+    "searchPlaceholder": "Search predictions...",
+    "searchButton": "Search",
+    "trendingBets": "Trending Bets",
+    "live": "Live",
+    "sortBy": "Sort by:",
+    "sortDate": "Newest",
+    "sortPopularity": "Popular",
+    "sortCoefficient": "High Odds",
+    "sortPool": "Large Pool",
     "noResults": "No bets found",
     "noResultsDesc": "Try adjusting your search or filters",
+    "noBetsFound": "No bets found",
+    "noBetsDesc": "Try adjusting your search or filters",
+    "clearFilters": "Clear all filters",
     "createBetForm": {
       "title": "Create Bet",
       "titlePlaceholder": "Prediction title...",
