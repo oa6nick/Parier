@@ -35,7 +35,7 @@
             "directAccessGrantsEnabled": true,
             "protocol": "openid-connect",
             "clientAuthenticatorType": "client-secret",
-            "clientSecret": "ywBD4H15rnDn1OGoBAtiTADK2MsaJJqo",
+            "secret": "ywBD4H15rnDn1OGoBAtiTADK2MsaJJqo",
             "attributes": {
                 "access.token.lifespan": "1800",
                 "client.secret.creation.time": "1609459200"
