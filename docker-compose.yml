@@ -15,8 +15,11 @@ services:
         - PROXY=${PROXY}
         - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
         - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-        - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
-        - OIDC_ISSUER=${OIDC_ISSUER}
+        - OIDC_CLIENT_ID=${OIDC_CLIENT_ID:-${KEYCLOAK_CLIENT_ID}}
+        - OIDC_ISSUER=${OIDC_ISSUER:-${KEYCLOAK_ISSUER}}
+        - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID:-${OIDC_CLIENT_ID}}
+        - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
+        - KEYCLOAK_ISSUER=${KEYCLOAK_ISSUER:-${OIDC_ISSUER}}
         - NEXTAUTH_URL=${NEXT_AUTH_URL}
         - AUTH_TRUST_HOST=${AUTH_TRUST_HOST}
         - DEFAULT_POSITION=${DEFAULT_POSITION}
@@ -25,8 +28,11 @@ services:
       NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL}"
       PROXY: "${PROXY}"
       NEXTAUTH_SECRET: "${NEXTAUTH_SECRET}"
-      OIDC_CLIENT_ID: "${OIDC_CLIENT_ID}"
-      OIDC_ISSUER: "${OIDC_ISSUER}"
+      OIDC_CLIENT_ID: "${OIDC_CLIENT_ID:-${KEYCLOAK_CLIENT_ID}}"
+      OIDC_ISSUER: "${OIDC_ISSUER:-${KEYCLOAK_ISSUER}}"
+      KEYCLOAK_CLIENT_ID: "${KEYCLOAK_CLIENT_ID:-${OIDC_CLIENT_ID}}"
+      KEYCLOAK_CLIENT_SECRET: "${KEYCLOAK_CLIENT_SECRET}"
+      KEYCLOAK_ISSUER: "${KEYCLOAK_ISSUER:-${OIDC_ISSUER}}"
       NEXTAUTH_URL: "${NEXT_AUTH_URL}"
       AUTH_TRUST_HOST: "${AUTH_TRUST_HOST}"
       DEFAULT_POSITION: "${DEFAULT_POSITION}"
@@ -167,6 +173,10 @@ services:
       # Frontend configuration
       FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-http://localhost:23000}
       
+      # Rate limit configuration
+      RATE_LIMIT_RPS: ${RATE_LIMIT_RPS:-10}
+      RATE_LIMIT_BURST: ${RATE_LIMIT_BURST:-20}
+      
       # Keycloak configuration
       KEYCLOAK_SERVER_URL: ${KEYCLOAK_SERVER_URL:-http://localhost:28080}
       KEYCLOAK_DEFAULT_REALM: ${KEYCLOAK_DEFAULT_REALM:-parier}
@@ -295,8 +305,10 @@ services:
       - pgadmin_data:/var/lib/pgadmin
     restart: unless-stopped
 
-  # n8n for workflow automation
+  # n8n for workflow automation (optional - use: docker-compose --profile full up)
   n8n:
+    profiles:
+      - full
     image: n8nio/n8n:latest
     container_name: parier-n8n
     ports:
@@ -314,6 +326,8 @@ services:
       start_period: 40s
 
   n8n-postgres:
+    profiles:
+      - full
     image: pgvector/pgvector:0.8.1-pg18-trixie
     container_name: parier-n8n-postgres
     environment:

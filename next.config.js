@@ -21,14 +21,12 @@ if (process.env.PROXY) {
 }
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable standalone output for Docker
   output: 'standalone',
   rewrites: async () => proxy,
   env: {
     OIDC_CLIENT_ID: process.env.OIDC_CLIENT_ID,
     OIDC_ISSUER: process.env.OIDC_ISSUER,
   },
-  // Reduce preload warnings
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },

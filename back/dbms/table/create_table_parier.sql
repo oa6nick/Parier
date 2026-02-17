@@ -726,3 +726,66 @@ COMMENT ON COLUMN t_chat_message_read.ck_user IS 'Идентификатор п�
 COMMENT ON COLUMN t_chat_message_read.ct_read IS 'Дата прочтения';
 
 CREATE UNIQUE INDEX uk_t_chat_message_read_ck_message_and_ck_user ON t_chat_message_read(ck_message, ck_user);
+
+--changeset artemov_i:init_parier_referral dbms:postgresql splitStatements:false stripComments:false
+-- =====================================================
+-- РЕФЕРАЛЬНАЯ СИСТЕМА
+-- =====================================================
+
+-- Таблица: t_referral_code - Коды рефералов
+CREATE TABLE IF NOT EXISTS t_referral_code (
+    ck_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ck_user uuid NOT NULL,
+    cv_code VARCHAR(32) NOT NULL,
+    CONSTRAINT fk_t_referral_code_ck_user FOREIGN KEY (ck_user) REFERENCES t_user(ck_id)
+);
+
+COMMENT ON TABLE t_referral_code IS 'Коды рефералов';
+COMMENT ON COLUMN t_referral_code.ck_id IS 'Идентификатор';
+COMMENT ON COLUMN t_referral_code.ck_user IS 'Идентификатор пользователя';
+COMMENT ON COLUMN t_referral_code.cv_code IS 'Код реферала';
+
+CREATE UNIQUE INDEX uk_t_referral_code_ck_user ON t_referral_code(ck_user);
+
+-- Таблица: t_referral - Связь рефералов
+CREATE TABLE IF NOT EXISTS t_referral (
+    ck_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ck_referrer uuid NOT NULL,
+    ck_referred uuid NOT NULL,
+    cv_code VARCHAR(32) NOT NULL,
+    CONSTRAINT fk_t_referral_ck_referrer FOREIGN KEY (ck_referrer) REFERENCES t_user(ck_id),
+    CONSTRAINT fk_t_referral_ck_referred FOREIGN KEY (ck_referred) REFERENCES t_user(ck_id)
+);
+
+COMMENT ON TABLE t_referral IS 'Связь рефералов';
+COMMENT ON COLUMN t_referral.ck_id IS 'Идентификатор';
+COMMENT ON COLUMN t_referral.ck_referrer IS 'Идентификатор реферала';
+COMMENT ON COLUMN t_referral.ck_referred IS 'Идентификатор приглашенного';
+COMMENT ON COLUMN t_referral.cv_code IS 'Код реферала';
+
+CREATE UNIQUE INDEX uk_t_referral_ck_referrer_and_ck_referred ON t_referral(ck_referrer, ck_referred);
+
+-- Таблица: t_referral_earning - Заработок с реферала
+CREATE TABLE IF NOT EXISTS t_referral_earning (
+    ck_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ck_referral uuid NOT NULL,
+    cn_amount DECIMAL NOT NULL,
+    ck_create VARCHAR(255) NOT NULL,
+    ct_create TIMESTAMP NOT NULL DEFAULT now(),
+    ck_modify VARCHAR(255) NOT NULL,
+    ct_modify TIMESTAMP NOT NULL DEFAULT now(),
+    ct_delete TIMESTAMP NULL,
+    CONSTRAINT fk_t_referral_earning_ck_referral FOREIGN KEY (ck_referral) REFERENCES t_referral(ck_id)
+);
+
+COMMENT ON TABLE t_referral_earning IS 'Заработок с реферала';
+COMMENT ON COLUMN t_referral_earning.ck_id IS 'Идентификатор';
+COMMENT ON COLUMN t_referral_earning.ck_referral IS 'Идентификатор реферала';
+COMMENT ON COLUMN t_referral_earning.cn_amount IS 'Сумма';
+COMMENT ON COLUMN t_referral_earning.ck_create IS 'Идентификатор создателя';
+COMMENT ON COLUMN t_referral_earning.ct_create IS 'Дата создания';
+COMMENT ON COLUMN t_referral_earning.ck_modify IS 'Идентификатор пользователя';
+COMMENT ON COLUMN t_referral_earning.ct_modify IS 'Дата модификации';
+COMMENT ON COLUMN t_referral_earning.ct_delete IS 'Дата логического удаления';
+
+CREATE UNIQUE INDEX uk_t_referral_earning_ck_referral ON t_referral_earning(ck_referral);

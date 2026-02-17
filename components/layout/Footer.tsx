@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from '@/navigation';
 import { useTranslations } from 'next-intl';
 import { Twitter, Instagram, Send, Github } from 'lucide-react';
+import { Logo } from '@/components/Logo';
 
 export const Footer = () => {
   const t = useTranslations('Footer');
@@ -13,14 +14,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="col-span-1 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                P
-              </div>
-              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
-                Parier
-              </span>
-            </Link>
+            <Logo size="sm" alwaysShowText className="mb-4" />
             <p className="text-gray-500 text-sm leading-relaxed mb-6">
               {t('description')}
             </p>
@@ -102,7 +96,7 @@ export const Footer = () => {
 
         <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-gray-400" suppressHydrationWarning>
-            © {currentYear} Parier. {t('rightsReserved')}
+            © {currentYear} Pariall. {t('rightsReserved')}
           </p>
           <div className="flex items-center gap-6 text-sm text-gray-400">
             <span>English</span>

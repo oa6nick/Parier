@@ -5,22 +5,6 @@ import { Bet } from '@/types';
 import { NextIntlClientProvider } from 'next-intl';
 import messages from '@/messages/en.json';
 
-// Mock the Auth Context
-vi.mock('@/context/AuthContext', () => ({
-    useAuth: () => ({
-        isAuthenticated: true,
-        user: {
-            id: '1',
-            username: 'TestUser',
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Test',
-            rating: 4.5,
-            winRate: 75,
-            isPro: true,
-            verified: true,
-        },
-    }),
-}));
-
 // Mock Navigation
 vi.mock('@/navigation', () => ({
     useRouter: () => ({
@@ -40,7 +24,7 @@ const mockBet: Bet = {
     shortDescription: 'Short description',
     fullDescription: 'Full description',
     outcome: 'Yes',
-    category: { id: 'tech', name: 'Technology', icon: 'tech' },
+    category: { id: 'tech', name: 'Technology', icon: 'tech', color: 'purple' },
     betAmount: 1000,
     coefficient: 2.5,
     potentialWinnings: 2500,
@@ -60,7 +44,8 @@ const mockBet: Bet = {
         avatar: 'avatar.png',
         rating: 4.8,
         winRate: 80,
-        isPro: true,
+        joinedDate: new Date(),
+        totalBets: 50,
         verified: true,
     },
 };

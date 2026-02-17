@@ -23,6 +23,35 @@ import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
+export interface InternalHandlersAdminCreditPreviewResponse {
+    'count'?: number;
+}
+export interface InternalHandlersAdminCreditRequest {
+    'amount': number;
+    'description'?: string;
+    'rule': InternalHandlersAdminCreditRequestRuleEnum;
+    'ruleParams'?: { [key: string]: any; };
+}
+
+export const InternalHandlersAdminCreditRequestRuleEnum = {
+    All: 'all',
+    NewUsers: 'new_users',
+    LowBalance: 'low_balance',
+    Active: 'active'
+} as const;
+
+export type InternalHandlersAdminCreditRequestRuleEnum = typeof InternalHandlersAdminCreditRequestRuleEnum[keyof typeof InternalHandlersAdminCreditRequestRuleEnum];
+
+export interface InternalHandlersAdminCreditResponse {
+    'amount'?: number;
+    'creditedCount'?: number;
+    'newBalances'?: { [key: string]: number; };
+    'success'?: boolean;
+}
+export interface InternalHandlersBalanceResponse {
+    'data'?: ParierServerInternalServiceBalanceResponse;
+    'success'?: boolean;
+}
 export interface InternalHandlersBetCommentResponse {
     'count'?: number;
     'data'?: Array<ParierServerInternalModelsBetCommentResponse>;
@@ -39,6 +68,10 @@ export interface InternalHandlersBetResponse {
     'data'?: Array<ParierServerInternalModelsBetResponse>;
     'success'?: boolean;
     'total'?: number;
+}
+export interface InternalHandlersDepositRequest {
+    'amount': number;
+    'description'?: string;
 }
 export interface InternalHandlersDictionaryResponse {
     'data'?: Array<ParierServerInternalModelsDictionaryItemString>;
@@ -101,6 +134,18 @@ export interface InternalHandlersPropertiesTypeResponse {
 export interface InternalHandlersPropertiesTypesResponse {
     'data'?: Array<InternalHandlersPropertiesTypeResponse>;
     'total'?: number;
+}
+export interface InternalHandlersReferralCodeResponse {
+    'code'?: string;
+}
+export interface InternalHandlersTransactionsResponse {
+    'data'?: Array<ParierServerInternalServiceTransactionResponse>;
+    'success'?: boolean;
+    'total'?: number;
+}
+export interface InternalHandlersWithdrawRequest {
+    'amount': number;
+    'description'?: string;
 }
 export interface ParierServerInternalModelsAuthorResponse {
     'avatar'?: string;
@@ -284,6 +329,248 @@ export interface ParierServerInternalRepositoryPropertiesTypeFilter {
     'sort_by'?: string;
     'sort_dir'?: string;
     'user'?: ParierServerInternalModelsUser;
+}
+
+
+export interface ParierServerInternalServiceBalanceResponse {
+    'balance'?: number;
+    'totalDeposited'?: number;
+    'totalSpent'?: number;
+    'totalWithdrawn'?: number;
+    'totalWon'?: number;
+    'userId'?: string;
+}
+export interface ParierServerInternalServiceReferralItemResponse {
+    'created_at'?: string;
+    'earnings'?: number;
+    'id'?: string;
+    'referred_id'?: string;
+    'referred_name'?: string;
+}
+export interface ParierServerInternalServiceReferralStatsResponse {
+    'referrals'?: Array<ParierServerInternalServiceReferralItemResponse>;
+    'total_earnings'?: number;
+    'total_referrals'?: number;
+}
+export interface ParierServerInternalServiceTransactionResponse {
+    'amount'?: number;
+    'createdAt'?: string;
+    'description'?: string;
+    'id'?: string;
+    'relatedBetId'?: string;
+    'relatedUserId'?: string;
+    'type'?: string;
+    'userId'?: string;
+}
+
+/**
+ * AdminApi - axios parameter creator
+ */
+export const AdminApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Get count of users matching the rule
+         * @summary Get admin credit preview
+         * @param {string} rule Rule
+         * @param {string} [days] Days
+         * @param {string} [maxBalance] Max balance
+         * @param {string} [minBets] Min bets
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminCreditPreviewGet: async (rule: string, days?: string, maxBalance?: string, minBets?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'rule' is not null or undefined
+            assertParamExists('adminCreditPreviewGet', 'rule', rule)
+            const localVarPath = `/admin/credit-preview`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (rule !== undefined) {
+                localVarQueryParameter['rule'] = rule;
+            }
+
+            if (days !== undefined) {
+                localVarQueryParameter['days'] = days;
+            }
+
+            if (maxBalance !== undefined) {
+                localVarQueryParameter['maxBalance'] = maxBalance;
+            }
+
+            if (minBets !== undefined) {
+                localVarQueryParameter['minBets'] = minBets;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Credit tokens to users by rule
+         * @summary Credit tokens to users by rule
+         * @param {InternalHandlersAdminCreditRequest} request Admin credit request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminCreditTokensPost: async (request: InternalHandlersAdminCreditRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'request' is not null or undefined
+            assertParamExists('adminCreditTokensPost', 'request', request)
+            const localVarPath = `/admin/credit-tokens`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * AdminApi - functional programming interface
+ */
+export const AdminApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = AdminApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Get count of users matching the rule
+         * @summary Get admin credit preview
+         * @param {string} rule Rule
+         * @param {string} [days] Days
+         * @param {string} [maxBalance] Max balance
+         * @param {string} [minBets] Min bets
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminCreditPreviewGet(rule: string, days?: string, maxBalance?: string, minBets?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InternalHandlersAdminCreditPreviewResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminCreditPreviewGet(rule, days, maxBalance, minBets, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.adminCreditPreviewGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Credit tokens to users by rule
+         * @summary Credit tokens to users by rule
+         * @param {InternalHandlersAdminCreditRequest} request Admin credit request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminCreditTokensPost(request: InternalHandlersAdminCreditRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InternalHandlersAdminCreditResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminCreditTokensPost(request, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.adminCreditTokensPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * AdminApi - factory interface
+ */
+export const AdminApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = AdminApiFp(configuration)
+    return {
+        /**
+         * Get count of users matching the rule
+         * @summary Get admin credit preview
+         * @param {string} rule Rule
+         * @param {string} [days] Days
+         * @param {string} [maxBalance] Max balance
+         * @param {string} [minBets] Min bets
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminCreditPreviewGet(rule: string, days?: string, maxBalance?: string, minBets?: string, options?: RawAxiosRequestConfig): AxiosPromise<InternalHandlersAdminCreditPreviewResponse> {
+            return localVarFp.adminCreditPreviewGet(rule, days, maxBalance, minBets, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Credit tokens to users by rule
+         * @summary Credit tokens to users by rule
+         * @param {InternalHandlersAdminCreditRequest} request Admin credit request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminCreditTokensPost(request: InternalHandlersAdminCreditRequest, options?: RawAxiosRequestConfig): AxiosPromise<InternalHandlersAdminCreditResponse> {
+            return localVarFp.adminCreditTokensPost(request, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * AdminApi - object-oriented interface
+ */
+export class AdminApi extends BaseAPI {
+    /**
+     * Get count of users matching the rule
+     * @summary Get admin credit preview
+     * @param {string} rule Rule
+     * @param {string} [days] Days
+     * @param {string} [maxBalance] Max balance
+     * @param {string} [minBets] Min bets
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminCreditPreviewGet(rule: string, days?: string, maxBalance?: string, minBets?: string, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).adminCreditPreviewGet(rule, days, maxBalance, minBets, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Credit tokens to users by rule
+     * @summary Credit tokens to users by rule
+     * @param {InternalHandlersAdminCreditRequest} request Admin credit request
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminCreditTokensPost(request: InternalHandlersAdminCreditRequest, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).adminCreditTokensPost(request, options).then((request) => request(this.axios, this.basePath));
+    }
 }
 
 
@@ -2288,6 +2575,514 @@ export class ParierApi extends BaseAPI {
      */
     public parierVerificationSourcesPost(request: ParierServerInternalModelsDictionaryRequest, options?: RawAxiosRequestConfig) {
         return ParierApiFp(this.configuration).parierVerificationSourcesPost(request, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * ReferralApi - axios parameter creator
+ */
+export const ReferralApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Get or generate user\'s referral code
+         * @summary Get referral code
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        referralCodeGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/referral/code`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get referral statistics (total referrals, earnings, list)
+         * @summary Get referral stats
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        referralStatsGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/referral/stats`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * ReferralApi - functional programming interface
+ */
+export const ReferralApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ReferralApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Get or generate user\'s referral code
+         * @summary Get referral code
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async referralCodeGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InternalHandlersReferralCodeResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.referralCodeGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ReferralApi.referralCodeGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Get referral statistics (total referrals, earnings, list)
+         * @summary Get referral stats
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async referralStatsGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ParierServerInternalServiceReferralStatsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.referralStatsGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ReferralApi.referralStatsGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * ReferralApi - factory interface
+ */
+export const ReferralApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = ReferralApiFp(configuration)
+    return {
+        /**
+         * Get or generate user\'s referral code
+         * @summary Get referral code
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        referralCodeGet(options?: RawAxiosRequestConfig): AxiosPromise<InternalHandlersReferralCodeResponse> {
+            return localVarFp.referralCodeGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get referral statistics (total referrals, earnings, list)
+         * @summary Get referral stats
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        referralStatsGet(options?: RawAxiosRequestConfig): AxiosPromise<ParierServerInternalServiceReferralStatsResponse> {
+            return localVarFp.referralStatsGet(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * ReferralApi - object-oriented interface
+ */
+export class ReferralApi extends BaseAPI {
+    /**
+     * Get or generate user\'s referral code
+     * @summary Get referral code
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public referralCodeGet(options?: RawAxiosRequestConfig) {
+        return ReferralApiFp(this.configuration).referralCodeGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get referral statistics (total referrals, earnings, list)
+     * @summary Get referral stats
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public referralStatsGet(options?: RawAxiosRequestConfig) {
+        return ReferralApiFp(this.configuration).referralStatsGet(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * WalletApi - axios parameter creator
+ */
+export const WalletApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Get wallet balance
+         * @summary Get wallet balance
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        walletBalanceGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/wallet/balance`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Deposit to wallet
+         * @summary Deposit to wallet
+         * @param {InternalHandlersDepositRequest} request Deposit request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        walletDepositPost: async (request: InternalHandlersDepositRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'request' is not null or undefined
+            assertParamExists('walletDepositPost', 'request', request)
+            const localVarPath = `/wallet/deposit`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get wallet transactions
+         * @summary Get wallet transactions
+         * @param {number} [offset] Offset
+         * @param {number} [limit] Limit
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        walletTransactionsGet: async (offset?: number, limit?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/wallet/transactions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Withdraw from wallet
+         * @summary Withdraw from wallet
+         * @param {InternalHandlersWithdrawRequest} request Withdraw request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        walletWithdrawPost: async (request: InternalHandlersWithdrawRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'request' is not null or undefined
+            assertParamExists('walletWithdrawPost', 'request', request)
+            const localVarPath = `/wallet/withdraw`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * WalletApi - functional programming interface
+ */
+export const WalletApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = WalletApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Get wallet balance
+         * @summary Get wallet balance
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async walletBalanceGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InternalHandlersBalanceResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.walletBalanceGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WalletApi.walletBalanceGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Deposit to wallet
+         * @summary Deposit to wallet
+         * @param {InternalHandlersDepositRequest} request Deposit request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async walletDepositPost(request: InternalHandlersDepositRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InternalHandlersBalanceResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.walletDepositPost(request, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WalletApi.walletDepositPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Get wallet transactions
+         * @summary Get wallet transactions
+         * @param {number} [offset] Offset
+         * @param {number} [limit] Limit
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async walletTransactionsGet(offset?: number, limit?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InternalHandlersTransactionsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.walletTransactionsGet(offset, limit, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WalletApi.walletTransactionsGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Withdraw from wallet
+         * @summary Withdraw from wallet
+         * @param {InternalHandlersWithdrawRequest} request Withdraw request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async walletWithdrawPost(request: InternalHandlersWithdrawRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InternalHandlersBalanceResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.walletWithdrawPost(request, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WalletApi.walletWithdrawPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * WalletApi - factory interface
+ */
+export const WalletApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = WalletApiFp(configuration)
+    return {
+        /**
+         * Get wallet balance
+         * @summary Get wallet balance
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        walletBalanceGet(options?: RawAxiosRequestConfig): AxiosPromise<InternalHandlersBalanceResponse> {
+            return localVarFp.walletBalanceGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Deposit to wallet
+         * @summary Deposit to wallet
+         * @param {InternalHandlersDepositRequest} request Deposit request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        walletDepositPost(request: InternalHandlersDepositRequest, options?: RawAxiosRequestConfig): AxiosPromise<InternalHandlersBalanceResponse> {
+            return localVarFp.walletDepositPost(request, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get wallet transactions
+         * @summary Get wallet transactions
+         * @param {number} [offset] Offset
+         * @param {number} [limit] Limit
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        walletTransactionsGet(offset?: number, limit?: number, options?: RawAxiosRequestConfig): AxiosPromise<InternalHandlersTransactionsResponse> {
+            return localVarFp.walletTransactionsGet(offset, limit, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Withdraw from wallet
+         * @summary Withdraw from wallet
+         * @param {InternalHandlersWithdrawRequest} request Withdraw request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        walletWithdrawPost(request: InternalHandlersWithdrawRequest, options?: RawAxiosRequestConfig): AxiosPromise<InternalHandlersBalanceResponse> {
+            return localVarFp.walletWithdrawPost(request, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * WalletApi - object-oriented interface
+ */
+export class WalletApi extends BaseAPI {
+    /**
+     * Get wallet balance
+     * @summary Get wallet balance
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public walletBalanceGet(options?: RawAxiosRequestConfig) {
+        return WalletApiFp(this.configuration).walletBalanceGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Deposit to wallet
+     * @summary Deposit to wallet
+     * @param {InternalHandlersDepositRequest} request Deposit request
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public walletDepositPost(request: InternalHandlersDepositRequest, options?: RawAxiosRequestConfig) {
+        return WalletApiFp(this.configuration).walletDepositPost(request, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get wallet transactions
+     * @summary Get wallet transactions
+     * @param {number} [offset] Offset
+     * @param {number} [limit] Limit
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public walletTransactionsGet(offset?: number, limit?: number, options?: RawAxiosRequestConfig) {
+        return WalletApiFp(this.configuration).walletTransactionsGet(offset, limit, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Withdraw from wallet
+     * @summary Withdraw from wallet
+     * @param {InternalHandlersWithdrawRequest} request Withdraw request
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public walletWithdrawPost(request: InternalHandlersWithdrawRequest, options?: RawAxiosRequestConfig) {
+        return WalletApiFp(this.configuration).walletWithdrawPost(request, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

@@ -13,18 +13,19 @@ import (
 
 // Config holds all configuration for the application
 type Config struct {
-	Database DatabaseConfig
-	Server   ServerConfig
-	Store    StoreConfig
-	Swagger  SwaggerConfig
-	S3       S3Config
-	Keycloak KeycloakConfig
-	Media    MediaConfig
-	Cache    CacheConfig
-	AI       AICofig
-	MCP      MCPConfig
-	Frontend FrontendConfig
-	Wallet   WalletConfig
+	Database  DatabaseConfig
+	Server    ServerConfig
+	Store     StoreConfig
+	Swagger   SwaggerConfig
+	S3        S3Config
+	Keycloak  KeycloakConfig
+	Media     MediaConfig
+	Cache     CacheConfig
+	AI        AICofig
+	MCP       MCPConfig
+	Frontend  FrontendConfig
+	Wallet    WalletConfig
+	RateLimit RateLimitConfig
 }
 
 type AIType string
@@ -155,6 +156,11 @@ type WalletConfig struct {
 	DefaultBalance float64
 }
 
+type RateLimitConfig struct {
+	RPS   float64
+	Burst int
+}
+
 // LoadConfig loads configuration from environment variables
 func LoadConfig() *Config {
 	// Load .env file if exists
@@ -246,6 +252,10 @@ func LoadConfig() *Config {
 		},
 		Wallet: WalletConfig{
 			DefaultBalance: getEnvAsFloat("WALLET_DEFAULT_BALANCE", 0),
+		},
+		RateLimit: RateLimitConfig{
+			RPS:   getEnvAsFloat("RATE_LIMIT_RPS", 10),
+			Burst: getEnvAsInt("RATE_LIMIT_BURST", 20),
 		},
 	}
 }

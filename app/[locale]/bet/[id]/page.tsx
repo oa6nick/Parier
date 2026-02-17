@@ -1,8 +1,6 @@
-import React from 'react';
-import { notFound } from 'next/navigation';
-import { getBets, getBetById } from '@/lib/mockData/betsServer';
-import { BetDetailView } from '@/components/features/bet-dashboard/BetDetailView';
-import { Metadata } from 'next';
+import React from "react";
+import { BetPageClient } from "@/components/features/bet-dashboard/BetPageClient";
+import { Metadata } from "next";
 
 interface PageProps {
   params: Promise<{
@@ -12,35 +10,14 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { id, locale } = await params;
-  const bets = await getBets(locale);
-  const bet = bets.find((b) => b.id === id);
-
-  if (!bet) {
-    return {
-      title: 'Bet Not Found - Parier',
-    };
-  }
-
+  await params;
   return {
-    title: `${bet.title} - Parier`,
-    description: bet.shortDescription,
-    openGraph: {
-      title: bet.title,
-      description: bet.shortDescription,
-      type: 'website',
-    },
+    title: "Bet - Pariall",
+    description: "View bet details on Pariall",
   };
 }
 
 export default async function BetPage({ params }: PageProps) {
-  const { id, locale } = await params;
-  const bets = await getBets(locale);
-  const bet = bets.find((b) => b.id === id);
-
-  if (!bet) {
-    notFound();
-  }
-
-  return <BetDetailView bet={bet} />;
+  await params;
+  return <BetPageClient />;
 }

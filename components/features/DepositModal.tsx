@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 interface DepositModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onDeposit: (amount: number) => void;
+  onDeposit: (amount: number) => void | Promise<void>;
 }
 
 export const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose, onDeposit }) => {
@@ -37,22 +37,25 @@ export const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose, onD
     setAmount(numValue);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const depositAmount = parseFloat(amount) || 0;
-    
+
     if (depositAmount < 100) {
       return;
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      onDeposit(depositAmount);
+    try {
+      await onDeposit(depositAmount);
       setAmount("");
       setIsAnimating(false);
       setTimeout(() => onClose(), 300);
-    }, 1500);
+    } catch {
+      // Error shown by parent
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {

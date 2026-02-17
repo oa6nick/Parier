@@ -1,5 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
-import {AuthApiFactory, Configuration, MediaApiFactory, ParierApiFactory} from './client';
+import {AdminApiFactory, AuthApiFactory, Configuration, MediaApiFactory, ParierApiFactory, ReferralApiFactory, WalletApiFactory} from './client';
 
 export interface ApiInstance {
     axios: AxiosInstance;
@@ -9,6 +9,9 @@ export interface ApiInstance {
     MediaApi: ReturnType<typeof MediaApiFactory>;
     AuthApi: ReturnType<typeof AuthApiFactory>;
     ParierApi: ReturnType<typeof ParierApiFactory>;
+    AdminApi: ReturnType<typeof AdminApiFactory>;
+    WalletApi: ReturnType<typeof WalletApiFactory>;
+    ReferralApi: ReturnType<typeof ReferralApiFactory>;
 }
 
 export function createApi(parameters: {baseUrl: string}): ApiInstance {
@@ -67,6 +70,9 @@ export function createApi(parameters: {baseUrl: string}): ApiInstance {
         MediaApi: MediaApiFactory(configuration, parameters.baseUrl, instance),
         AuthApi: AuthApiFactory(configuration, parameters.baseUrl, instance),
         ParierApi: ParierApiFactory(configuration, parameters.baseUrl, instance),
+        AdminApi: AdminApiFactory(configuration, parameters.baseUrl, instance),
+        WalletApi: WalletApiFactory(configuration, parameters.baseUrl, instance),
+        ReferralApi: ReferralApiFactory(configuration, parameters.baseUrl, instance),
     };
 }
 

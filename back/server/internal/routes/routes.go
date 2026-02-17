@@ -53,6 +53,9 @@ func SetupRoutes(cfg *config.Config, db *gorm.DB) *gin.Engine {
 	mediaHandler := handlers.NewMediaHandler(services.Media, cfg)
 	coreHandler := handlers.NewCoreHandler(services.Core, cfg)
 	parierHandler := handlers.NewParierHandler(services.Parier)
+	adminHandler := handlers.NewAdminHandler(services.Admin)
+	walletHandler := handlers.NewWalletHandler(services.Wallet)
+	referralHandler := handlers.NewReferralHandler(services.Referral)
 	// Authentication routes (public)
 	public := v1.Group("")
 	public.Use(middleware.KeycloakAuthMiddleware(cfg, services.Keycloak, false))
@@ -77,6 +80,15 @@ func SetupRoutes(cfg *config.Config, db *gorm.DB) *gin.Engine {
 
 		// Parier endpoints
 		parierHandler.RegisterRoutes(protected)
+
+		// Admin endpoints
+		adminHandler.RegisterRoutes(protected)
+
+		// Wallet endpoints
+		walletHandler.RegisterRoutes(protected)
+
+		// Referral endpoints
+		referralHandler.RegisterRoutes(protected)
 
 		// MCP endpoints
 		if cfg.MCP.Enabled {

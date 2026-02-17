@@ -1,5 +1,51 @@
 basePath: /api/v1
 definitions:
+  internal_handlers.AdminCreditPreviewResponse:
+    properties:
+      count:
+        type: integer
+    type: object
+  internal_handlers.AdminCreditRequest:
+    properties:
+      amount:
+        minimum: 1
+        type: integer
+      description:
+        type: string
+      rule:
+        enum:
+        - all
+        - new_users
+        - low_balance
+        - active
+        type: string
+      ruleParams:
+        additionalProperties: true
+        type: object
+    required:
+    - amount
+    - rule
+    type: object
+  internal_handlers.AdminCreditResponse:
+    properties:
+      amount:
+        type: integer
+      creditedCount:
+        type: integer
+      newBalances:
+        additionalProperties:
+          type: number
+        type: object
+      success:
+        type: boolean
+    type: object
+  internal_handlers.BalanceResponse:
+    properties:
+      data:
+        $ref: '#/definitions/parier-server_internal_service.BalanceResponse'
+      success:
+        type: boolean
+    type: object
   internal_handlers.BetCommentResponse:
     properties:
       count:
@@ -34,6 +80,15 @@ definitions:
         type: boolean
       total:
         type: integer
+    type: object
+  internal_handlers.DepositRequest:
+    properties:
+      amount:
+        type: number
+      description:
+        type: string
+    required:
+    - amount
     type: object
   internal_handlers.DictionaryResponse:
     properties:
@@ -152,6 +207,31 @@ definitions:
         type: array
       total:
         type: integer
+    type: object
+  internal_handlers.ReferralCodeResponse:
+    properties:
+      code:
+        type: string
+    type: object
+  internal_handlers.TransactionsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/parier-server_internal_service.TransactionResponse'
+        type: array
+      success:
+        type: boolean
+      total:
+        type: integer
+    type: object
+  internal_handlers.WithdrawRequest:
+    properties:
+      amount:
+        type: number
+      description:
+        type: string
+    required:
+    - amount
     type: object
   parier-server_internal_models.AuthorResponse:
     properties:
@@ -491,6 +571,64 @@ definitions:
       user:
         $ref: '#/definitions/parier-server_internal_models.User'
     type: object
+  parier-server_internal_service.BalanceResponse:
+    properties:
+      balance:
+        type: number
+      totalDeposited:
+        type: number
+      totalSpent:
+        type: number
+      totalWithdrawn:
+        type: number
+      totalWon:
+        type: number
+      userId:
+        type: string
+    type: object
+  parier-server_internal_service.ReferralItemResponse:
+    properties:
+      created_at:
+        type: string
+      earnings:
+        type: number
+      id:
+        type: string
+      referred_id:
+        type: string
+      referred_name:
+        type: string
+    type: object
+  parier-server_internal_service.ReferralStatsResponse:
+    properties:
+      referrals:
+        items:
+          $ref: '#/definitions/parier-server_internal_service.ReferralItemResponse'
+        type: array
+      total_earnings:
+        type: number
+      total_referrals:
+        type: integer
+    type: object
+  parier-server_internal_service.TransactionResponse:
+    properties:
+      amount:
+        type: number
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      relatedBetId:
+        type: string
+      relatedUserId:
+        type: string
+      type:
+        type: string
+      userId:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -505,6 +643,89 @@ info:
   title: Oasix API
   version: "1.0"
 paths:
+  /admin/credit-preview:
+    get:
+      description: Get count of users matching the rule
+      parameters:
+      - description: Rule
+        in: query
+        name: rule
+        required: true
+        type: string
+      - description: Days
+        in: query
+        name: days
+        type: string
+      - description: Max balance
+        in: query
+        name: maxBalance
+        type: string
+      - description: Min bets
+        in: query
+        name: minBets
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.AdminCreditPreviewResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Get admin credit preview
+      tags:
+      - admin
+  /admin/credit-tokens:
+    post:
+      consumes:
+      - application/json
+      description: Credit tokens to users by rule
+      parameters:
+      - description: Admin credit request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.AdminCreditRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.AdminCreditResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Credit tokens to users by rule
+      tags:
+      - admin
   /auth/login-code:
     put:
       consumes:
@@ -1402,6 +1623,185 @@ paths:
       summary: Get verification sources
       tags:
       - parier
+  /referral/code:
+    get:
+      description: Get or generate user's referral code
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.ReferralCodeResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Get referral code
+      tags:
+      - referral
+  /referral/stats:
+    get:
+      description: Get referral statistics (total referrals, earnings, list)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/parier-server_internal_service.ReferralStatsResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Get referral stats
+      tags:
+      - referral
+  /wallet/balance:
+    get:
+      description: Get wallet balance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.BalanceResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Get wallet balance
+      tags:
+      - wallet
+  /wallet/deposit:
+    post:
+      consumes:
+      - application/json
+      description: Deposit to wallet
+      parameters:
+      - description: Deposit request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.DepositRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.BalanceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Deposit to wallet
+      tags:
+      - wallet
+  /wallet/transactions:
+    get:
+      description: Get wallet transactions
+      parameters:
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.TransactionsResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Get wallet transactions
+      tags:
+      - wallet
+  /wallet/withdraw:
+    post:
+      consumes:
+      - application/json
+      description: Withdraw from wallet
+      parameters:
+      - description: Withdraw request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.WithdrawRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.BalanceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      summary: Withdraw from wallet
+      tags:
+      - wallet
 securityDefinitions:
   BasicAuth:
     type: basic

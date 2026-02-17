@@ -4,6 +4,7 @@ import React from "react";
 import { Link } from "@/navigation";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Logo } from "@/components/Logo";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -27,14 +28,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
         </div>
 
         <div className="relative z-20">
-          <Link href="/" className="flex items-center gap-2 group w-fit">
-            <div className="relative w-10 h-10 flex items-center justify-center">
-              <div className="absolute inset-0 bg-primary rounded-xl rotate-3"></div>
-              <div className="absolute inset-0 bg-white rounded-xl -rotate-3"></div>
-              <span className="relative text-gray-900 font-bold text-xl">P</span>
-            </div>
-            <span className="text-xl font-bold tracking-tight">Parier</span>
-          </Link>
+          <Logo size="md" variant="auth" alwaysShowText />
         </div>
 
         <div className="relative z-20 max-w-lg">
@@ -42,7 +36,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
         </div>
 
         <div className="relative z-20 text-sm text-gray-400">
-          © 2026 Parier Platform. All rights reserved.
+          © 2026 Pariall Platform. All rights reserved.
         </div>
       </div>
 

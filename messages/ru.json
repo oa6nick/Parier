@@ -12,7 +12,7 @@
     },
     "ruleParams": {
       "days": "Зарегистрированы за последние (дней)",
-      "maxBalance": "Баланс ниже (PRR)",
+      "maxBalance": "Баланс ниже (PAR)",
       "minBets": "Минимум ставок"
     },
     "preview": "{count} пользователей получат токены",
@@ -80,11 +80,11 @@
     "closed": "Закрыт",
     "betNow": "Сделать ставку",
     "winRate": "WIN",
-    "tokens": "Parier",
-    "tokenSymbol": "PRR",
+    "tokens": "Pariall",
+    "tokenSymbol": "PAR",
     "share": "Поделиться",
     "copied": "Скопировано!",
-    "shareText": "{title} - {outcome}\nКэф: {coefficient}x\nСмотри прогноз на Parier!",
+    "shareText": "{title} - {outcome}\nКэф: {coefficient}x\nСмотри прогноз на Pariall!",
     "details": "Подробнее"
   },
   "BetModal": {
@@ -102,7 +102,8 @@
     "placing": "Размещение...",
     "errors": {
       "minBet": "Минимальная ставка ${min}",
-      "maxBet": "Максимальная ставка ${max}"
+      "maxBet": "Максимальная ставка ${max}",
+      "generic": "Что-то пошло не так. Попробуйте ещё раз."
     }
   },
   "Create": {
@@ -241,7 +242,11 @@
     "placeholder": "Добавить комментарий...",
     "send": "Отправить",
     "noComments": "Комментариев пока нет. Будьте первым!",
-    "reply": "Ответить"
+    "reply": "Ответить",
+    "loading": "Загрузка комментариев...",
+    "sending": "Отправка...",
+    "failedToLoad": "Не удалось загрузить комментарии",
+    "loginToComment": "Войдите, чтобы комментировать"
   },
   "Chat": {
     "title": "Сообщения",
@@ -294,8 +299,8 @@
     "title": "Кошелек",
     "subtitle": "Управляйте токенами и транзакциями",
     "balance": "Баланс",
-    "tokens": "Parier",
-    "tokenSymbol": "PRR",
+    "tokens": "Pariall",
+    "tokenSymbol": "PAR",
     "totalDeposited": "Всего пополнено",
     "totalWithdrawn": "Всего выведено",
     "totalWon": "Всего выиграно",
@@ -305,7 +310,7 @@
     "minDeposit": "Минимальное пополнение",
     "quickAmounts": "Быстрые суммы",
     "youWillReceive": "Вы получите",
-    "depositNote": "PRR будут добавлены на ваш баланс сразу",
+    "depositNote": "PAR будут добавлены на ваш баланс сразу",
     "paymentMethod": "Способ оплаты",
     "cardPayment": "Оплата картой",
     "cancel": "Отмена",
@@ -328,7 +333,7 @@
   },
   "Referral": {
     "title": "Реферальная программа",
-    "subtitle": "Приглашайте друзей и зарабатывайте PRR",
+    "subtitle": "Приглашайте друзей и зарабатывайте PAR",
     "yourCode": "Ваш реферальный код",
     "copy": "Копировать",
     "copied": "Скопировано!",
@@ -336,7 +341,7 @@
     "totalReferrals": "Всего приглашено",
     "totalEarnings": "Всего заработано",
     "howItWorks": "Как это работает",
-    "howItWorksDesc": "Поделитесь своим реферальным кодом с друзьями. Когда они зарегистрируются и сделают ставки, вы получите PRR!"
+    "howItWorksDesc": "Поделитесь своим реферальным кодом с друзьями. Когда они зарегистрируются и сделают ставки, вы получите PAR!"
   },
   "Home": {
     "title_part1": "Брось вызов",
@@ -345,8 +350,20 @@
     "globalMarket": "Глобальный рынок",
     "activePredictions": "{count} Активных прогнозов",
     "all": "Все",
+    "searchPlaceholder": "Поиск прогнозов...",
+    "searchButton": "Поиск",
+    "trendingBets": "Популярные ставки",
+    "live": "В эфире",
+    "sortBy": "Сортировка:",
+    "sortDate": "Сначала новые",
+    "sortPopularity": "Популярные",
+    "sortCoefficient": "Высокий коэффициент",
+    "sortPool": "Большой пул",
     "noResults": "Ставки не найдены",
     "noResultsDesc": "Попробуйте изменить поиск или фильтры",
+    "noBetsFound": "Ставки не найдены",
+    "noBetsDesc": "Попробуйте изменить поиск или фильтры",
+    "clearFilters": "Сбросить фильтры",
     "createBetForm": {
       "title": "Создать пари",
       "titlePlaceholder": "Заголовок прогноза...",
@@ -439,7 +456,7 @@
     "rightsReserved": "Все права защищены."
   },
   "About": {
-    "title": "О Parier",
+    "title": "О Pariall",
     "mission": {
       "title": "Наша миссия",
       "description": "Демократизировать истину через эффективные рынки прогнозов."
@@ -481,7 +498,7 @@
     "lastUpdated": "Последнее обновление",
     "acceptance": {
       "title": "Принятие условий",
-      "content": "Используя Parier, вы соглашаетесь с этими Условиями."
+      "content": "Используя Pariall, вы соглашаетесь с этими Условиями."
     },
     "eligibility": {
       "title": "Право на участие",

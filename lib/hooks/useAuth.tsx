@@ -19,17 +19,17 @@ export const useAuth = () => {
     const session = useSelector(getSession);
     const isAuthenticated = useSelector(getSessionIsAuthenticated);
 
-    const login = async (event: React.MouseEvent<HTMLElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
+    const login = async (event?: React.MouseEvent<HTMLElement>) => {
+        event?.preventDefault();
+        event?.stopPropagation();
         localStorage.setItem('redirect_url', window.location.href);
         const REDIRECT_URI = `${window.location.origin}/auth`;
         window.location.href = `${ISSUER}/protocol/openid-connect/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=openid&state=${v4()}`;
     };
 
-    const editProfile = async (e: React.MouseEvent<HTMLElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const editProfile = async (e?: React.MouseEvent<HTMLElement>) => {
+        e?.preventDefault();
+        e?.stopPropagation();
         window.location.href = `${ISSUER}/account`;
     };
 
@@ -51,9 +51,9 @@ export const useAuth = () => {
         }
     };
 
-    const logout = async (event: React.MouseEvent<HTMLElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
+    const logout = async (event?: React.MouseEvent<HTMLElement>) => {
+        event?.preventDefault();
+        event?.stopPropagation();
         await api.AuthApi.authLogoutPut({});
         dispatch(clearSession());
     };

@@ -5,7 +5,7 @@ APP_NAME_FRONT=oasix-frontend
 APP_NAME=parier-server
 DOCKER_IMAGE_FRONT=parier-front
 DOCKER_IMAGE=parier-api
-GO_VERSION=1.21
+GO_VERSION=1.24
 DOCKER_COMPOSE_FILE=docker-compose.yml
 
 ifeq (${FILE_ENV}, development)
@@ -59,7 +59,7 @@ docker-build-front: ## Build Docker image
 	docker build -t $(DOCKER_IMAGE_FRONT) .
 
 .PHONY: docker-run-front
-docker-run-front: docker-build ## Run Docker container
+docker-run-front: docker-build-front ## Run Docker container
 	docker run -p 9040:3000 --name $(APP_NAME_FRONT) $(DOCKER_IMAGE_FRONT)
 
 .PHONY: docker-clean-front

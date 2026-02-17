@@ -26,6 +26,7 @@ yarn-error.log*
 *.log
 
 # local env files
+.env
 .env*.local
 
 # vercel
@@ -33,6 +34,10 @@ yarn-error.log*
 
 # mock data (created bets at runtime)
 /data/
+
+# backend binary (built in Docker/CI)
+back/server/main
+back/server/main.exe
 
 # typescript
 *.tsbuildinfo

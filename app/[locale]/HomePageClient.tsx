@@ -9,7 +9,7 @@ import { getCategories } from '@/lib/mockData/categories';
 import { useTranslations, useLocale } from 'next-intl';
 import { Bet, BetStatus } from '@/types';
 import { isToday, isThisWeek, isThisMonth } from 'date-fns';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/lib/hooks/useAuth';
 import { useRouter, usePathname } from '@/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -25,7 +25,6 @@ function HomePageContent() {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-
     const searchQuery = searchParams.get('q') || '';
     const selectedCategory = searchParams.get('category');
 
@@ -44,9 +43,9 @@ function HomePageContent() {
 
     const handleQuickBetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setQuickBetForm({ ...quickBetForm, [name]: value });
+        setQuickBetForm((prev) => ({ ...prev, [name]: value }));
         if (formErrors[name as keyof typeof formErrors]) {
-            setFormErrors({ ...formErrors, [name]: undefined });
+            setFormErrors((prev) => ({ ...prev, [name]: undefined }));
         }
     };
 
