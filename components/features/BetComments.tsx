@@ -13,11 +13,12 @@ import { cn } from "@/lib/utils";
 
 interface BetCommentsProps {
   comments: Comment[];
-  currentUser: User;
+  currentUser: User | null;
+  commentsError?: string | null;
   onAddComment: (content: string) => void;
 }
 
-export const BetComments: React.FC<BetCommentsProps> = ({ comments, currentUser, onAddComment }) => {
+export const BetComments: React.FC<BetCommentsProps> = ({ comments, currentUser, commentsError, onAddComment }) => {
   const t = useTranslations('BetComments');
   const locale = useLocale();
   const [newComment, setNewComment] = useState("");
@@ -33,7 +34,11 @@ export const BetComments: React.FC<BetCommentsProps> = ({ comments, currentUser,
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto space-y-4 p-1">
-        {comments.length === 0 ? (
+        {commentsError ? (
+          <div className="text-center text-red-600 py-8">
+            {commentsError}
+          </div>
+        ) : comments.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
             {t('noComments')}
           </div>
@@ -69,26 +74,32 @@ export const BetComments: React.FC<BetCommentsProps> = ({ comments, currentUser,
       </div>
 
       <div className="mt-4 pt-4 border-t border-gray-100">
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <Avatar src={currentUser.avatar} alt={currentUser.username} size="sm" className="hidden sm:block" />
-          <div className="flex-1 relative">
-            <Input
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder={t('placeholder')}
-              className="pr-10"
-            />
-            <Button
-              type="submit"
-              variant="ghost"
-              size="sm"
-              className="absolute right-1 top-1/2 -translate-y-1/2 text-primary hover:text-primary-dark p-2 h-auto"
-              disabled={!newComment.trim()}
-            >
-              <Send className="w-4 h-4" />
-            </Button>
+        {currentUser ? (
+          <form onSubmit={handleSubmit} className="flex gap-2">
+            <Avatar src={currentUser.avatar} alt={currentUser.username} size="sm" className="hidden sm:block" />
+            <div className="flex-1 relative">
+              <Input
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder={t('placeholder')}
+                className="pr-10"
+              />
+              <Button
+                type="submit"
+                variant="ghost"
+                size="sm"
+                className="absolute right-1 top-1/2 -translate-y-1/2 text-primary hover:text-primary-dark p-2 h-auto"
+                disabled={!newComment.trim()}
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <div className="text-center text-gray-500 py-4 text-sm">
+            {t('loginToComment')}
           </div>
-        </form>
+        )}
       </div>
     </div>
   );

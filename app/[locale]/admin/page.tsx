@@ -5,6 +5,7 @@ import { Shield, Coins, User, Users, Sparkles, Wallet, Zap } from "lucide-react"
 import { useTranslations, useFormatter } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+// TODO: replace with API when admin users endpoint exists
 import { users } from "@/lib/mockData/users";
 import { getTokenBalance } from "@/lib/mockData/wallet";
 import { CreditRuleType } from "@/types";

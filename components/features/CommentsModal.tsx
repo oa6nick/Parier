@@ -10,7 +10,8 @@ import { BetComments } from "./BetComments";
 interface CommentsModalProps {
   bet: Bet;
   initialComments: Comment[];
-  currentUser: User;
+  currentUser: User | null;
+  commentsError?: string | null;
   isOpen: boolean;
   onClose: () => void;
   onAddComment: (content: string) => void;
@@ -21,6 +22,7 @@ export const CommentsModal: React.FC<CommentsModalProps> = ({
   bet, 
   initialComments, 
   currentUser, 
+  commentsError,
   isOpen, 
   onClose,
   onAddComment,
@@ -92,6 +94,7 @@ export const CommentsModal: React.FC<CommentsModalProps> = ({
             <BetComments 
               comments={initialComments} 
               currentUser={currentUser}
+              commentsError={commentsError}
               onAddComment={onAddComment}
             />
           )}

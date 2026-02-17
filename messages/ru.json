@@ -242,7 +242,9 @@
     "noComments": "Комментариев пока нет. Будьте первым!",
     "reply": "Ответить",
     "loading": "Загрузка комментариев...",
-    "sending": "Отправка..."
+    "sending": "Отправка...",
+    "failedToLoad": "Не удалось загрузить комментарии",
+    "loginToComment": "Войдите, чтобы комментировать"
   },
   "Chat": {
     "title": "Сообщения",
@@ -346,8 +348,20 @@
     "globalMarket": "Глобальный рынок",
     "activePredictions": "{count} Активных прогнозов",
     "all": "Все",
+    "searchPlaceholder": "Поиск прогнозов...",
+    "searchButton": "Поиск",
+    "trendingBets": "Популярные ставки",
+    "live": "В эфире",
+    "sortBy": "Сортировка:",
+    "sortDate": "Сначала новые",
+    "sortPopularity": "Популярные",
+    "sortCoefficient": "Высокий коэффициент",
+    "sortPool": "Большой пул",
     "noResults": "Ставки не найдены",
     "noResultsDesc": "Попробуйте изменить поиск или фильтры",
+    "noBetsFound": "Ставки не найдены",
+    "noBetsDesc": "Попробуйте изменить поиск или фильтры",
+    "clearFilters": "Сбросить фильтры",
     "createBetForm": {
       "title": "Создать пари",
       "titlePlaceholder": "Заголовок прогноза...",

@@ -15,8 +15,6 @@ import { cn } from "@/lib/utils";
 import { CommentsModal } from "@/components/features/CommentsModal";
 import { AuthPromptModal } from "@/components/features/AuthPromptModal";
 import { useAuth } from "@/context/AuthContext";
-import { users } from "@/lib/mockData/users";
-import { getComments } from "@/lib/mockData/comments";
 import {
   joinBet,
   likeBet,
@@ -34,6 +32,7 @@ interface BetCardProps {
 export const BetCard: React.FC<BetCardProps> = ({ bet, onBetJoined }) => {
   const t = useTranslations('BetCard');
   const tModal = useTranslations('BetModal');
+  const tComments = useTranslations('BetComments');
   const format = useFormatter();
   const locale = useLocale();
   const router = useRouter();
@@ -51,12 +50,13 @@ export const BetCard: React.FC<BetCardProps> = ({ bet, onBetJoined }) => {
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const [comments, setComments] = useState<import("@/types").Comment[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentsError, setCommentsError] = useState<string | null>(null);
   const [commentsCount, setCommentsCount] = useState(bet.commentsCount);
   const [isCopied, setIsCopied] = useState(false);
   const [betsCount, setBetsCount] = useState(bet.betsCount);
   const [displayBetAmount, setDisplayBetAmount] = useState(bet.betAmount);
 
-  const currentUser = user || users[0]; // Use authenticated user or fallback to mock
+  const currentUser = user ?? null;
 
   const timeAgo = formatDistanceToNow(bet.createdAt, {
     addSuffix: true,
@@ -179,6 +179,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet, onBetJoined }) => {
   const handleCommentsClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsCommentsOpen(true);
+    setCommentsError(null);
     if (isAuthenticated) {
       setCommentsLoading(true);
       try {
@@ -186,12 +187,13 @@ export const BetCard: React.FC<BetCardProps> = ({ bet, onBetJoined }) => {
         setComments(apiComments.map(mapCommentResponseToComment));
         setCommentsCount(total);
       } catch {
-        setComments(getComments(bet.id));
+        setComments([]);
+        setCommentsError(tComments('failedToLoad'));
       } finally {
         setCommentsLoading(false);
       }
     } else {
-      setComments(getComments(bet.id));
+      setComments([]);
     }
   };
 
@@ -569,6 +571,7 @@ export const BetCard: React.FC<BetCardProps> = ({ bet, onBetJoined }) => {
         bet={bet}
         initialComments={comments}
         currentUser={currentUser}
+        commentsError={commentsError}
         isOpen={isCommentsOpen}
         onClose={() => setIsCommentsOpen(false)}
         onAddComment={handleAddComment}

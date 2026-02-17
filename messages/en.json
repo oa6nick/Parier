@@ -242,7 +242,9 @@
     "noComments": "No comments yet. Be the first!",
     "reply": "Reply",
     "loading": "Loading comments...",
-    "sending": "Sending..."
+    "sending": "Sending...",
+    "failedToLoad": "Failed to load comments",
+    "loginToComment": "Log in to comment"
   },
   "Chat": {
     "title": "Messages",
@@ -346,8 +348,20 @@
     "globalMarket": "Global Market",
     "activePredictions": "{count} Active Predictions",
     "all": "All",
+    "searchPlaceholder": "Search predictions...",
+    "searchButton": "Search",
+    "trendingBets": "Trending Bets",
+    "live": "Live",
+    "sortBy": "Sort by:",
+    "sortDate": "Newest",
+    "sortPopularity": "Popular",
+    "sortCoefficient": "High Odds",
+    "sortPool": "Large Pool",
     "noResults": "No bets found",
     "noResultsDesc": "Try adjusting your search or filters",
+    "noBetsFound": "No bets found",
+    "noBetsDesc": "Try adjusting your search or filters",
+    "clearFilters": "Clear all filters",
     "createBetForm": {
       "title": "Create Bet",
       "titlePlaceholder": "Prediction title...",

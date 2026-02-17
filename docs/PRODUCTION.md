@@ -27,6 +27,10 @@
 - Use strong `DB_API_PASSWORD` and `KEYCLOAK_DB_PASSWORD`
 - Use managed PostgreSQL (e.g., AWS RDS, Supabase) with SSL in production
 
+### Development / Fallback to mock
+
+When `NEXT_PUBLIC_API_URL` is not set or the backend returns 404, the frontend falls back to mock data (bets, categories, etc.). This allows running the frontend without the backend for UI development. **Recommendation:** Always set `NEXT_PUBLIC_API_URL` when developing with the backend to ensure API integration is tested.
+
 ## Keycloak Configuration
 
 ### Local development (HTTP)

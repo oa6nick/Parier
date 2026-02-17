@@ -66,7 +66,7 @@ export async function getBetComments(
     language: language === "ru" ? "ru" : "en",
   });
   const data = res.data ?? [];
-  const total = res.total ?? data.length;
+  const total = res.total ?? res.count ?? data.length;
   return { comments: data, total };
 }
 

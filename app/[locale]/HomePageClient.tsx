@@ -20,7 +20,7 @@ function HomePageContent() {
   const locale = useLocale();
   const searchParams = useSearchParams();
   const selectedCategory = searchParams.get('category');
-  const { bets: allBets, loading: betsLoading, categories } = useBets(locale, { category: selectedCategory ?? undefined });
+  const { bets: allBets, loading: betsLoading, categories, useApi } = useBets(locale, { category: selectedCategory ?? undefined });
   const { isAuthenticated } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -165,7 +165,8 @@ function HomePageContent() {
     if (maxCoefficient != null) result = result.filter((bet) => bet.coefficient <= maxCoefficient);
     if (minPool != null) result = result.filter((bet) => bet.betAmount >= minPool);
     if (maxPool != null) result = result.filter((bet) => bet.betAmount <= maxPool);
-    if (location?.trim()) {
+    // Location filter: API bets don't have location; skip when using API data
+    if (!useApi && location?.trim()) {
       const loc = location.toLowerCase();
       result = result.filter((bet) => bet.location?.toLowerCase().includes(loc));
     }
@@ -193,7 +194,7 @@ function HomePageContent() {
     });
     
     return result;
-  }, [allBets, searchQuery, selectedCategory, searchParams]);
+  }, [allBets, searchQuery, selectedCategory, searchParams, useApi]);
 
   return (
     <div className="min-h-screen bg-gray-50/50 relative selection:bg-primary/20">
@@ -222,12 +223,19 @@ function HomePageContent() {
                 <Search className="w-5 h-5 text-gray-400 ml-3" />
                 <input
                   name="search"
-                  defaultValue={searchQuery}
-                  placeholder="Search predictions..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    const params = new URLSearchParams(searchParams.toString());
+                    const val = e.target.value;
+                    if (val) params.set('q', val);
+                    else params.delete('q');
+                    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+                  }}
+                  placeholder={t('searchPlaceholder')}
                   className="flex-1 bg-transparent border-none focus:ring-0 text-base text-gray-900 placeholder:text-gray-400 h-11 px-3"
                 />
                 <Button type="submit" size="sm" className="rounded-lg px-5 h-10 font-medium">
-                  Search
+                  {t('searchButton')}
                 </Button>
               </div>
             </form>
@@ -250,7 +258,7 @@ function HomePageContent() {
                       : "bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                   )}
                 >
-                  All
+                  {t('all')}
                 </button>
                 {categories.slice(0, 5).map((category) => (
                   <button
@@ -334,14 +342,14 @@ function HomePageContent() {
         {/* Bets Grid Header */}
         <div id="bets-grid" className="flex items-center justify-between mb-8 scroll-mt-32">
           <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold text-gray-900">Trending Bets</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{t('trendingBets')}</h2>
             <div className="px-2.5 py-0.5 rounded-full bg-red-100 text-red-600 text-xs font-bold uppercase tracking-wide">
-              Live
+              {t('live')}
             </div>
           </div>
           
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500 font-medium">Sort by:</span>
+            <span className="text-sm text-gray-500 font-medium">{t('sortBy')}</span>
             <select 
               className="bg-white border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 font-medium cursor-pointer"
               onChange={(e) => {
@@ -351,10 +359,10 @@ function HomePageContent() {
               }}
               defaultValue={searchParams.get('sortBy') || "date"}
             >
-              <option value="date">Newest</option>
-              <option value="popularity">Popular</option>
-              <option value="coefficient">High Odds</option>
-              <option value="pool">Large Pool</option>
+              <option value="date">{t('sortDate')}</option>
+              <option value="popularity">{t('sortPopularity')}</option>
+              <option value="coefficient">{t('sortCoefficient')}</option>
+              <option value="pool">{t('sortPool')}</option>
             </select>
           </div>
         </div>
@@ -378,8 +386,8 @@ function HomePageContent() {
               <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center shadow-sm mb-6 border border-gray-100">
                 <TrendingUp className="w-10 h-10 text-gray-300" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">No bets found</h3>
-              <p className="text-gray-500 text-lg">Try adjusting your search or filters</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t('noBetsFound')}</h3>
+              <p className="text-gray-500 text-lg">{t('noBetsDesc')}</p>
               <Button 
                 variant="outline" 
                 className="mt-6 rounded-full"
@@ -388,7 +396,7 @@ function HomePageContent() {
                   setQuickBetForm({ title: "", betAmount: "", coefficient: "" });
                 }}
               >
-                Clear all filters
+                {t('clearFilters')}
               </Button>
             </div>
           )}
