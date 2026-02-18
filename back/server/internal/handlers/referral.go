@@ -75,6 +75,9 @@ func (h *ReferralHandler) GetReferralStats(c *gin.Context) {
 }
 
 func (h *ReferralHandler) RegisterRoutes(router *gin.RouterGroup) {
-	router.GET("/code", h.GetReferralCode)
-	router.GET("/stats", h.GetReferralStats)
+	referral := router.Group("referral")
+	{
+		referral.GET("/code", h.GetReferralCode)
+		referral.GET("/stats", h.GetReferralStats)
+	}
 }

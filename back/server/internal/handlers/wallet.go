@@ -203,8 +203,11 @@ func (h *WalletHandler) GetTransactions(c *gin.Context) {
 }
 
 func (h *WalletHandler) RegisterRoutes(router *gin.RouterGroup) {
-	router.GET("/balance", h.GetBalance)
-	router.POST("/deposit", h.Deposit)
-	router.POST("/withdraw", h.Withdraw)
-	router.GET("/transactions", h.GetTransactions)
+	wallet := router.Group("wallet")
+	{
+		wallet.GET("/balance", h.GetBalance)
+		wallet.POST("/deposit", h.Deposit)
+		wallet.POST("/withdraw", h.Withdraw)
+		wallet.GET("/transactions", h.GetTransactions)
+	}
 }
