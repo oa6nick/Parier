@@ -14,6 +14,7 @@ docs/InternalHandlersBalanceResponse.md
 docs/InternalHandlersBetCommentResponse.md
 docs/InternalHandlersBetCreateResponse.md
 docs/InternalHandlersBetResponse.md
+docs/InternalHandlersCurrentUserResponse.md
 docs/InternalHandlersDepositRequest.md
 docs/InternalHandlersDictionaryResponse.md
 docs/InternalHandlersKeycloakLogoutRequest.md

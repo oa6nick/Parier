@@ -69,6 +69,11 @@ export interface InternalHandlersBetResponse {
     'success'?: boolean;
     'total'?: number;
 }
+export interface InternalHandlersCurrentUserResponse {
+    'data'?: ParierServerInternalModelsAuthorResponse;
+    'message'?: string;
+    'success'?: boolean;
+}
 export interface InternalHandlersDepositRequest {
     'amount': number;
     'description'?: string;
@@ -153,7 +158,9 @@ export interface ParierServerInternalModelsAuthorResponse {
     'created_at'?: string;
     'deleted_at'?: string;
     'id'?: string;
+    'interests'?: Array<string>;
     'likes'?: number;
+    'location'?: string;
     'rating'?: number;
     'updated_at'?: string;
     'username'?: string;
@@ -200,11 +207,13 @@ export interface ParierServerInternalModelsBetCreateRequest {
     'verification_source_id'?: Array<string>;
 }
 export interface ParierServerInternalModelsBetRequest {
+    'author_id'?: string;
     'category_id'?: string;
     'coefficient'?: string;
     'deadline'?: string;
     'description'?: string;
     'id'?: string;
+    'is_my'?: boolean;
     'language'?: string;
     'limit'?: number;
     'max_amount'?: string;
@@ -2058,6 +2067,47 @@ export const ParierApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
+         * Get current user
+         * @summary Get current user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        parierUserGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/parier/user`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2Keycloak required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2Keycloak", [], configuration)
+
+            // authentication BasicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Get verification sources
          * @summary Get verification sources
          * @param {ParierServerInternalModelsDictionaryRequest} request Request
@@ -2272,6 +2322,18 @@ export const ParierApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * Get current user
+         * @summary Get current user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async parierUserGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InternalHandlersCurrentUserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.parierUserGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ParierApi.parierUserGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Get verification sources
          * @summary Get verification sources
          * @param {ParierServerInternalModelsDictionaryRequest} request Request
@@ -2414,6 +2476,15 @@ export const ParierApiFactory = function (configuration?: Configuration, basePat
          */
         parierLikeTypesPost(request: ParierServerInternalModelsDictionaryRequest, options?: RawAxiosRequestConfig): AxiosPromise<InternalHandlersDictionaryResponse> {
             return localVarFp.parierLikeTypesPost(request, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get current user
+         * @summary Get current user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        parierUserGet(options?: RawAxiosRequestConfig): AxiosPromise<InternalHandlersCurrentUserResponse> {
+            return localVarFp.parierUserGet(options).then((request) => request(axios, basePath));
         },
         /**
          * Get verification sources
@@ -2564,6 +2635,16 @@ export class ParierApi extends BaseAPI {
      */
     public parierLikeTypesPost(request: ParierServerInternalModelsDictionaryRequest, options?: RawAxiosRequestConfig) {
         return ParierApiFp(this.configuration).parierLikeTypesPost(request, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get current user
+     * @summary Get current user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public parierUserGet(options?: RawAxiosRequestConfig) {
+        return ParierApiFp(this.configuration).parierUserGet(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -81,6 +81,15 @@ definitions:
       total:
         type: integer
     type: object
+  internal_handlers.CurrentUserResponse:
+    properties:
+      data:
+        $ref: '#/definitions/parier-server_internal_models.AuthorResponse'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
   internal_handlers.DepositRequest:
     properties:
       amount:
@@ -245,8 +254,14 @@ definitions:
         type: string
       id:
         type: string
+      interests:
+        items:
+          type: string
+        type: array
       likes:
         type: integer
+      location:
+        type: string
       rating:
         type: integer
       updated_at:
@@ -336,6 +351,8 @@ definitions:
     type: object
   parier-server_internal_models.BetRequest:
     properties:
+      author_id:
+        type: string
       category_id:
         type: string
       coefficient:
@@ -346,6 +363,8 @@ definitions:
         type: string
       id:
         type: string
+      is_my:
+        type: boolean
       language:
         type: string
       limit:
@@ -1583,6 +1602,37 @@ paths:
       - OAuth2Keycloak: []
       - BasicAuth: []
       summary: Get like types
+      tags:
+      - parier
+  /parier/user:
+    get:
+      consumes:
+      - application/json
+      description: Get current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handlers.CurrentUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/parier-server_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - OAuth2Keycloak: []
+      - BasicAuth: []
+      summary: Get current user
       tags:
       - parier
   /parier/verification-sources:

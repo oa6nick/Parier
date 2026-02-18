@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"parier-server/internal/models"
 	"parier-server/internal/repository"
 	"parier-server/internal/util"
@@ -352,6 +353,12 @@ func (s *ParierService) GetBets(request models.BetRequest) ([]*models.BetRespons
 	if request.ID != nil {
 		query = query.Where("ck_id = ?", request.ID)
 	}
+	if request.IsMy != nil && *request.IsMy {
+		query = query.Where("ck_author = ?", request.User.ID)
+	}
+	if request.AuthorID != nil {
+		query = query.Where("ck_author = ?", request.AuthorID)
+	}
 	offset, limit := util.ValidatePageAndPageSize(request.Offset, request.Limit)
 	sort := util.ValidateSort(request.SortBy, request.SortDir, nil)
 	query = query.Order(sort)
@@ -422,6 +429,8 @@ func (s *ParierService) GetBets(request models.BetRequest) ([]*models.BetRespons
 				Likes:     len(bet.Author.LikesReceived),
 				Rating:    len(bet.Author.RatingsReceived),
 				WinRate:   s.calculateWinRate(bet.Author),
+				Interests: s.findUserInterests(bet.Author.UserProperties),
+				Location:  s.findUserLocation(bet.Author.UserProperties),
 				CreatedAt: bet.Author.CtCreate,
 				UpdatedAt: bet.Author.CtModify,
 				DeletedAt: bet.Author.CtDelete,
@@ -503,6 +512,8 @@ func (s *ParierService) GetBetComments(betID uuid.UUID, request models.BetCommen
 						Likes:     len(parentComment.Author.LikesReceived),
 						Rating:    len(parentComment.Author.RatingsReceived),
 						WinRate:   s.calculateWinRate(parentComment.Author),
+						Interests: s.findUserInterests(parentComment.Author.UserProperties),
+						Location:  s.findUserLocation(parentComment.Author.UserProperties),
 						CreatedAt: parentComment.Author.CtCreate,
 						UpdatedAt: parentComment.Author.CtModify,
 						DeletedAt: parentComment.Author.CtDelete,
@@ -530,6 +541,8 @@ func (s *ParierService) GetBetComments(betID uuid.UUID, request models.BetCommen
 				Likes:     len(comment.Author.LikesReceived),
 				Rating:    len(comment.Author.RatingsReceived),
 				WinRate:   s.calculateWinRate(comment.Author),
+				Interests: s.findUserInterests(comment.Author.UserProperties),
+				Location:  s.findUserLocation(comment.Author.UserProperties),
 				CreatedAt: comment.Author.CtCreate,
 				UpdatedAt: comment.Author.CtModify,
 				DeletedAt: comment.Author.CtDelete,
@@ -640,6 +653,44 @@ func (s *ParierService) UnlikeBet(betID uuid.UUID, request models.DefaultRequest
 	return true, nil
 }
 
+func (s *ParierService) GetCurrentUser(currentUser *models.User) (*models.AuthorResponse, error) {
+	db := s.repo.GetDB()
+	query := db.Model(&models.TUser{})
+	query = query.Where("ck_id = ?", currentUser.ID)
+	query = query.Preload("UserProperties")
+	query = query.Preload("UserProperties.PropertyType")
+	query = query.Preload("LikesReceived")
+	query = query.Preload("RatingsReceived")
+	query = query.Preload("BetHistory")
+	var user models.TUser
+	err := query.First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	res := models.AuthorResponse{
+		ID:       user.CkId,
+		Username: util.IfThenElseFunc(s.findUserProperty(user.UserProperties, "USER_USERNAME") != nil, func() *string { return s.findUserProperty(user.UserProperties, "USER_USERNAME").CvText }, func() *string { return nil }),
+		Avatar: util.IfThenElseFunc(s.findUserProperty(user.UserProperties, "USER_AVATAR") != nil, func() *uuid.UUID {
+			return s.findUserProperty(user.UserProperties, "USER_AVATAR").CkMedia
+		}, func() *uuid.UUID { return nil }),
+		Background: util.IfThenElseFunc(s.findUserProperty(user.UserProperties, "USER_BACKGROUND") != nil, func() *uuid.UUID {
+			return s.findUserProperty(user.UserProperties, "USER_BACKGROUND").CkMedia
+		}, func() *uuid.UUID { return nil }),
+		Verified: util.IfThenElseFunc(s.findUserProperty(user.UserProperties, "USER_VERIFIED") != nil, func() bool {
+			return *s.findUserProperty(user.UserProperties, "USER_VERIFIED").ClBool
+		}, func() bool { return false }),
+		Likes:     len(user.LikesReceived),
+		Rating:    len(user.RatingsReceived),
+		WinRate:   s.calculateWinRate(&user),
+		Interests: s.findUserInterests(user.UserProperties),
+		Location:  s.findUserLocation(user.UserProperties),
+		CreatedAt: user.CtCreate,
+		UpdatedAt: user.CtModify,
+		DeletedAt: user.CtDelete,
+	}
+	return &res, nil
+}
+
 // HELPER FUNCTIONS
 func (s *ParierService) findUserProperty(userProperties []models.TUserProperties, propertyType string) *models.TUserProperties {
 	for _, property := range userProperties {
@@ -671,4 +722,27 @@ func (s *ParierService) calculateWinRate(user *models.TUser) int {
 		return 0
 	}
 	return int(float64(totalWin) / float64(totalBets) * 100)
+}
+
+func (s *ParierService) findUserInterests(userProperties []models.TUserProperties) *[]string {
+	for _, property := range userProperties {
+		if property.PropertyType.CkId == "USER_INTERESTS" && property.CvText != nil {
+			interests := []string{}
+			err := json.Unmarshal([]byte(*property.CvText), &interests)
+			if err != nil {
+				return nil
+			}
+			return &interests
+		}
+	}
+	return nil
+}
+
+func (s *ParierService) findUserLocation(userProperties []models.TUserProperties) *string {
+	for _, property := range userProperties {
+		if property.PropertyType.CkId == "USER_LOCATION" && property.CvText != nil {
+			return property.CvText
+		}
+	}
+	return nil
 }

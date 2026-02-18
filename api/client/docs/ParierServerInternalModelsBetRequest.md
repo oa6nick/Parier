@@ -5,11 +5,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**author_id** | **string** |  | [optional] [default to undefined]
 **category_id** | **string** |  | [optional] [default to undefined]
 **coefficient** | **string** |  | [optional] [default to undefined]
 **deadline** | **string** |  | [optional] [default to undefined]
 **description** | **string** |  | [optional] [default to undefined]
 **id** | **string** |  | [optional] [default to undefined]
+**is_my** | **boolean** |  | [optional] [default to undefined]
 **language** | **string** |  | [optional] [default to undefined]
 **limit** | **number** |  | [optional] [default to undefined]
 **max_amount** | **string** |  | [optional] [default to undefined]
@@ -29,11 +31,13 @@ Name | Type | Description | Notes
 import { ParierServerInternalModelsBetRequest } from './api';
 
 const instance: ParierServerInternalModelsBetRequest = {
+    author_id,
     category_id,
     coefficient,
     deadline,
     description,
     id,
+    is_my,
     language,
     limit,
     max_amount,

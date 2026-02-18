@@ -16,6 +16,7 @@ All URIs are relative to *http://localhost:8080/api/v1*
 |[**parierCommentCommentIdLikePost**](#pariercommentcommentidlikepost) | **POST** /parier/comment/{comment_id}/like | Like bet comment|
 |[**parierCommentCommentIdUnlikePost**](#pariercommentcommentidunlikepost) | **POST** /parier/comment/{comment_id}/unlike | Unlike bet comment|
 |[**parierLikeTypesPost**](#parierliketypespost) | **POST** /parier/like-types | Get like types|
+|[**parierUserGet**](#parieruserget) | **GET** /parier/user | Get current user|
 |[**parierVerificationSourcesPost**](#parierverificationsourcespost) | **POST** /parier/verification-sources | Get verification sources|
 
 # **parierBetBetIdCommentPut**
@@ -667,6 +668,53 @@ const { status, data } = await apiInstance.parierLikeTypesPost(
 ### HTTP request headers
 
  - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**400** | Bad Request |  -  |
+|**401** | Unauthorized |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **parierUserGet**
+> InternalHandlersCurrentUserResponse parierUserGet()
+
+Get current user
+
+### Example
+
+```typescript
+import {
+    ParierApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new ParierApi(configuration);
+
+const { status, data } = await apiInstance.parierUserGet();
+```
+
+### Parameters
+This endpoint does not have any parameters.
+
+
+### Return type
+
+**InternalHandlersCurrentUserResponse**
+
+### Authorization
+
+[OAuth2Keycloak](../README.md#OAuth2Keycloak), [BasicAuth](../README.md#BasicAuth), [BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
  - **Accept**: application/json
 
 

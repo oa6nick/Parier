@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
     Calendar,
     MapPin,
@@ -21,44 +21,64 @@ import { StatCard } from '@/components/ui/StatCard';
 import { BetCard } from '@/components/features/BetCard';
 import { WalletBalance } from '@/components/features/WalletBalance';
 import { ReferralCard } from '@/components/features/ReferralCard';
-import { users } from '@/lib/mockData/users';
-import { getBetsSync } from '@/lib/mockData/bets';
-import { getCategories } from '@/lib/mockData/categories';
-import { getTokenBalance } from '@/lib/mockData/wallet';
-import { getReferralStats, generateReferralCode } from '@/lib/mockData/referrals';
-import { cn } from '@/lib/utils';
+import { cn, GetMediaUrl } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { useTranslations, useFormatter, useLocale } from 'next-intl';
 import { Link } from '@/navigation';
+import { useDictionaries } from '@/lib/hooks/useDictionaries';
+import { useApi } from '@/api/context';
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/lib/hooks/useAuth';
 
 export default function ProfilePage() {
     const t = useTranslations('Profile');
     const format = useFormatter();
     const locale = useLocale();
-    const categories = getCategories(locale);
-    const bets = getBetsSync(locale);
-    const currentUser = users[0]; // "You"
-    const userBets = bets.filter((bet) => bet.author.id === currentUser.id);
+    const { categories } = useDictionaries(locale);
+    const api = useApi();
+    const { isAuthenticated } = useAuth();
+    const { data: betsData } = useQuery({
+        queryKey: ['bets_user'],
+        queryFn: () => api.ParierApi.parierBetPost({ language: locale, is_my: true }),
+    });
+    const { data: balance } = useQuery({
+        queryKey: ['balance_user'],
+        queryFn: () => api.WalletApi.walletBalanceGet(),
+    });
+    const { data: currentUserData } = useQuery({
+        queryKey: ['current_user'],
+        queryFn: () => api.ParierApi.parierUserGet(),
+    });
+    const { data: referralData } = useQuery({
+        queryKey: ['referral_user'],
+        queryFn: () => api.ReferralApi.referralStatsGet(),
+    });
+    const { data: referralCodeData } = useQuery({
+        queryKey: ['referral_code_user'],
+        queryFn: () => api.ReferralApi.referralCodeGet(),
+    });
+    const referralStats = useMemo(() => referralData?.data || {}, [referralData]);
+    const currentUser = useMemo(() => currentUserData?.data?.data || {}, [currentUserData]);
+    const userBets = useMemo(() => betsData?.data?.data || [], [betsData]);
     const [activeTab, setActiveTab] = useState<'all' | 'active' | 'completed'>('all');
 
     const filteredBets = userBets.filter((bet) => {
-        if (activeTab === 'active') return bet.status === 'open';
-        if (activeTab === 'completed') return bet.status === 'completed';
+        if (activeTab === 'active') return bet.status_id === 'OPEN';
+        if (activeTab === 'completed') return bet.status_id === 'COMPLETED';
         return true;
     });
 
     const userStats = {
-        activeBets: userBets.filter((b) => b.status === 'open').length,
-        wonBets: userBets.filter((b) => b.status === 'completed').length,
+        activeBets: userBets.filter((b) => b.status_id === 'OPEN').length,
+        wonBets: userBets.filter((b) => b.status_id === 'COMPLETED').length,
         totalWinnings: 0,
-        rating: currentUser.rank || 0,
+        rating: currentUser.rating || 0,
     };
 
     const userInterests = categories.filter((cat) => currentUser.interests?.includes(cat.id));
 
-    const tokenBalance = getTokenBalance(currentUser.id);
-    const referralCode = currentUser.referralCode || generateReferralCode(currentUser.id);
-    const referralStats = getReferralStats(currentUser.id);
+    const tokenBalance = useMemo(() => balance?.data?.data || {}, [balance]);
+    const referralCode = useMemo(() => referralCodeData?.data?.code, [referralCodeData]);
 
     return (
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -71,8 +91,8 @@ export default function ProfilePage() {
                         <div className="p-1 bg-gradient-to-br from-primary to-secondary rounded-full">
                             <div className="p-1 bg-white rounded-full">
                                 <Avatar
-                                    src={currentUser.avatar}
-                                    alt={currentUser.username}
+                                    src={GetMediaUrl(currentUser.avatar)}
+                                    alt={currentUser.username || ''}
                                     size="lg"
                                     className="w-32 h-32"
                                 />
@@ -96,7 +116,7 @@ export default function ProfilePage() {
                             <div className="flex flex-wrap gap-2 sm:gap-3">
                                 <Link href="/wallet">
                                     <Button variant="primary" size="sm" className="rounded-full min-h-[44px]">
-                                        <Wallet className="w-4 h-4 mr-2" /> {format.number(tokenBalance.balance)}
+                                        <Wallet className="w-4 h-4 mr-2" /> {format.number(tokenBalance.balance || 0)}
                                     </Button>
                                 </Link>
                                 <Link href="/messages">
@@ -123,13 +143,13 @@ export default function ProfilePage() {
 
                         <div className="flex flex-wrap items-center gap-6 mb-6">
                             <div className="flex items-center gap-2 px-3 py-1 bg-yellow-50 rounded-lg border border-yellow-100">
-                                <RatingStars rating={currentUser.rating} size="md" />
+                                <RatingStars rating={currentUser.rating || 0} size="md" />
                                 <span className="text-sm font-bold text-yellow-700 ml-1">4.8</span>
                             </div>
                             <div className="flex items-center gap-2 px-3 py-1 bg-green-50 rounded-lg border border-green-100">
                                 <Trophy className="w-4 h-4 text-green-600" />
                                 <span className="text-sm font-bold text-green-700">
-                                    {currentUser.winRate}% {t('winRate')}
+                                    {currentUser.win_rate}% {t('winRate')}
                                 </span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -168,14 +188,14 @@ export default function ProfilePage() {
                             </Button>
                         </Link>
                     </div>
-                    <WalletBalance balance={tokenBalance} />
+                    <WalletBalance balance={tokenBalance as any} />
                 </div>
                 <div>
                     <h2 className="text-xl font-bold text-gray-900 mb-4">{t('referralProgram')}</h2>
                     <ReferralCard
-                        referralCode={referralCode}
-                        totalReferrals={referralStats.totalReferrals}
-                        totalEarnings={referralStats.totalEarnings}
+                        referralCode={referralCode as any}
+                        totalReferrals={referralStats.total_referrals || 0}
+                        totalEarnings={referralStats.total_earnings || 0}
                     />
                 </div>
             </div>
@@ -192,7 +212,7 @@ export default function ProfilePage() {
                 <StatCard
                     icon={DollarSign}
                     label={t('totalEarnings')}
-                    value={`${format.number(tokenBalance.totalWon)}`}
+                    value={`${format.number(tokenBalance.totalWon || 0)}`}
                     iconColor="text-yellow-500"
                 />
                 <StatCard

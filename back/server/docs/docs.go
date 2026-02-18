@@ -1566,6 +1566,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/parier/user": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "OAuth2Keycloak": []
+                    },
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "Get current user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "parier"
+                ],
+                "summary": "Get current user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.CurrentUserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/parier-server_internal_models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/parier-server_internal_models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/parier-server_internal_models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/parier/verification-sources": {
             "post": {
                 "security": [
@@ -2047,6 +2099,20 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_handlers.CurrentUserResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/parier-server_internal_models.AuthorResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "internal_handlers.DepositRequest": {
             "type": "object",
             "required": [
@@ -2298,8 +2364,17 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "interests": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "likes": {
                     "type": "integer"
+                },
+                "location": {
+                    "type": "string"
                 },
                 "rating": {
                     "type": "integer"
@@ -2437,6 +2512,9 @@ const docTemplate = `{
         "parier-server_internal_models.BetRequest": {
             "type": "object",
             "properties": {
+                "author_id": {
+                    "type": "string"
+                },
                 "category_id": {
                     "type": "string"
                 },
@@ -2451,6 +2529,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
+                },
+                "is_my": {
+                    "type": "boolean"
                 },
                 "language": {
                     "type": "string"

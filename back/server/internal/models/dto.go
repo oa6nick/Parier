@@ -180,6 +180,8 @@ type BetRequest struct {
 	MaxAmount            *string    `json:"max_amount,omitempty" form:"max_amount"`
 	Coefficient          *string    `json:"coefficient,omitempty" form:"coefficient"`
 	Deadline             *string    `json:"deadline,omitempty" form:"deadline"`
+	IsMy                 *bool      `json:"is_my,omitempty" form:"is_my"`
+	AuthorID             *uuid.UUID `json:"author_id,omitempty" form:"author_id"`
 	PaginationRequest
 }
 
@@ -197,6 +199,8 @@ type AuthorResponse struct {
 	Likes      int        `json:"likes"`
 	Rating     int        `json:"rating"`
 	WinRate    int        `json:"win_rate"`
+	Interests  *[]string  `json:"interests"`
+	Location   *string    `json:"location"`
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`
 	DeletedAt  *time.Time `json:"deleted_at,omitempty"`

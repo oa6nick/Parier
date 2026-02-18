@@ -99,7 +99,9 @@ INSERT INTO t_localization (ck_id, cr_type, ck_create, ck_modify) VALUES
     ('user.verified', 'STATIC', 'system', 'system'),
     ('user.username', 'STATIC', 'system', 'system'),    
     ('user.email', 'STATIC', 'system', 'system'),
-    ('user.phone', 'STATIC', 'system', 'system')
+    ('user.phone', 'STATIC', 'system', 'system'),
+    ('user.interests', 'STATIC', 'system', 'system'),
+    ('user.location', 'STATIC', 'system', 'system')
     ON CONFLICT (ck_id) DO NOTHING;
 
 INSERT INTO t_localization_word (ck_localization, ck_lang, ck_text, ck_create, ck_modify) VALUES 
@@ -204,7 +206,11 @@ INSERT INTO t_localization_word (ck_localization, ck_lang, ck_text, ck_create, c
     ('user.email', 'EN', f_create_or_select_word('Email'), 'system', 'system'),
     ('user.email', 'RU', f_create_or_select_word('Email'), 'system', 'system'),
     ('user.phone', 'EN', f_create_or_select_word('Phone'), 'system', 'system'),
-    ('user.phone', 'RU', f_create_or_select_word('Телефон'), 'system', 'system')
+    ('user.phone', 'RU', f_create_or_select_word('Телефон'), 'system', 'system'),
+    ('user.interests', 'EN', f_create_or_select_word('Interests'), 'system', 'system'),
+    ('user.interests', 'RU', f_create_or_select_word('Интересы'), 'system', 'system'),
+    ('user.location', 'EN', f_create_or_select_word('Location'), 'system', 'system'),
+    ('user.location', 'RU', f_create_or_select_word('Местоположение'), 'system', 'system')
     ON CONFLICT (ck_localization, ck_lang) DO NOTHING;
 
 --changeset artemov_i:init_categories_data runOnChange:true dbms:postgresql splitStatements:false stripComments:false
@@ -340,7 +346,9 @@ INSERT INTO t_d_properties_type (ck_id, cr_type, cr_place, ck_name, ck_descripti
     ('USER_VERIFIED', 'BOOLEAN', 'USER', 'user.verified', null, 'system', 'system'),
     ('USER_USERNAME', 'TEXT', 'USER', 'user.username', null, 'system', 'system'),
     ('USER_EMAIL', 'TEXT', 'USER', 'user.email', null, 'system', 'system'),
-    ('USER_PHONE', 'TEXT', 'USER', 'user.phone', null, 'system', 'system')
+    ('USER_PHONE', 'TEXT', 'USER', 'user.phone', null, 'system', 'system'),
+    ('USER_INTERESTS', 'JSONARRAY', 'USER', 'user.interests', null, 'system', 'system'),
+    ('USER_LOCATION', 'TEXT', 'USER', 'user.location', null, 'system', 'system')
     ON CONFLICT (ck_id) DO NOTHING;
 
 --rollback DROP TABLE t_d_properties_type;

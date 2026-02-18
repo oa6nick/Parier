@@ -10,7 +10,9 @@ Name | Type | Description | Notes
 **created_at** | **string** |  | [optional] [default to undefined]
 **deleted_at** | **string** |  | [optional] [default to undefined]
 **id** | **string** |  | [optional] [default to undefined]
+**interests** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
 **likes** | **number** |  | [optional] [default to undefined]
+**location** | **string** |  | [optional] [default to undefined]
 **rating** | **number** |  | [optional] [default to undefined]
 **updated_at** | **string** |  | [optional] [default to undefined]
 **username** | **string** |  | [optional] [default to undefined]
@@ -28,7 +30,9 @@ const instance: ParierServerInternalModelsAuthorResponse = {
     created_at,
     deleted_at,
     id,
+    interests,
     likes,
+    location,
     rating,
     updated_at,
     username,

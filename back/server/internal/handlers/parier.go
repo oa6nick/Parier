@@ -33,6 +33,11 @@ type BetCommentResponse struct {
 	Data []models.BetCommentResponse `json:"data"`
 }
 
+type CurrentUserResponse struct {
+	models.SuccessResponse
+	Data models.AuthorResponse `json:"data"`
+}
+
 func NewParierHandler(service *service.ParierService) *ParierHandler {
 	return &ParierHandler{service: service}
 }
@@ -455,6 +460,29 @@ func (h *ParierHandler) PostUnlikeBetComment(c *gin.Context) {
 	SendSuccess(c, "Comment unliked successfully", unliked)
 }
 
+// GetCurrentUser godoc
+// @Summary Get current user
+// @Description Get current user
+// @Tags parier
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Security OAuth2Keycloak
+// @Security BasicAuth
+// @Success 200 {object} CurrentUserResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /parier/user [get]
+func (h *ParierHandler) GetCurrentUser(c *gin.Context) {
+	user, err := h.service.GetCurrentUser(GetUser(c))
+	if err != nil {
+		SendError(c, http.StatusInternalServerError, "Internal server error", err.Error())
+		return
+	}
+	SendSuccess(c, "Current user fetched successfully", user)
+}
+
 // RegisterRoutes registers all parier routes
 func (h *ParierHandler) RegisterRoutes(router *gin.RouterGroup) {
 	parier := router.Group("/parier")
@@ -472,5 +500,6 @@ func (h *ParierHandler) RegisterRoutes(router *gin.RouterGroup) {
 		parier.PUT("/bet/:bet_id/comment", h.PutCreateBetComment)
 		parier.POST("/comment/:comment_id/like", h.PostLikeBetComment)
 		parier.POST("/comment/:comment_id/unlike", h.PostUnlikeBetComment)
+		parier.GET("/user", h.GetCurrentUser)
 	}
 }

@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { useTranslations, useLocale, useFormatter } from 'next-intl';
 import { getTokenBalance } from '@/lib/mockData/wallet';
 import { useAuth } from '@/lib/hooks/useAuth';
+import { useApi } from '@/api/context';
 
 const HeaderContent: React.FC = () => {
     const pathname = usePathname();
@@ -33,9 +34,16 @@ const HeaderContent: React.FC = () => {
     const locale = useLocale();
     const router = useRouter();
     const format = useFormatter();
-
+    const api = useApi();
+    const [balance, setBalance] = useState<number>(0);
     const { session, isAuthenticated, logout, login } = useAuth();
-    const balance = session ? getTokenBalance(session.id!) : { balance: 0 };
+    useEffect(() => {
+        if (isAuthenticated) {
+            api.WalletApi.walletBalanceGet()
+                .then((response) => response.data?.data?.balance ?? 0)
+                .then((balance) => setBalance(balance));
+        }
+    }, [isAuthenticated, api]);
 
     const navItems = [
         { href: '/', label: t('feed') },
@@ -96,7 +104,7 @@ const HeaderContent: React.FC = () => {
                                                 <Wallet className="w-3 h-3 text-primary" />
                                             </div>
                                             <span className="text-sm font-bold text-gray-900 group-hover:text-primary transition-colors">
-                                                {format.number(balance.balance)}
+                                                {format.number(balance)}
                                             </span>
                                         </div>
                                     </Link>
@@ -224,7 +232,7 @@ const HeaderContent: React.FC = () => {
                                         className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium text-gray-700 hover:bg-gray-50 transition-colors min-h-[48px]"
                                     >
                                         <Wallet className="w-5 h-5 text-primary" />
-                                        <span>{format.number(balance.balance)} PRR</span>
+                                        <span>{format.number(balance)} PRR</span>
                                     </Link>
                                     <Link
                                         href="/create"
